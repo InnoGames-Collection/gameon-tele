@@ -52,7 +52,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       [norm]
     );
 
-    const token = jwt.sign({ msisdn: norm, id: player.id }, env.JWT_SECRET, { expiresIn: env.JWT_ACCESS_EXPIRES_IN });
+    const token = jwt.sign({ msisdn: norm, id: player.id }, env.JWT_SECRET, { expiresIn: env.JWT_ACCESS_EXPIRES_IN as any });
 
     return reply.send({
       success: true,
