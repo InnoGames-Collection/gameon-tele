@@ -13,7 +13,7 @@ services:
   # ── PostgreSQL 16 Enterprise Relational Store ────────────────────────────────
   postgres:
     image: postgres:16-alpine
-    container_name: gameon-postgres
+    container_name: gameon-tele-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-gameon}
@@ -37,7 +37,7 @@ services:
   # ── Valkey 8.x Distributed High-Performance Cache ───────────────────────────
   valkey:
     image: valkey/valkey:8-alpine
-    container_name: gameon-valkey
+    container_name: gameon-tele-valkey
     restart: unless-stopped
     command: ["valkey-server", "--maxmemory", "96mb", "--maxmemory-policy", "allkeys-lru"]
     ports:
@@ -57,7 +57,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: gameon-api
+    container_name: gameon-tele-api
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -93,7 +93,7 @@ services:
     build:
       context: ./admin
       dockerfile: Dockerfile.admin
-    container_name: gameon-admin
+    container_name: gameon-tele-admin
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -119,7 +119,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.web
-    container_name: gameon-web
+    container_name: gameon-tele-web
     restart: unless-stopped
     environment:
       NODE_ENV: production
