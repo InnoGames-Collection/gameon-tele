@@ -32,14 +32,6 @@ import { SolitaireGame } from '../games/solitaire';
 import { PuzzleBlockGame } from '../games/puzzleBlock';
 import { CrazyColorsGame } from '../games/crazyColors';
 import { HelixJumpGame } from '../games/helixJump';
-import { SkyHopperGame } from '../games/skyHopper';
-import { HockeyGame } from '../games/hockey';
-import { CatchUpGame } from '../games/catchUp';
-import { FruitFancyGame } from '../games/fruitFancy';
-import { PictureMatchGame } from '../games/pictureMatch';
-import { CandyBombGame } from '../games/candyBomb';
-import { LinkColorGame } from '../games/linkColor';
-import { TapRushGame } from '../games/tapRush';
 import { InteractiveGameRunner } from '../games/interactiveSimulator';
 import { 
   X, 
@@ -341,6 +333,8 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
       <div className="fixed inset-0 z-50 bg-[#2B2B2B] flex flex-col justify-start items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
         <CrazyColorsGame
           onExit={onClose}
+          onGameOver={onGameOver}
+          isWeeklyCompetition={game.launchContext === 'weekly-challenge'}
         />
       </div>
     );
@@ -352,126 +346,6 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
       <div className="fixed inset-0 z-50 bg-[#0284c7] flex flex-col justify-start items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
         <HelixJumpGame
           onExit={onClose}
-        />
-      </div>
-    );
-  }
-
-  // Sky Hopper features 40 progressive levels, deterministic pipe physics, collectible coins, Web Audio engine
-  if (game.id === 'sky-hopper') {
-    return (
-      <div className="fixed inset-0 z-50 bg-[#4ec0ca] flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <SkyHopperGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
-        />
-      </div>
-    );
-  }
-
-  // Hockey (Air Hockey Challenge) features 40 progressive levels, deterministic physics, Very Hard AI, Web Audio engine
-  if (game.id === 'hockey') {
-    return (
-      <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <HockeyGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
-        />
-      </div>
-    );
-  }
-
-  // Catch Up features 40 progressive stages, 3D highway perspective, deterministic obstacles, Web Audio engine
-  if (game.id === 'catch-up') {
-    return (
-      <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <CatchUpGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
-        />
-      </div>
-    );
-  }
-
-  // Fruit Fancy features 40 challenging levels, match-3 mechanics, tree stumps & ice, Web Audio synthesizer
-  if (game.id === 'fruit-fancy') {
-    return (
-      <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <FruitFancyGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
-        />
-      </div>
-    );
-  }
-
-  // Picture Match features 40 tournament levels, hard difficulty, memorization phase, +5s bonus, Web Audio engine
-  if (game.id === 'picture-match') {
-    return (
-      <div className="fixed inset-0 z-50 bg-[#004D40] flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <PictureMatchGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
-        />
-      </div>
-    );
-  }
-
-  // Candy Bomb features 40 tournament levels, 3D candy artwork, striped & wrapped bombs, rainbow color bombs, Web Audio synthesizer
-  if (game.id === 'candy-bomb') {
-    return (
-      <div className="fixed inset-0 z-50 bg-[#0284C7] flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <CandyBombGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
-        />
-      </div>
-    );
-  }
-
-  // Link Color features 40 tournament levels, 3D glossy orbs, dynamic glowing chains, paint splatters, rainbow bombs, Web Audio synthesizer
-  if (game.id === 'link-color') {
-    return (
-      <div className="fixed inset-0 z-50 bg-[#075985] flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <LinkColorGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
-        />
-      </div>
-    );
-  }
-
-  // Tap Rush features ultra fast reflex arcade, shrinking target rings, decoy hazards, combos, and Web Audio engine
-  if (game.id === 'tap-rush') {
-    return (
-      <div className="fixed inset-0 z-50 bg-[#070B16] flex flex-col justify-center items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
-        <TapRushGame
-          game={game}
-          profile={profile}
-          onExit={onClose}
-          onGameOver={onGameOver}
-          isAudioEnabled={isAudioEnabled}
         />
       </div>
     );
@@ -737,7 +611,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
 
       {/* Footer Branding */}
       <div className="px-4 py-2 bg-[#1688C9] text-center text-xs text-white/90 border-t border-blue-600">
-        TelePlus • Official Mobile Gaming Portal
+        GameON Tele • Official Mobile Gaming Portal
       </div>
     </div>
   );
