@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import { pool } from '../config/database.js';
@@ -12,7 +13,19 @@ export async function authRoutes(fastify: FastifyInstance) {
     if (!phoneNumber) return reply.status(400).send({ error: 'Phone number is required' });
 
     const norm = normalizeMsisdn(phoneNumber);
-    const otp = env.NODE_ENV === 'development' ? '123456' : Math.floor(100000 + Math.random() * 900000).toString();
+    if (norm.length < 9) {
+      return reply.status(400).send({ error: 'Invalid Ethiopian phone number' });
+    }
+
+    // Rate limiting: max 3 requests per 10 minutes
+    const rateLimitKey = `ratelimit:otp:${norm}`;
+    const attempts = await cache.incr(rateLimitKey);
+    if (attempts === 1) await cache.expire(rateLimitKey, 600);
+    if (attempts > 3) {
+      return reply.status(429).send({ error: 'Too many OTP requests. Please wait 10 minutes before requesting again.' });
+    }
+
+    const otp = crypto.randomInt(100000, 1000000).toString();
     await cache.set(`otp:gameon:${norm}`, otp, 'EX', 300);
 
     await SpService.sendMt({
@@ -24,7 +37,6 @@ export async function authRoutes(fastify: FastifyInstance) {
     return reply.send({
       success: true,
       message: `Verification code sent to ${maskMsisdn(norm)}`,
-      demoOtp: env.NODE_ENV === 'development' ? '123456' : undefined,
     });
   });
 
@@ -33,9 +45,12 @@ export async function authRoutes(fastify: FastifyInstance) {
     const norm = normalizeMsisdn(phoneNumber);
     const cached = await cache.get(`otp:gameon:${norm}`);
 
-    if (otpCode !== '123456' && otpCode !== cached) {
-      return reply.status(400).send({ error: 'Invalid verification code' });
+    if (!cached || otpCode !== cached) {
+      return reply.status(400).send({ error: 'Invalid or expired verification code' });
     }
+
+    // Invalidate OTP immediately to prevent replay attacks
+    await cache.del(`otp:gameon:${norm}`);
 
     const masked = maskMsisdn(norm);
     const playerRes = await pool.query(
