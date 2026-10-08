@@ -3,21 +3,29 @@ import crypto from 'crypto';
 import { env } from '../config/env.js';
 
 export async function verifySpSignature(req: FastifyRequest, reply: FastifyReply) {
-  if (env.NODE_ENV === 'development' && env.SP_WEBHOOK_SECRET === 'gameon-hmac-webhook-secret-2026') {
-    return;
+  const signatureHeader = (req.headers['x-signature'] || req.headers['x-hub-signature-256']) as string;
+  if (!signatureHeader) {
+    return reply.status(401).send({ error: 'Missing X-Signature header' });
   }
 
-  const signature = req.headers['x-signature'] as string;
-  if (!signature) {
-    reply.status(401).send({ error: 'Missing X-Signature header' });
-    return;
-  }
+  // Clean prefix if provided (e.g. 'sha256=abcdef...')
+  const cleanReceivedSig = signatureHeader.startsWith('sha256=')
+    ? signatureHeader.slice(7)
+    : signatureHeader;
 
-  const rawBody = JSON.stringify(req.body);
-  const expected = 'sha256=' + crypto.createHmac('sha256', env.SP_WEBHOOK_SECRET).update(rawBody).digest('hex');
+  // Retrieve raw buffer or string if preserved, else fallback to JSON stringify
+  const rawBody = (req as any).rawBody
+    ? (req as any).rawBody.toString('utf-8')
+    : JSON.stringify(req.body);
 
-  if (signature !== expected) {
-    reply.status(403).send({ error: 'Invalid HMAC signature' });
-    return;
+  const secret = env.PORTAL_WEBHOOK_SECRET || env.SP_WEBHOOK_SECRET;
+  const expectedHash = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+
+  // Guard against differing string lengths before timingSafeEqual
+  const receivedBuf = Buffer.from(cleanReceivedSig, 'hex');
+  const expectedBuf = Buffer.from(expectedHash, 'hex');
+
+  if (receivedBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(receivedBuf, expectedBuf)) {
+    return reply.status(403).send({ error: 'Invalid HMAC-SHA256 signature' });
   }
 }

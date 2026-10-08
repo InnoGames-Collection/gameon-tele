@@ -1,53 +1,49 @@
 /**
- * Helix Jump Leaderboard Modal
- * Shows top high scores, ranks, levels reached, and player position.
+ * Helix Jump Authoritative Tournament Leaderboard Modal
+ * Directly connects to Fastify 5 + Valkey 8 + PostgreSQL 16 backend.
+ * Renders verified 7-day tournament standings, masked MSISDNs, and prize tiers.
  */
 
-import React, { useState, useMemo } from 'react';
-import { X, Trophy, Medal, Crown, Star, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Trophy, Crown } from 'lucide-react';
 import { helixAudio } from '../audioEngine';
-import { HelixJumpSaveData, HelixLeaderboardEntry } from '../types';
+import { HelixJumpSaveData } from '../types';
+import { HelixCompetitionService, HelixLeaderboardEntry, HELIX_PRIZE_RULES } from '../../../services/helixCompetitionService';
 
 interface LeaderboardModalProps {
   saveData: HelixJumpSaveData;
   onClose: () => void;
 }
 
-// Built-in leaderboard hall of fame base
-const DEFAULT_GLOBAL_ENTRIES: HelixLeaderboardEntry[] = [
-  { id: '1', playerName: 'HelixMaster99', score: 18450, level: 40, date: 'Today' },
-  { id: '2', playerName: 'VortexKing', score: 14200, level: 36, date: 'Today' },
-  { id: '3', playerName: 'SkyDropper', score: 11850, level: 31, date: 'Yesterday' },
-  { id: '4', playerName: 'ApexSpinner', score: 9400, level: 25, date: '2 days ago' },
-  { id: '5', playerName: 'CylinderAce', score: 7650, level: 20, date: '3 days ago' },
-  { id: '6', playerName: 'NeonGlider', score: 5800, level: 16, date: '4 days ago' },
-  { id: '7', playerName: 'BouncePro', score: 4200, level: 12, date: '5 days ago' },
-  { id: '8', playerName: 'GravityDrift', score: 3100, level: 8, date: '1 week ago' },
-];
-
 export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ saveData, onClose }) => {
-  const [tab, setTab] = useState<'ALL' | 'TODAY'>('ALL');
+  const [tab, setTab] = useState<'7DAY' | 'ALL'>('7DAY');
+  const [leaderboard, setLeaderboard] = useState<HelixLeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const entries = useMemo(() => {
-    // Add current player's record if they have any score
-    const playerBest = saveData.bestScore || 0;
-    const playerLevel = saveData.highestUnlockedLevel || 1;
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
 
-    const list = [...DEFAULT_GLOBAL_ENTRIES];
-    if (playerBest > 0) {
-      list.push({
-        id: 'player',
-        playerName: 'You (Player)',
-        score: playerBest,
-        level: playerLevel,
-        date: 'Today',
-        isPlayer: true,
+    HelixCompetitionService.fetchRemoteLeaderboard()
+      .then((entries) => {
+        if (isMounted) {
+          setLeaderboard(entries);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setLeaderboard(HelixCompetitionService.getLeaderboard());
+          setLoading(false);
+        }
       });
-    }
 
-    // Sort descending by score
-    return list.sort((a, b) => b.score - a.score);
-  }, [saveData.bestScore, saveData.highestUnlockedLevel]);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const period = HelixCompetitionService.getCurrentPeriod();
 
   return (
     <div
@@ -63,10 +59,10 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ saveData, on
             </div>
             <div>
               <h2 className="text-lg font-black text-white uppercase tracking-wider leading-none">
-                Leaderboard
+                Weekly Tournament
               </h2>
-              <p className="text-[11px] font-bold text-slate-400 mt-1">
-                Global High Score Rankings
+              <p className="text-[11px] font-bold text-amber-400 mt-1">
+                Cycle #{period.cycleNumber} • {period.timeRemainingFormatted}
               </p>
             </div>
           </div>
@@ -81,8 +77,31 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ saveData, on
           </button>
         </div>
 
+        {/* Prize Pool Banner */}
+        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-2xl p-3 mb-3 text-center">
+          <p className="text-[10px] font-black uppercase tracking-wider text-amber-300">
+            Total Prize Pool: 40,000 ETB Airtime
+          </p>
+          <p className="text-xs font-bold text-white mt-0.5">
+            1st: 20k ETB • 2nd: 12k ETB • 3rd: 5k ETB
+          </p>
+        </div>
+
         {/* Tab Toggle */}
         <div className="grid grid-cols-2 p-1 bg-white/5 rounded-2xl mb-3 border border-white/10">
+          <button
+            onClick={() => {
+              helixAudio.playButtonClick();
+              setTab('7DAY');
+            }}
+            className={`py-1.5 text-xs font-black uppercase rounded-xl transition-all cursor-pointer ${
+              tab === '7DAY'
+                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            7-Day Live
+          </button>
           <button
             onClick={() => {
               helixAudio.playButtonClick();
@@ -94,109 +113,103 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ saveData, on
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            All-Time
-          </button>
-          <button
-            onClick={() => {
-              helixAudio.playButtonClick();
-              setTab('TODAY');
-            }}
-            className={`py-1.5 text-xs font-black uppercase rounded-xl transition-all cursor-pointer ${
-              tab === 'TODAY'
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Today
+            My Stats
           </button>
         </div>
 
         {/* Rankings List */}
         <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-2">
-          {entries.map((entry, index) => {
-            const rank = index + 1;
-            const isTop3 = rank <= 3;
-            const isPlayer = entry.isPlayer;
+          {loading ? (
+            <div className="py-12 text-center text-slate-400 text-xs font-bold animate-pulse">
+              Loading authoritative standings from server...
+            </div>
+          ) : tab === '7DAY' ? (
+            leaderboard.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 text-xs font-bold">
+                No scores recorded for this cycle yet. Be the first to play!
+              </div>
+            ) : (
+              leaderboard.map((entry) => {
+                const rank = entry.rank;
+                const isTop3 = rank <= 3;
+                const isCurrentUser = entry.isCurrentUser;
+                const prize = HELIX_PRIZE_RULES.find((p) => p.rank === rank)?.reward || (rank <= 10 ? '1,000 ETB' : undefined);
 
-            return (
-              <div
-                key={entry.id}
-                className={`p-3 rounded-2xl border flex items-center justify-between transition-all ${
-                  isPlayer
-                    ? 'bg-gradient-to-r from-sky-900/60 to-indigo-900/60 border-sky-400/50 shadow-lg shadow-sky-500/20 ring-1 ring-sky-400'
-                    : isTop3
-                    ? 'bg-amber-500/10 border-amber-500/30'
-                    : 'bg-white/5 border-white/10'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  {/* Rank Badge */}
+                return (
                   <div
-                    className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs ${
-                      rank === 1
-                        ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-500/30'
-                        : rank === 2
-                        ? 'bg-slate-300 text-slate-950'
-                        : rank === 3
-                        ? 'bg-amber-700 text-white'
-                        : 'bg-white/10 text-slate-400'
+                    key={entry.maskedMsisdn + rank}
+                    className={`p-3 rounded-2xl border flex items-center justify-between transition-all ${
+                      isCurrentUser
+                        ? 'bg-gradient-to-r from-sky-900/60 to-indigo-900/60 border-sky-400/50 shadow-lg shadow-sky-500/20 ring-1 ring-sky-400'
+                        : isTop3
+                        ? 'bg-amber-500/10 border-amber-500/30'
+                        : 'bg-white/5 border-white/10'
                     }`}
                   >
-                    {rank === 1 ? (
-                      <Crown className="w-4 h-4 fill-slate-950" />
-                    ) : (
-                      rank
-                    )}
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={`text-xs font-black truncate max-w-[120px] ${
-                          isPlayer ? 'text-sky-300 font-extrabold' : 'text-white'
+                    <div className="flex items-center gap-3">
+                      {/* Rank Badge */}
+                      <div
+                        className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs ${
+                          rank === 1
+                            ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-500/30'
+                            : rank === 2
+                            ? 'bg-slate-300 text-slate-950'
+                            : rank === 3
+                            ? 'bg-amber-700 text-white'
+                            : 'bg-white/10 text-slate-400'
                         }`}
                       >
-                        {entry.playerName}
-                      </span>
-                      {isPlayer && (
-                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-sky-500 text-slate-950">
-                          YOU
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-                      <span>Level {entry.level}</span>
-                      <span>•</span>
-                      <span>{entry.date}</span>
-                    </div>
-                  </div>
-                </div>
+                        {rank === 1 ? <Crown className="w-4 h-4 fill-slate-950" /> : rank}
+                      </div>
 
-                {/* Score */}
-                <div className="text-right">
-                  <div className="text-sm font-black text-amber-300">
-                    {entry.score.toLocaleString()}
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs font-black text-white leading-tight">
+                            {entry.maskedMsisdn}
+                          </p>
+                          {isCurrentUser && (
+                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-sky-400/30 text-sky-300 font-black">
+                              YOU
+                            </span>
+                          )}
+                        </div>
+                        {prize && (
+                          <p className="text-[10px] font-bold text-amber-400 mt-0.5">
+                            Prize: {prize}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-sm font-black text-white leading-tight">
+                        {entry.sevenDayScore.toLocaleString()}
+                      </p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                        Points
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                    pts
-                  </div>
-                </div>
+                );
+              })
+            )
+          ) : (
+            <div className="flex flex-col gap-3 py-2">
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
+                <p className="text-xs font-bold text-slate-400 uppercase">My High Score</p>
+                <p className="text-2xl font-black text-white mt-1">{(saveData.bestScore || 0).toLocaleString()}</p>
               </div>
-            );
-          })}
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
+                <p className="text-xs font-bold text-slate-400 uppercase">Tower Highest Level</p>
+                <p className="text-2xl font-black text-amber-400 mt-1">Level {saveData.highestUnlockedLevel || 1}</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
+                <p className="text-xs font-bold text-slate-400 uppercase">Total Rounds Played</p>
+                <p className="text-2xl font-black text-sky-400 mt-1">{saveData.totalGames || 0}</p>
+              </div>
+            </div>
+          )}
         </div>
-
-        {/* Close Button */}
-        <button
-          onClick={() => {
-            helixAudio.playButtonClick();
-            onClose();
-          }}
-          className="mt-3 w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Menu
-        </button>
       </div>
     </div>
   );

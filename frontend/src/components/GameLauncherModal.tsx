@@ -346,6 +346,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
       <div className="fixed inset-0 z-50 bg-[#0284c7] flex flex-col justify-start items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
         <HelixJumpGame
           onExit={onClose}
+          profile={profile}
         />
       </div>
     );

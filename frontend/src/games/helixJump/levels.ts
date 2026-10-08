@@ -178,4 +178,87 @@ function buildAll40Levels(): LevelDefinition[] {
   return levels;
 }
 
+export class DeterministicRNG {
+  private state: number;
+
+  constructor(seedStr: string) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < seedStr.length; i++) {
+      h = Math.imul(h ^ seedStr.charCodeAt(i), 16777619);
+    }
+    this.state = h >>> 0;
+  }
+
+  next(): number {
+    let t = (this.state += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+
+  nextInt(min: number, max: number): number {
+    return Math.floor(this.next() * (max - min + 1)) + min;
+  }
+}
+
+/**
+ * Procedurally generates a level based on a server-issued tower_seed.
+ * Guarantees identical slice rotations and danger sectors to server anti-cheat.
+ */
+export function generateProceduralLevelFromSeed(seed: string, lvl: number = 1): LevelDefinition {
+  const rng = new DeterministicRNG(seed);
+  const ringCount = getRingCountForLevel(lvl);
+  const spacing = HELIX_DIMENSIONS.RING_SPACING;
+  const themeIndex = Math.min(39, (lvl - 1) % 40);
+
+  const rings: PlatformRingDefinition[] = [];
+  let currentGapPos = 0;
+
+  for (let r = 0; r < ringCount; r++) {
+    const y = -r * spacing;
+
+    if (r === 0) {
+      rings.push(createRing(y, [0, 1], [4, 5]));
+      currentGapPos = 1;
+    } else if (r === ringCount - 1) {
+      rings.push(createRing(y, [], [], true));
+    } else {
+      const shiftDirection = rng.next() > 0.5 ? 1 : -1;
+      const shiftSteps = rng.nextInt(2, 5);
+      currentGapPos = (currentGapPos + shiftDirection * shiftSteps + 12) % 12;
+
+      const gapSize = r > 20 && rng.next() > 0.6 ? 1 : 2;
+      const gapSectors: number[] = [];
+      for (let g = 0; g < gapSize; g++) {
+        gapSectors.push((currentGapPos + g) % 12);
+      }
+
+      const dangerCount = Math.min(4, 1 + Math.floor(r * 0.08) + (r % 2));
+      const dangerSectors: number[] = [];
+      const dangerStart = (currentGapPos + gapSize + 1) % 12;
+
+      for (let d = 0; d < dangerCount; d++) {
+        const idx = (dangerStart + d) % 12;
+        if (!gapSectors.includes(idx)) {
+          dangerSectors.push(idx);
+        }
+      }
+
+      rings.push(createRing(y, gapSectors, dangerSectors));
+    }
+  }
+
+  const baseScore = ringCount * 60;
+  return {
+    id: lvl,
+    title: `Tournament Tower (Seed ${seed.slice(0, 6)})`,
+    difficulty: lvl <= 10 ? 'hard' : lvl <= 20 ? 'very_hard' : 'expert',
+    description: `Deterministic 7-day tournament tower verified by server telemetry.`,
+    ringCount,
+    themeIndex,
+    rings,
+    starThresholds: [baseScore, Math.round(baseScore * 1.6), Math.round(baseScore * 2.4)],
+  };
+}
+
 export const HELIX_LEVELS: LevelDefinition[] = buildAll40Levels();

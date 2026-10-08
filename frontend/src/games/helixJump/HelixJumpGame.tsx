@@ -7,8 +7,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { GameState, HelixJumpSaveData } from './types';
 import { STORAGE_KEY } from './constants';
-import { HELIX_LEVELS } from './levels';
+import { HELIX_LEVELS, generateProceduralLevelFromSeed } from './levels';
 import { helixAudio } from './audioEngine';
+import { HelixCompetitionService } from '../../services/helixCompetitionService';
+import { StorageService } from '../../services/storageService';
+import { UserProfile } from '../../types';
 import { TopHud } from './components/TopHud';
 import { HelixJump3DCanvas } from './components/HelixJump3DCanvas';
 import { MenuModal } from './components/MenuModal';
@@ -26,6 +29,7 @@ import { LeaderboardModal } from './components/LeaderboardModal';
 
 interface HelixJumpGameProps {
   onExit: () => void;
+  profile?: UserProfile;
 }
 
 const DEFAULT_SAVE_DATA: HelixJumpSaveData = {
@@ -68,7 +72,7 @@ function evaluateAchievements(data: HelixJumpSaveData): HelixJumpSaveData {
   };
 }
 
-export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit }) => {
+export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile }) => {
   // Load saved progress from localStorage
   const [saveData, setSaveData] = useState<HelixJumpSaveData>(() => {
     if (typeof window !== 'undefined') {
@@ -97,6 +101,15 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit }) => {
   const [progressPercent, setProgressPercent] = useState<number>(0);
   const [starsEarnedThisRound, setStarsEarnedThisRound] = useState<number>(1);
   const [renderKey, setRenderKey] = useState<number>(0); // force canvas re-mount on restart
+  const [activeSeed, setActiveSeed] = useState<string | null>(null);
+
+  // Active server-authoritative tournament session
+  const activeSessionRef = useRef<{
+    runToken: string;
+    towerSeed: string;
+    competitionId: string;
+    startedAt: number;
+  } | null>(null);
 
   // Sync sound settings with audio engine
   useEffect(() => {
@@ -126,26 +139,62 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit }) => {
   }, [updateAndPersistSaveData]);
 
   const currentLevelDef = useMemo(() => {
+    if (activeSeed) {
+      return generateProceduralLevelFromSeed(activeSeed, currentLevelId);
+    }
     return HELIX_LEVELS.find((lvl) => lvl.id === currentLevelId) || HELIX_LEVELS[0];
-  }, [currentLevelId]);
+  }, [currentLevelId, activeSeed]);
 
-  // Start specific level
-  const handleStartLevel = useCallback((levelId: number) => {
-    setCurrentLevelId(levelId);
-    setScore(0);
-    setProgressPercent(0);
-    setRenderKey((k) => k + 1);
-    updateAndPersistSaveData((prev) => ({
-      ...prev,
-      totalGames: (prev.totalGames || 0) + 1,
-    }));
-    setGameState('PLAYING');
-  }, [updateAndPersistSaveData]);
+  // Start specific level with server session handshake
+  const handleStartLevel = useCallback(
+    async (levelId: number) => {
+      setCurrentLevelId(levelId);
+      setScore(0);
+      setProgressPercent(0);
+      setRenderKey((k) => k + 1);
+      updateAndPersistSaveData((prev) => ({
+        ...prev,
+        totalGames: (prev.totalGames || 0) + 1,
+      }));
 
-  // Handle Game Over
+      const effectiveProfile = profile || StorageService.getProfile();
+      const phone = effectiveProfile?.phoneNumber || '0911428890';
+
+      try {
+        const session = await HelixCompetitionService.startRunSession(phone);
+        activeSessionRef.current = session;
+        setActiveSeed(session.towerSeed);
+      } catch {
+        activeSessionRef.current = null;
+        setActiveSeed(null);
+      }
+
+      setGameState('PLAYING');
+    },
+    [profile, updateAndPersistSaveData]
+  );
+
+  // Handle Game Over with telemetry submission
   const handleGameOver = useCallback(
-    (finalScore: number) => {
+    (finalScore: number, telemetry: any[] = [], floorsCleared: number = 0, durationSeconds: number = 1) => {
       setScore(finalScore);
+
+      const effectiveProfile = profile || StorageService.getProfile();
+      const phone = effectiveProfile?.phoneNumber || '0911428890';
+      const session = activeSessionRef.current;
+
+      if (session && telemetry.length > 0) {
+        HelixCompetitionService.submitAuthoritativeRun({
+          phoneNumber: phone,
+          runToken: session.runToken,
+          floorsCleared: floorsCleared || 1,
+          finalScore,
+          durationSeconds: durationSeconds || 1,
+          telemetry,
+        }).catch((err) => console.warn('[Run Submit Warning]', err));
+        activeSessionRef.current = null;
+      }
+
       updateAndPersistSaveData((prev) => {
         const prevBestLevel = prev.bestScores[currentLevelId] || 0;
         const newOverallBest = Math.max(prev.bestScore || 0, finalScore);
@@ -162,13 +211,29 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit }) => {
       });
       setGameState('GAME_OVER');
     },
-    [currentLevelId, updateAndPersistSaveData]
+    [currentLevelId, profile, updateAndPersistSaveData]
   );
 
-  // Handle Level Complete
+  // Handle Level Complete with telemetry submission
   const handleLevelComplete = useCallback(
-    (finalScore: number) => {
+    (finalScore: number, telemetry: any[] = [], floorsCleared: number = 0, durationSeconds: number = 1) => {
       setScore(finalScore);
+
+      const effectiveProfile = profile || StorageService.getProfile();
+      const phone = effectiveProfile?.phoneNumber || '0911428890';
+      const session = activeSessionRef.current;
+
+      if (session && telemetry.length > 0) {
+        HelixCompetitionService.submitAuthoritativeRun({
+          phoneNumber: phone,
+          runToken: session.runToken,
+          floorsCleared: floorsCleared || currentLevelDef.ringCount,
+          finalScore,
+          durationSeconds: durationSeconds || 1,
+          telemetry,
+        }).catch((err) => console.warn('[Run Submit Warning]', err));
+        activeSessionRef.current = null;
+      }
 
       // Calculate 1-3 stars
       const thresholds = currentLevelDef.starThresholds;
@@ -209,7 +274,7 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit }) => {
         setGameState('LEVEL_COMPLETE');
       }
     },
-    [currentLevelDef, currentLevelId, updateAndPersistSaveData]
+    [currentLevelDef, currentLevelId, profile, updateAndPersistSaveData]
   );
 
   // Reset Progress

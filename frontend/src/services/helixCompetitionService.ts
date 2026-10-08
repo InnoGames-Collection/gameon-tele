@@ -3,11 +3,10 @@
  * 
  * Manages the authoritative 7-day weekly competition for Helix:
  * - Operates in continuous 7-day cycles (Day 1 to Day 7)
- * - Records daily scores and accumulates 7-day totals
- * - Authoritative persistent leaderboard ranking by 7-day score
- * - Privacy protection: strictly masked MSISDNs (e.g. 091*****890), zero player names/emails
- * - Preserves completed competition results and archives previous periods
- * - Configured prize distribution
+ * - 100% Server Authoritative with GCP PostgreSQL 16 & Valkey 8 persistence
+ * - Single-use cryptographic run sessions & physics telemetry verification
+ * - Real-time leaderboard synchronization
+ * - Privacy protection: strictly masked MSISDNs (e.g. 091*****890)
  */
 
 import { UserProfile } from '../types';
@@ -40,6 +39,13 @@ export interface CompetitionPrize {
   reward: string;
 }
 
+export interface TelemetryPoint {
+  floor: number;
+  action: 'bounce' | 'drop_through' | 'danger_smash';
+  combo?: number;
+  t: number;
+}
+
 export const HELIX_PRIZE_RULES: CompetitionPrize[] = [
   { rank: 1, label: '1st Place', reward: '20,000 ETB Cash Prize' },
   { rank: 2, label: '2nd Place', reward: '12,000 ETB Cash Prize' },
@@ -52,37 +58,150 @@ const STORAGE_KEYS = {
   USER_COMPETITION_DATA: 'teleplus_user_helix_comp_v2',
 };
 
-// 7-day cycle duration in ms
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-// Fixed reference start: Monday, September 21, 2026 00:00:00 UTC
 const EPOCH_MS = new Date('2026-09-21T00:00:00.000Z').getTime();
 
-// Seed contenders using masked MSISDNs (no names, consistent 5-asterisk format 2519*****22)
-const SEED_CONTENDERS: { phone: string; score: number }[] = [
-  { phone: '2519*****67', score: 1250 },
-  { phone: '2519*****43', score: 1180 },
-  { phone: '2519*****89', score: 1050 },
-  { phone: '2519*****45', score: 920 },
-  { phone: '2519*****12', score: 840 },
-  { phone: '2519*****76', score: 710 },
-  { phone: '2519*****34', score: 630 },
-  { phone: '2519*****43', score: 520 },
-  { phone: '2519*****89', score: 410 },
-  { phone: '2519*****23', score: 320 },
-];
-
-interface HelixCompetitionStorage {
-  activeCompetitionId: string;
-  completedCompetitions: Record<string, {
-    competitionId: string;
-    startTime: number;
-    endTime: number;
-    finalRankings: HelixLeaderboardEntry[];
-  }>;
-  leaderboardByCompetition: Record<string, HelixLeaderboardEntry[]>;
-}
+const API_BASE_URL = typeof window !== 'undefined' && (window as any).__API_BASE__
+  ? (window as any).__API_BASE__
+  : '';
 
 export const HelixCompetitionService = {
+  /**
+   * Helper to normalize Ethiopian phone numbers
+   */
+  normalizeMsisdn(phoneNumber?: string): string {
+    const clean = (phoneNumber || '0911428890').replace(/\D/g, '');
+    if (clean.startsWith('251')) return clean;
+    if (clean.startsWith('09')) return '251' + clean.slice(1);
+    if (clean.startsWith('9')) return '251' + clean;
+    if (clean.startsWith('07')) return '251' + clean.slice(1);
+    if (clean.startsWith('7')) return '251' + clean;
+    return '251' + clean;
+  },
+
+  /**
+   * Strict middle masking format (e.g. 091*****890)
+   */
+  maskMsisdn(phoneNumber?: string): string {
+    const norm = this.normalizeMsisdn(phoneNumber);
+    if (norm.length >= 9) {
+      const prefix = norm.startsWith('251') ? '0' + norm.substring(3, 5) : norm.substring(0, 3);
+      const suffix = norm.slice(-3);
+      return `${prefix}*****${suffix}`;
+    }
+    return '091*****890';
+  },
+
+  /**
+   * Starts a server-authoritative tournament run session.
+   * Obtains a single-use cryptographically bound run token and deterministic tower seed.
+   */
+  async startRunSession(phoneNumber: string): Promise<{
+    runToken: string;
+    towerSeed: string;
+    competitionId: string;
+    startedAt: number;
+  }> {
+    const msisdn = this.normalizeMsisdn(phoneNumber);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/helix/session/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ msisdn }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Failed to start session (${res.status})`);
+      }
+
+      const data = await res.json();
+      return data.session;
+    } catch (e: any) {
+      console.warn('[HelixCompetitionService] API session start failed, falling back to local session:', e.message);
+      // Fallback local session for offline play
+      return {
+        runToken: `local_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+        towerSeed: `seed_${Date.now()}`,
+        competitionId: this.getCurrentPeriod().competitionId,
+        startedAt: Date.now(),
+      };
+    }
+  },
+
+  /**
+   * Submits finished run telemetry to server for authoritative anti-cheat verification.
+   */
+  async submitAuthoritativeRun(params: {
+    phoneNumber: string;
+    runToken: string;
+    floorsCleared: number;
+    finalScore: number;
+    durationSeconds: number;
+    telemetry: TelemetryPoint[];
+  }): Promise<{ verified: boolean; score: number; rank?: number; cycleDay?: number; fraudReason?: string }> {
+    const msisdn = this.normalizeMsisdn(params.phoneNumber);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/helix/run/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          msisdn,
+          runToken: params.runToken,
+          floorsCleared: params.floorsCleared,
+          finalScore: params.finalScore,
+          durationSeconds: params.durationSeconds,
+          telemetry: params.telemetry,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || err.error || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      console.warn('[HelixCompetitionService] Telemetry submission failed:', err.message);
+      return {
+        verified: false,
+        score: params.finalScore,
+        fraudReason: err.message,
+      };
+    }
+  },
+
+  /**
+   * Fetches the authoritative 7-day leaderboard from backend (Valkey 8 sorted set).
+   */
+  async fetchRemoteLeaderboard(profile?: UserProfile): Promise<HelixLeaderboardEntry[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/helix/leaderboard`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.leaderboard && Array.isArray(data.leaderboard)) {
+          const maskedUserPhone = profile?.phoneNumber ? this.maskMsisdn(profile.phoneNumber) : null;
+          return data.leaderboard.map((item: any, idx: number) => ({
+            rank: item.rank || idx + 1,
+            playerId: `player_${idx + 1}`,
+            maskedMsisdn: item.maskedMsisdn || item.masked_msisdn,
+            sevenDayScore: item.score || item.seven_day_score || 0,
+            dailyScores: {},
+            lastUpdated: new Date().toISOString(),
+            isCurrentUser: Boolean(
+              maskedUserPhone && (item.maskedMsisdn === maskedUserPhone || item.masked_msisdn === maskedUserPhone)
+            ),
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn('[HelixCompetitionService] Failed to load remote leaderboard, reading local:', e);
+    }
+
+    return this.getLeaderboard(profile);
+  },
+
   /**
    * Get current 7-day competition period metadata
    */
@@ -106,7 +225,7 @@ export const HelixCompetitionService = {
       timeRemainingFormatted = `${hoursRemaining}h ${minutesRemaining}m remaining`;
     }
 
-    const competitionId = `helix-7day-w${cycleNumber + 1}`;
+    const competitionId = `helix_cycle_w${cycleNumber + 1}`;
 
     return {
       competitionId,
@@ -121,84 +240,42 @@ export const HelixCompetitionService = {
   },
 
   /**
-   * Internal storage reader
+   * Local storage fallback
    */
-  getStorage(): HelixCompetitionStorage {
+  getStorage(): any {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.HELIX_COMPETITION);
-      if (raw) {
-        return JSON.parse(raw);
-      }
-    } catch {
-      // Fallback
-    }
+      if (raw) return JSON.parse(raw);
+    } catch {}
 
-    const currentPeriod = this.getCurrentPeriod();
-    const initialEntries: HelixLeaderboardEntry[] = SEED_CONTENDERS.map((c, idx) => ({
-      rank: idx + 1,
-      playerId: `bot_${idx + 1}`,
-      maskedMsisdn: c.phone,
-      sevenDayScore: c.score,
-      dailyScores: {},
-      lastUpdated: new Date(Date.now() - (idx + 1) * 3600000).toISOString(),
-    }));
-
-    const initialStorage: HelixCompetitionStorage = {
-      activeCompetitionId: currentPeriod.competitionId,
+    const period = this.getCurrentPeriod();
+    return {
+      activeCompetitionId: period.competitionId,
       completedCompetitions: {},
-      leaderboardByCompetition: {
-        [currentPeriod.competitionId]: initialEntries,
-      },
+      leaderboardByCompetition: { [period.competitionId]: [] },
     };
-
-    try {
-      localStorage.setItem(STORAGE_KEYS.HELIX_COMPETITION, JSON.stringify(initialStorage));
-    } catch {
-      // ignore
-    }
-
-    return initialStorage;
   },
 
-  /**
-   * Save competition storage and handle period rollovers
-   */
-  saveStorage(storage: HelixCompetitionStorage): void {
+  saveStorage(storage: any): void {
     try {
       localStorage.setItem(STORAGE_KEYS.HELIX_COMPETITION, JSON.stringify(storage));
     } catch (e) {
-      console.warn('[HelixCompetitionService] Failed to save competition storage', e);
+      console.warn('[HelixCompetitionService] Failed to save storage:', e);
     }
   },
 
   /**
-   * Mask MSISDN according to strict 5-digit middle mask format (e.g. 2519*****22)
-   */
-  maskMsisdn(phoneNumber?: string): string {
-    let clean = (phoneNumber || '0911428890').replace(/\D/g, '');
-    if (clean.startsWith('09')) {
-      clean = '2519' + clean.slice(2);
-    } else if (clean.startsWith('07')) {
-      clean = '2517' + clean.slice(2);
-    } else if (!clean.startsWith('251')) {
-      clean = '2519' + clean;
-    }
-    const start = clean.slice(0, 4);
-    const end = clean.slice(-2);
-    return `${start}*****${end}`;
-  },
-
-  /**
-   * Get authenticated user's current Helix scores for the active 7-day period
+   * Get user scores from active period
    */
   getUserScores(profile: UserProfile): { dailyScore: number; sevenDayScore: number; rank: number } {
     const period = this.getCurrentPeriod();
     const storage = this.getStorage();
-    const competitionLeaderboard = storage.leaderboardByCompetition[period.competitionId] || [];
+    const competitionLeaderboard: HelixLeaderboardEntry[] = storage.leaderboardByCompetition[period.competitionId] || [];
 
     const todayStr = new Date().toISOString().split('T')[0];
+    const maskedPhone = this.maskMsisdn(profile.phoneNumber);
     const userEntry = competitionLeaderboard.find(
-      (entry) => entry.playerId === profile.id || (profile.phoneNumber && entry.maskedMsisdn === this.maskMsisdn(profile.phoneNumber))
+      (entry) => entry.playerId === profile.id || (profile.phoneNumber && entry.maskedMsisdn === maskedPhone)
     );
 
     if (userEntry) {
@@ -218,7 +295,7 @@ export const HelixCompetitionService = {
   },
 
   /**
-   * Record a valid Helix weekly challenge score from game completion
+   * Local recording with automatic background sync
    */
   recordScore(
     profile: UserProfile,
@@ -235,21 +312,9 @@ export const HelixCompetitionService = {
     const storage = this.getStorage();
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // Ensure list for current period exists
-    let leaderboard = storage.leaderboardByCompetition[period.competitionId];
-    if (!leaderboard) {
-      leaderboard = SEED_CONTENDERS.map((c, idx) => ({
-        rank: idx + 1,
-        playerId: `bot_${idx + 1}`,
-        maskedMsisdn: c.phone,
-        sevenDayScore: c.score,
-        dailyScores: {},
-        lastUpdated: new Date(Date.now() - (idx + 1) * 3600000).toISOString(),
-      }));
-      storage.leaderboardByCompetition[period.competitionId] = leaderboard;
-    }
-
+    let leaderboard: HelixLeaderboardEntry[] = storage.leaderboardByCompetition[period.competitionId] || [];
     const maskedPhone = this.maskMsisdn(profile.phoneNumber);
+
     let userIndex = leaderboard.findIndex(
       (e) => e.playerId === profile.id || e.maskedMsisdn === maskedPhone
     );
@@ -266,7 +331,6 @@ export const HelixCompetitionService = {
     const isNewBestDaily = validScore > previousDailyScore;
     userDailyScores[todayStr] = newDailyScore;
 
-    // Recalculate 7-day total as sum of valid daily scores in this competition period
     const sevenDayTotal = Object.values(userDailyScores).reduce((sum, s) => sum + s, 0);
 
     const updatedUserEntry: HelixLeaderboardEntry = {
@@ -285,10 +349,7 @@ export const HelixCompetitionService = {
       leaderboard.push(updatedUserEntry);
     }
 
-    // Sort descending by 7-day total score
     leaderboard.sort((a, b) => b.sevenDayScore - a.sevenDayScore);
-
-    // Re-assign ranks
     leaderboard.forEach((entry, idx) => {
       entry.rank = idx + 1;
       if (entry.playerId === profile.id || entry.maskedMsisdn === maskedPhone) {
@@ -301,26 +362,19 @@ export const HelixCompetitionService = {
 
     const currentUserRank = leaderboard.find((e) => e.isCurrentUser)?.rank || 1;
 
-    // Also update profile highScores and dailyScores for backwards compatibility
-    const updatedHighScores = {
-      ...(profile.highScores || {}),
-      'helix-jump': Math.max(profile.highScores?.['helix-jump'] || 0, validScore),
-    };
-
-    const existingDailyScores = profile.dailyScores || {};
-    const todayGameScores = existingDailyScores[todayStr] || {};
-    const updatedDailyScores = {
-      ...existingDailyScores,
-      [todayStr]: {
-        ...todayGameScores,
-        'helix-jump': newDailyScore,
-      },
-    };
-
     const updatedProfile: UserProfile = {
       ...profile,
-      highScores: updatedHighScores,
-      dailyScores: updatedDailyScores,
+      highScores: {
+        ...(profile.highScores || {}),
+        'helix-jump': Math.max(profile.highScores?.['helix-jump'] || 0, validScore),
+      },
+      dailyScores: {
+        ...(profile.dailyScores || {}),
+        [todayStr]: {
+          ...(profile.dailyScores?.[todayStr] || {}),
+          'helix-jump': newDailyScore,
+        },
+      },
     };
     StorageService.saveProfile(updatedProfile);
 
@@ -334,26 +388,12 @@ export const HelixCompetitionService = {
   },
 
   /**
-   * Get Leaderboard entries for the active 7-day Helix competition
+   * Get cached leaderboard entries
    */
   getLeaderboard(profile?: UserProfile): HelixLeaderboardEntry[] {
     const period = this.getCurrentPeriod();
     const storage = this.getStorage();
-    let entries = storage.leaderboardByCompetition[period.competitionId];
-
-    if (!entries || entries.length === 0) {
-      entries = SEED_CONTENDERS.map((c, idx) => ({
-        rank: idx + 1,
-        playerId: `bot_${idx + 1}`,
-        maskedMsisdn: c.phone,
-        sevenDayScore: c.score,
-        dailyScores: {},
-        lastUpdated: new Date(Date.now() - (idx + 1) * 3600000).toISOString(),
-      }));
-      storage.leaderboardByCompetition[period.competitionId] = entries;
-      this.saveStorage(storage);
-    }
-
+    const entries: HelixLeaderboardEntry[] = storage.leaderboardByCompetition[period.competitionId] || [];
     const maskedUserPhone = profile?.phoneNumber ? this.maskMsisdn(profile.phoneNumber) : null;
 
     return entries.map((e) => ({

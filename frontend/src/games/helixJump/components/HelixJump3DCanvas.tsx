@@ -10,12 +10,19 @@ import { LevelDefinition, RingSector, FloatingScoreText } from '../types';
 import { HELIX_DIMENSIONS, HELIX_PHYSICS, LEVEL_THEMES } from '../constants';
 import { helixAudio } from '../audioEngine';
 
+export interface TelemetryPoint {
+  floor: number;
+  action: 'bounce' | 'drop_through' | 'danger_smash';
+  combo?: number;
+  t: number;
+}
+
 interface HelixJump3DCanvasProps {
   level: LevelDefinition;
   onScoreChange: (score: number) => void;
   onProgressChange: (percent: number) => void;
-  onGameOver: (finalScore: number) => void;
-  onLevelComplete: (finalScore: number) => void;
+  onGameOver: (finalScore: number, telemetry: TelemetryPoint[], floorsCleared: number, durationSeconds: number) => void;
+  onLevelComplete: (finalScore: number, telemetry: TelemetryPoint[], floorsCleared: number, durationSeconds: number) => void;
   isPaused: boolean;
 }
 
@@ -41,6 +48,9 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
   // Refs for animation loop state
   const stateRef = useRef({
     score: 0,
+    startTime: Date.now(),
+    telemetry: [] as TelemetryPoint[],
+    floorsCleared: 0,
     ballY: 0.58,
     ballVy: HELIX_PHYSICS.BOUNCE_IMPULSE,
     ballState: 'BOUNCING' as 'BOUNCING' | 'FALLING' | 'DEEP_DROP' | 'LANDING' | 'DANGER_HIT' | 'GAME_OVER' | 'LEVEL_COMPLETE',
@@ -98,6 +108,9 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
     // Reset local simulation state for this level
     const state = stateRef.current;
     state.score = 0;
+    state.startTime = Date.now();
+    state.telemetry = [];
+    state.floorsCleared = 0;
     const ring0TopY = level.rings[0].y + HELIX_DIMENSIONS.PLATFORM_THICKNESS;
     state.ballY = ring0TopY + HELIX_DIMENSIONS.BALL_RADIUS;
     state.ballVy = HELIX_PHYSICS.BOUNCE_IMPULSE;
@@ -576,6 +589,13 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                   if (state.lastRingPassedIndex < rIdx) {
                     state.lastRingPassedIndex = rIdx;
                     state.comboCount++;
+                    state.telemetry.push({
+                      floor: rIdx,
+                      action: 'drop_through',
+                      combo: state.comboCount,
+                      t: Math.max(0, Date.now() - state.startTime),
+                    });
+                    state.floorsCleared = Math.max(state.floorsCleared, rIdx + 1);
                     if (rIdx + 1 < level.rings.length) {
                       state.activePlatformY = level.rings[rIdx + 1].y;
                     }
@@ -602,6 +622,11 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                   if (state.isComboSmashing) {
                     // Power smash through danger platform with 3+ combo!
                     shatterRing(rIdx);
+                    state.telemetry.push({
+                      floor: rIdx,
+                      action: 'danger_smash',
+                      t: Math.max(0, Date.now() - state.startTime),
+                    });
                     state.isComboSmashing = false;
                     state.comboCount = 0;
                     if (rIdx + 1 < level.rings.length) {
@@ -682,7 +707,8 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
 
                     // 7. Transition to failure after natural recoil, tumble, and fall (680ms)
                     setTimeout(() => {
-                      onGameOver(state.score);
+                      const dur = Math.max(0.1, (Date.now() - state.startTime) / 1000);
+                      onGameOver(state.score, state.telemetry, state.floorsCleared, dur);
                     }, 680);
                     break;
                   }
@@ -699,7 +725,8 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                     helixAudio.playLevelComplete();
 
                     setTimeout(() => {
-                      onLevelComplete(state.score);
+                      const dur = Math.max(0.1, (Date.now() - state.startTime) / 1000);
+                      onLevelComplete(state.score, state.telemetry, state.floorsCleared, dur);
                     }, 750);
                     break;
                   } else if (state.isComboSmashing) {
@@ -724,6 +751,11 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                     state.activePlatformY = ring.y;
 
                     state.score += 2;
+                    state.telemetry.push({
+                      floor: rIdx,
+                      action: 'bounce',
+                      t: Math.max(0, Date.now() - state.startTime),
+                    });
                     onScoreChange(state.score);
                     helixAudio.playBounce();
                     addPaintSplatter(ring.y, state.helixAngle);
@@ -745,7 +777,8 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
         if (state.ballY < failureBoundary && !state.gameOverTriggered && !state.levelCompleteTriggered) {
           state.gameOverTriggered = true;
           state.ballVy = 0;
-          onGameOver(state.score);
+          const dur = Math.max(0.1, (Date.now() - state.startTime) / 1000);
+          onGameOver(state.score, state.telemetry, state.floorsCleared, dur);
         }
       }
 
@@ -900,6 +933,31 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
       container.removeEventListener('pointermove', onPointerMove);
       container.removeEventListener('pointerup', onPointerUp);
       container.removeEventListener('pointercancel', onPointerUp);
+
+      // Mobile WebGL Optimization: Comprehensive GPU VRAM disposal
+      scene.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          if (obj.geometry) {
+            obj.geometry.dispose();
+          }
+          if (obj.material) {
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach((m) => m.dispose());
+            } else {
+              obj.material.dispose();
+            }
+          }
+        }
+      });
+
+      sparkParticles.forEach((p) => {
+        if (p.mesh.geometry) p.mesh.geometry.dispose();
+        if (p.mesh.material) {
+          if (Array.isArray(p.mesh.material)) p.mesh.material.forEach((m) => m.dispose());
+          else p.mesh.material.dispose();
+        }
+      });
+
       renderer.dispose();
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
