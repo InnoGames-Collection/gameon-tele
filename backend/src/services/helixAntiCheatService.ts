@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { pool } from '../config/database.js';
 import { cache } from '../config/cache.js';
 import { env } from '../config/env.js';
-import { normalizeMsisdn, maskMsisdn } from './helixEngine.js';
+import { HelixEngine, normalizeMsisdn, maskMsisdn } from './helixEngine.js';
 
 export interface TelemetryEvent {
   floor: number;
@@ -143,11 +143,9 @@ export const HelixAntiCheatService = {
       throw err;
     }
 
-    // 2. Fetch or create active 7-day tournament cycle
-    const cycleRes = await pool.query(
-      `SELECT competition_id FROM competition_cycles WHERE status = 'ACTIVE' ORDER BY cycle_number DESC LIMIT 1`
-    );
-    const competitionId = cycleRes.rows[0]?.competition_id || `helix_cycle_w${Math.floor(Date.now() / (7 * 86400000))}`;
+    // 2. Fetch or ensure active 7-day tournament cycle
+    const activeCycle = await HelixEngine.getActiveCycle();
+    const competitionId = activeCycle.competition_id;
 
     // 3. Generate cryptographic tower seed & single-use run nonce
     const startedAt = Date.now();
@@ -237,23 +235,20 @@ export const HelixAntiCheatService = {
     const serverDurationMs = session ? now - session.startedAt : Math.round(params.durationSeconds * 1000);
     const clientDurationMs = Math.round(params.durationSeconds * 1000);
 
-    let fraudFlag = false;
-    let fraudReason = '';
+    const fraudReasons: string[] = [];
 
     // ── 2. Duration Integrity Check ──────────────────────────────────────────
     // Zero tolerance for sub-second 50-floor completions
     const minTheoreticalDuration = params.floorsCleared * 0.38; // absolute minimum fall duration per floor
     if (params.durationSeconds < minTheoreticalDuration) {
-      fraudFlag = true;
-      fraudReason = `IMPOSSIBLE_SPEED: ${params.floorsCleared} floors cleared in ${params.durationSeconds}s (min: ${minTheoreticalDuration.toFixed(2)}s)`;
+      fraudReasons.push(`IMPOSSIBLE_SPEED: ${params.floorsCleared} floors cleared in ${params.durationSeconds}s (min: ${minTheoreticalDuration.toFixed(2)}s)`);
     }
 
     if (session) {
       // Client duration must not vastly diverge from server clock elapsed time
       const allowableDrift = 15000; // 15s leeway for network lag
       if (Math.abs(serverDurationMs - clientDurationMs) > allowableDrift && clientDurationMs < serverDurationMs * 0.2) {
-        fraudFlag = true;
-        fraudReason = `CLOCK_DRIFT_MANIPULATION: Client claims ${clientDurationMs}ms, server elapsed ${serverDurationMs}ms`;
+        fraudReasons.push(`CLOCK_DRIFT_MANIPULATION: Client claims ${clientDurationMs}ms, server elapsed ${serverDurationMs}ms`);
       }
     }
 
@@ -261,8 +256,7 @@ export const HelixAntiCheatService = {
     if (session?.towerSeed) {
       const tower = this.generateTower(session.towerSeed, 40);
       if (params.floorsCleared > tower.length) {
-        fraudFlag = true;
-        fraudReason = `EXCEEDED_MAX_FLOORS: Cleared ${params.floorsCleared} > generated tower ${tower.length}`;
+        fraudReasons.push(`EXCEEDED_MAX_FLOORS: Cleared ${params.floorsCleared} > generated tower ${tower.length}`);
       }
     }
 
@@ -274,8 +268,7 @@ export const HelixAntiCheatService = {
 
     if (!params.telemetry || !Array.isArray(params.telemetry) || params.telemetry.length === 0) {
       if (params.floorsCleared > 3 || params.finalScore > 50) {
-        fraudFlag = true;
-        fraudReason = 'MISSING_TELEMETRY: Significant score submitted with zero physics telemetry';
+        fraudReasons.push('MISSING_TELEMETRY: Significant score submitted with zero physics telemetry');
       }
     } else {
       for (let i = 0; i < params.telemetry.length; i++) {
@@ -283,8 +276,7 @@ export const HelixAntiCheatService = {
 
         // Timestamp monotonicity
         if (ev.t < lastEventTime) {
-          fraudFlag = true;
-          fraudReason = `RETROGRADE_TIME: Telemetry timestamp out of order at step ${i}`;
+          fraudReasons.push(`RETROGRADE_TIME: Telemetry timestamp out of order at step ${i}`);
           break;
         }
 
@@ -300,8 +292,7 @@ export const HelixAntiCheatService = {
           // Theoretical free-fall time t = sqrt(2h/g) = sqrt(4.4/26) = ~0.41 seconds (410ms)
           // With existing downward velocity, minimum deltaT is ~120ms
           if (deltaT < 90 && i > 0) {
-            fraudFlag = true;
-            fraudReason = `GRAVITY_VIOLATION: Instantaneous floor drop ${ev.floor} in ${deltaT}ms`;
+            fraudReasons.push(`GRAVITY_VIOLATION: Instantaneous floor drop ${ev.floor} in ${deltaT}ms`);
             break;
           }
 
@@ -309,8 +300,7 @@ export const HelixAntiCheatService = {
           const comboMultiplier = ev.combo !== undefined ? ev.combo : simulatedCombo;
           
           if (comboMultiplier !== simulatedCombo) {
-            fraudFlag = true;
-            fraudReason = `COMBO_MISMATCH: Reported combo ${comboMultiplier} != calculated ${simulatedCombo}`;
+            fraudReasons.push(`COMBO_MISMATCH: Reported combo ${comboMultiplier} != calculated ${simulatedCombo}`);
             break;
           }
 
@@ -319,8 +309,7 @@ export const HelixAntiCheatService = {
         } else if (ev.action === 'danger_smash') {
           // Smashing through danger zone requires at least 3 combo
           if (simulatedCombo < 3) {
-            fraudFlag = true;
-            fraudReason = `ILLEGAL_DANGER_SMASH: Attempted smash with insufficient combo ${simulatedCombo} < 3`;
+            fraudReasons.push(`ILLEGAL_DANGER_SMASH: Attempted smash with insufficient combo ${simulatedCombo} < 3`);
             break;
           }
           simulatedCombo = 0; // Combo consumed
@@ -330,17 +319,16 @@ export const HelixAntiCheatService = {
       }
 
       // Reconstructed score must strictly equal client finalScore
-      if (!fraudFlag && reconstructedScore !== params.finalScore) {
-        fraudFlag = true;
-        fraudReason = `SCORE_MATH_MISMATCH: Client score ${params.finalScore} != telemetry sum ${reconstructedScore}`;
+      if (fraudReasons.length === 0 && reconstructedScore !== params.finalScore) {
+        fraudReasons.push(`SCORE_MATH_MISMATCH: Client score ${params.finalScore} != telemetry sum ${reconstructedScore}`);
       }
     }
 
+    const fraudFlag = fraudReasons.length > 0;
+    const fraudReason = fraudReasons.join(' | ');
     const verified = !fraudFlag;
     const runId = `run_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
-    const competitionId = session?.competitionId || (await pool.query(
-      `SELECT competition_id FROM competition_cycles WHERE status = 'ACTIVE' ORDER BY cycle_number DESC LIMIT 1`
-    )).rows[0]?.competition_id || 'helix_cycle_w39';
+    const competitionId = session?.competitionId || (await HelixEngine.getActiveCycle()).competition_id;
 
     // ── 5. Database Transaction (Atomic Run Recording & Daily Rollup) ─────────
     const client = await pool.connect();
