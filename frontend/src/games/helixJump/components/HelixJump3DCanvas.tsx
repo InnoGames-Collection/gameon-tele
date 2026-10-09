@@ -15,6 +15,8 @@ export interface TelemetryPoint {
   action: 'bounce' | 'drop_through' | 'danger_smash';
   combo?: number;
   t: number;
+  sector?: number;
+  angle?: number;
 }
 
 interface HelixJump3DCanvasProps {
@@ -651,6 +653,8 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                       action: 'drop_through',
                       combo: state.comboCount,
                       t: Math.max(0, Date.now() - state.startTime),
+                      sector: centerIndex,
+                      angle: centerAngle,
                     });
                     state.floorsCleared = Math.max(state.floorsCleared, rIdx + 1);
                     if (rIdx + 1 < level.rings.length) {
@@ -683,6 +687,8 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                       floor: rIdx,
                       action: 'danger_smash',
                       t: Math.max(0, Date.now() - state.startTime),
+                      sector: centerIndex,
+                      angle: centerAngle,
                     });
                     state.isComboSmashing = false;
                     state.comboCount = 0;
@@ -812,6 +818,8 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                       floor: rIdx,
                       action: 'bounce',
                       t: Math.max(0, Date.now() - state.startTime),
+                      sector: centerIndex,
+                      angle: centerAngle,
                     });
                     onScoreChange(state.score);
                     helixAudio.playBounce();

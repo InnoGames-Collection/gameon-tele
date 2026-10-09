@@ -7,11 +7,12 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3603;
+const BACKEND_HOST = process.env.BACKEND_HOST || '127.0.0.1';
 const BACKEND_PORT = process.env.BACKEND_PORT || 3602;
 
-// Reverse-proxy all /api calls directly to Fastify backend on port 3602
+// Reverse-proxy all /api calls directly to Fastify backend
 app.use('/api', express.raw({ type: '*/*', limit: '10mb' }), async (req, res) => {
-  const backendUrl = `http://127.0.0.1:${BACKEND_PORT}/api${req.url}`;
+  const backendUrl = `http://${BACKEND_HOST}:${BACKEND_PORT}/api${req.url}`;
   try {
     const headers = { ...req.headers };
     delete headers.host;

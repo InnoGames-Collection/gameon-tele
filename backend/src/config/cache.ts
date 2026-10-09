@@ -1,32 +1,62 @@
 import { Redis } from 'ioredis';
 import { env } from './env.js';
 
+let isRedisConnected = false;
+
 const realRedis = new Redis(env.VALKEY_URL, {
-  maxRetriesPerRequest: 1,
-  connectTimeout: 400,
-  enableOfflineQueue: false,
-  retryStrategy: () => null,
+  maxRetriesPerRequest: 3,
+  connectTimeout: 5000,
+  enableOfflineQueue: true,
+  retryStrategy: (times) => {
+    // Reconnect with backoff up to 2 seconds
+    return Math.min(times * 150, 2000);
+  },
   lazyConnect: true,
 });
 
-let isRedisConnected = false;
-
-realRedis.connect().then(() => {
+realRedis.on('connect', () => {
   isRedisConnected = true;
-  console.log('✅ Valkey/Redis connected successfully');
-}).catch(() => {
+  console.log('✅ Valkey 8 connected successfully');
+});
+
+realRedis.on('ready', () => {
+  isRedisConnected = true;
+});
+
+realRedis.on('error', (err) => {
+  isRedisConnected = false;
+  console.warn('[Valkey Warning]', err.message);
+});
+
+realRedis.on('close', () => {
   isRedisConnected = false;
 });
 
-realRedis.on('error', () => {
-  isRedisConnected = false;
+// Attempt initial connection without blocking app startup
+realRedis.connect().catch((err) => {
+  console.warn('[Valkey Connect Warning] Initial connection delayed:', err.message);
 });
 
-// Resilient In-Memory Cache Store for 0ms sub-millisecond local latency
+// Resilient In-Memory Cache Store for 0ms sub-millisecond local latency or fallback
 const memStore = new Map<string, { value: any; expiresAt?: number }>();
 const zsetStore = new Map<string, Map<string, number>>();
 
 export const cache = {
+  isReady(): boolean {
+    return isRedisConnected;
+  },
+
+  async ping(): Promise<string> {
+    if (isRedisConnected) {
+      try {
+        return await realRedis.ping();
+      } catch (err: any) {
+        throw new Error(`Valkey ping failed: ${err.message}`);
+      }
+    }
+    return 'PONG_INMEM';
+  },
+
   async get(key: string): Promise<string | null> {
     if (isRedisConnected) {
       try { return await realRedis.get(key); } catch {}

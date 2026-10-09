@@ -4,7 +4,7 @@
  */
 
 import { UserProfile, LanguageCode } from '../types';
-import { DEMO_USER_PROFILE } from './demoData';
+import { INITIAL_GUEST_PROFILE } from './demoData';
 
 const STORAGE_KEYS = {
   PROFILE: 'teleplay_ethio_profile_v1',
@@ -56,15 +56,14 @@ export const StorageService = {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PROFILE);
       if (!stored) {
-        // Initialize with default demo profile
-        this.saveProfile(DEMO_USER_PROFILE);
-        return DEMO_USER_PROFILE;
+        this.saveProfile(INITIAL_GUEST_PROFILE);
+        return INITIAL_GUEST_PROFILE;
       }
       const parsed: UserProfile = JSON.parse(stored);
       // Auto-calculate energy recharge based on elapsed time
       return this.recalculateEnergy(parsed);
     } catch {
-      return DEMO_USER_PROFILE;
+      return INITIAL_GUEST_PROFILE;
     }
   },
 
@@ -178,10 +177,10 @@ export const StorageService = {
   resetDemoState(): UserProfile {
     try {
       localStorage.removeItem(STORAGE_KEYS.PROFILE);
-      this.saveProfile(DEMO_USER_PROFILE);
-      return DEMO_USER_PROFILE;
+      this.saveProfile(INITIAL_GUEST_PROFILE);
+      return INITIAL_GUEST_PROFILE;
     } catch {
-      return DEMO_USER_PROFILE;
+      return INITIAL_GUEST_PROFILE;
     }
   },
 

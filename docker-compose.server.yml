@@ -67,6 +67,7 @@ services:
       DATABASE_URL: "postgresql://${POSTGRES_USER:-gameon_app}:${POSTGRES_PASSWORD:-gameon_secure_prod_password_2026}@postgres:5432/${POSTGRES_DB:-gameon}?sslmode=disable"
       VALKEY_URL: "redis://valkey:6379"
       JWT_SECRET: ${JWT_SECRET:-gameon-telecom-jwt-secret-key-prod-2026}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:-gameon-admin-isolated-jwt-secret-prod-2026}
       SP_GATEWAY_URL: ${SP_GATEWAY_URL:-http://168.119.53.26:8484}
       SP_API_KEY: ${SP_API_KEY:-gameon-sp-api-key-2026}
       SP_WEBHOOK_SECRET: ${SP_WEBHOOK_SECRET:-gameon-hmac-webhook-secret-2026}
@@ -99,6 +100,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3603
+      BACKEND_HOST: api
+      BACKEND_PORT: 3602
     ports:
       - "127.0.0.1:3603:3603"
     deploy:
@@ -125,6 +128,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3600
+      BACKEND_HOST: api
+      BACKEND_PORT: 3602
     ports:
       - "127.0.0.1:3600:3600"
     deploy:

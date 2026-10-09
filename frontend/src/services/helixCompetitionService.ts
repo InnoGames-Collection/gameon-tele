@@ -44,6 +44,8 @@ export interface TelemetryPoint {
   action: 'bounce' | 'drop_through' | 'danger_smash';
   combo?: number;
   t: number;
+  sector?: number;
+  angle?: number;
 }
 
 export const HELIX_PRIZE_RULES: CompetitionPrize[] = [

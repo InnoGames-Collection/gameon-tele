@@ -80,6 +80,11 @@ for i in {1..30}; do
   sleep 2
 done
 
+echo "=============================================================================="
+echo "🧪 [STAGE 3: VERIFY] Tier-0 Automated Security & Anti-Cheat Suite"
+echo "=============================================================================="
+./scripts/verify-gameon-production.sh
+
 trap - EXIT
 echo "=============================================================================="
 echo "🎉 [DEPLOYMENT CERTIFIED] GameOn Tele Live on innopulseplatform.com"

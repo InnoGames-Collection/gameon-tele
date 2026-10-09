@@ -6,7 +6,7 @@ import { cache } from '../config/cache.js';
 import { pool } from '../config/database.js';
 
 const StartSessionSchema = z.object({
-  msisdn: z.string().min(9),
+  msisdn: z.string().min(9).max(20),
 });
 
 const TelemetryItemSchema = z.object({
@@ -14,14 +14,16 @@ const TelemetryItemSchema = z.object({
   action: z.enum(['bounce', 'drop_through', 'danger_smash']),
   combo: z.number().int().min(0).optional(),
   t: z.number().min(0),
+  sector: z.number().int().min(0).max(11).optional(),
+  angle: z.number().optional(),
 });
 
 const SubmitRunSchema = z.object({
-  msisdn: z.string().min(9),
+  msisdn: z.string().min(9).max(20),
   runToken: z.string().min(16),
   floorsCleared: z.number().int().min(0),
   finalScore: z.number().int().min(0),
-  durationSeconds: z.number().min(0.1),
+  durationSeconds: z.number().min(0.05),
   telemetry: z.array(TelemetryItemSchema),
 });
 
@@ -58,7 +60,7 @@ export async function helixRoutes(fastify: FastifyInstance) {
 
   /**
    * 2. Submit Finished Run Telemetry
-   * Validates gravity, ballistic acceleration, combo math, and single-use token.
+   * Validates gravity, ballistic acceleration, hazard collisions, combo math, and single-use token.
    */
   fastify.post('/run/submit', async (req, reply) => {
     const parse = SubmitRunSchema.safeParse(req.body);
@@ -125,7 +127,7 @@ export async function helixRoutes(fastify: FastifyInstance) {
       req.log.warn({ cErr }, 'Valkey cache miss/error, querying PostgreSQL database');
     }
 
-    // Database fallback with composite index idx_helix_runs_cycle_score_time
+    // Database fallback with composite index idx_cycle_leaderboard_score_rank
     const dbRes = await pool.query(
       `SELECT rank, masked_msisdn, seven_day_score as score, prize_etb 
        FROM cycle_leaderboard 

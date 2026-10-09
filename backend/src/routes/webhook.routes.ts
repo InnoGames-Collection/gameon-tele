@@ -8,14 +8,18 @@ import { env } from '../config/env.js';
 
 const WebhookPayloadSchema = z.object({
   event: z.enum(['subscribe', 'unsubscribe', 'renew', 'billing_failed']),
-  request_id: z.string().min(1),
-  service_id: z.string().optional(),
-  msisdn: z.string().min(9),
-  timestamp: z.string().or(z.number()).optional(),
+  request_id: z.string().min(1).max(100),
+  service_id: z.string().max(50).optional(),
+  msisdn: z.string().min(9).max(20),
+  timestamp: z.union([z.string(), z.number()]).optional(),
   channel: z.string().optional(),
 });
 
 export async function webhookRoutes(fastify: FastifyInstance) {
+  /**
+   * Telecom VAS Webhook Endpoint (Ethio Telecom Shortcode 7198)
+   * Protected with HMAC-SHA256 signature verification.
+   */
   fastify.post('/subscription', { preHandler: [verifySpSignature] }, async (req, reply) => {
     // 1. Zod Schema Validation
     const parseResult = WebhookPayloadSchema.safeParse(req.body);
@@ -64,8 +68,8 @@ export async function webhookRoutes(fastify: FastifyInstance) {
       // 4. State Machine Execution
       if (event === 'subscribe' || event === 'renew') {
         const subRes = await client.query(
-          `INSERT INTO subscriptions (msisdn, shortcode, service_id, status, renew_count, last_billed_at, next_billing_at, updated_at)
-           VALUES ($1, $2, $3, 'ACTIVE', 1, NOW(), NOW() + INTERVAL '1 day', NOW())
+          `INSERT INTO subscriptions (msisdn, shortcode, service_id, status, plan_type, price_etb, renew_count, last_billed_at, next_billing_at, updated_at)
+           VALUES ($1, $2, $3, 'ACTIVE', 'daily', 2.00, 1, NOW(), NOW() + INTERVAL '1 day', NOW())
            ON CONFLICT (msisdn, service_id) 
            DO UPDATE SET 
              status = 'ACTIVE',
@@ -78,9 +82,11 @@ export async function webhookRoutes(fastify: FastifyInstance) {
         );
 
         await client.query(
-          `INSERT INTO players (msisdn, masked_msisdn, last_active_at)
-           VALUES ($1, $2, NOW())
-           ON CONFLICT (msisdn) DO UPDATE SET last_active_at = NOW()`,
+          `INSERT INTO players (msisdn, masked_msisdn, status, last_active_at)
+           VALUES ($1, $2, 'ACTIVE', NOW())
+           ON CONFLICT (msisdn) DO UPDATE SET 
+             status = 'ACTIVE',
+             last_active_at = NOW()`,
           [norm, masked]
         );
 
@@ -95,7 +101,7 @@ export async function webhookRoutes(fastify: FastifyInstance) {
           [norm, targetServiceId]
         );
       } else if (event === 'billing_failed') {
-        // Suspend subscription on billing failure so user cannot exploit tournament
+        // Suspend subscription on billing failure so user cannot exploit tournament prize pool
         await client.query(
           `UPDATE subscriptions 
            SET status = 'SUSPENDED', updated_at = NOW() 

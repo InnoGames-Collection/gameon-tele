@@ -1,23 +1,35 @@
 import { FastifyInstance } from 'fastify';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
 import { env } from '../config/env.js';
 import { pool } from '../config/database.js';
 import { cache } from '../config/cache.js';
 import { SpService } from '../services/spService.js';
 import { normalizeMsisdn, maskMsisdn } from '../services/helixEngine.js';
 
+const RequestOtpSchema = z.object({
+  phoneNumber: z.string().min(9).max(20),
+});
+
+const VerifyOtpSchema = z.object({
+  phoneNumber: z.string().min(9).max(20),
+  otpCode: z.string().min(4).max(8),
+});
+
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/request-otp', async (req, reply) => {
-    const { phoneNumber } = req.body as { phoneNumber: string };
-    if (!phoneNumber) return reply.status(400).send({ error: 'Phone number is required' });
+    const parse = RequestOtpSchema.safeParse(req.body);
+    if (!parse.success) {
+      return reply.status(400).send({ error: 'Phone number is required and must be valid', details: parse.error.format() });
+    }
 
-    const norm = normalizeMsisdn(phoneNumber);
+    const norm = normalizeMsisdn(parse.data.phoneNumber);
     if (norm.length < 9) {
       return reply.status(400).send({ error: 'Invalid Ethiopian phone number' });
     }
 
-    // Rate limiting: max 3 requests per 10 minutes
+    // Rate limiting: max 3 requests per 10 minutes per MSISDN
     const rateLimitKey = `ratelimit:otp:${norm}`;
     const attempts = await cache.incr(rateLimitKey);
     if (attempts === 1) await cache.expire(rateLimitKey, 600);
@@ -26,11 +38,11 @@ export async function authRoutes(fastify: FastifyInstance) {
     }
 
     const otp = crypto.randomInt(100000, 1000000).toString();
-    await cache.set(`otp:gameon:${norm}`, otp, 'EX', 300);
+    await cache.set(`otp:gameon:${norm}`, otp, 'EX', 300); // 5 min TTL
 
     await SpService.sendMt({
       msisdn: norm,
-      message: `Your GameOn verification code is ${otp}. Valid for 5 minutes.`,
+      message: `Your GameOn Tele verification code is ${otp}. Valid for 5 minutes. Do not share this code.`,
       type: 'otp',
     });
 
@@ -41,11 +53,16 @@ export async function authRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post('/verify-otp', async (req, reply) => {
-    const { phoneNumber, otpCode } = req.body as { phoneNumber: string; otpCode: string };
+    const parse = VerifyOtpSchema.safeParse(req.body);
+    if (!parse.success) {
+      return reply.status(400).send({ error: 'Phone number and OTP code are required', details: parse.error.format() });
+    }
+
+    const { phoneNumber, otpCode } = parse.data;
     const norm = normalizeMsisdn(phoneNumber);
     const cached = await cache.get(`otp:gameon:${norm}`);
 
-    if (!cached || otpCode !== cached) {
+    if (!cached || otpCode.trim() !== cached.trim()) {
       return reply.status(400).send({ error: 'Invalid or expired verification code' });
     }
 
@@ -54,8 +71,8 @@ export async function authRoutes(fastify: FastifyInstance) {
 
     const masked = maskMsisdn(norm);
     const playerRes = await pool.query(
-      `INSERT INTO players (msisdn, masked_msisdn, last_active_at)
-       VALUES ($1, $2, NOW())
+      `INSERT INTO players (msisdn, masked_msisdn, status, last_active_at)
+       VALUES ($1, $2, 'ACTIVE', NOW())
        ON CONFLICT (msisdn) DO UPDATE SET last_active_at = NOW()
        RETURNING *`,
       [norm, masked]
@@ -67,7 +84,11 @@ export async function authRoutes(fastify: FastifyInstance) {
       [norm]
     );
 
-    const token = jwt.sign({ msisdn: norm, id: player.id }, env.JWT_SECRET, { expiresIn: env.JWT_ACCESS_EXPIRES_IN as any });
+    const token = jwt.sign(
+      { msisdn: norm, id: player.id }, 
+      env.JWT_SECRET, 
+      { expiresIn: env.JWT_ACCESS_EXPIRES_IN as any }
+    );
 
     return reply.send({
       success: true,

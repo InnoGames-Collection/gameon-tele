@@ -1,7 +1,14 @@
 import { FastifyInstance } from 'fastify';
+import { z } from 'zod';
 import { pool } from '../config/database.js';
 import { cache } from '../config/cache.js';
 import { HelixEngine, normalizeMsisdn, maskMsisdn } from '../services/helixEngine.js';
+
+const SubmitScoreSchema = z.object({
+  msisdn: z.string().min(9).max(20),
+  gameId: z.string().min(1).max(50),
+  score: z.number().int().min(0),
+});
 
 export async function competitionRoutes(fastify: FastifyInstance) {
   /**
@@ -99,27 +106,22 @@ export async function competitionRoutes(fastify: FastifyInstance) {
 
   /**
    * 3. Submit Non-Tournament Game Score
-   * Records high scores for catalog games (e.g. bubble-blast, retro-runner)
-   * in PostgreSQL player_game_scores table (without cash prizes).
+   * Records high scores for catalog games in PostgreSQL player_game_scores table.
    */
   fastify.post('/scores', async (req, reply) => {
-    const { msisdn, gameId, score } = req.body as {
-      msisdn: string;
-      gameId: string;
-      score: number;
-    };
-
-    if (!msisdn || !gameId || typeof score !== 'number') {
-      return reply.status(400).send({ error: 'msisdn, gameId, and score are required' });
+    const parse = SubmitScoreSchema.safeParse(req.body);
+    if (!parse.success) {
+      return reply.status(400).send({ error: 'Invalid score payload', details: parse.error.format() });
     }
 
+    const { msisdn, gameId, score } = parse.data;
     const norm = normalizeMsisdn(msisdn);
     const validScore = Math.max(0, Math.floor(score));
 
     // Ensure player exists in players table
     await pool.query(
-      `INSERT INTO players (msisdn, masked_msisdn, last_active_at)
-       VALUES ($1, $2, NOW())
+      `INSERT INTO players (msisdn, masked_msisdn, status, last_active_at)
+       VALUES ($1, $2, 'ACTIVE', NOW())
        ON CONFLICT (msisdn) DO UPDATE SET last_active_at = NOW()`,
       [norm, maskMsisdn(norm)]
     );

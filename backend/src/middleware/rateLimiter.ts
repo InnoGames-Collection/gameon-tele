@@ -2,17 +2,36 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { cache } from '../config/cache.js';
 
 export async function rateLimiter(req: FastifyRequest, reply: FastifyReply) {
-  const ip = req.ip || '127.0.0.1';
-  const key = `rl:gameon:${ip}`;
+  // Allow health checks to pass unmetered
+  if (req.url.startsWith('/health')) {
+    return;
+  }
+
+  const ip = req.ip || (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || '127.0.0.1';
+  const ipKey = `rl:ip:${ip}`;
 
   try {
-    const current = await cache.incr(key);
-    if (current === 1) await cache.expire(key, 60);
-    if (current > 120) {
-      reply.status(429).send({ error: 'Too Many Requests — rate limit exceeded' });
-      return;
+    const ipHits = await cache.incr(ipKey);
+    if (ipHits === 1) await cache.expire(ipKey, 60);
+    if (ipHits > 180) {
+      return reply.status(429).send({ error: 'Too Many Requests — IP rate limit exceeded. Please wait 60 seconds.' });
+    }
+
+    // Secondary rate limiter per MSISDN if present in body or auth token
+    const rawBody = req.body as any;
+    const msisdn = rawBody?.msisdn || rawBody?.phoneNumber || req.user?.msisdn;
+    if (msisdn && typeof msisdn === 'string') {
+      const cleanPhone = msisdn.replace(/\D/g, '');
+      if (cleanPhone.length >= 9) {
+        const phoneKey = `rl:msisdn:${cleanPhone}`;
+        const phoneHits = await cache.incr(phoneKey);
+        if (phoneHits === 1) await cache.expire(phoneKey, 60);
+        if (phoneHits > 60) {
+          return reply.status(429).send({ error: 'Too Many Requests — Account request limit exceeded.' });
+        }
+      }
     }
   } catch {
-    // fallback gracefully
+    // If Valkey is momentarily recovering, continue safely
   }
 }

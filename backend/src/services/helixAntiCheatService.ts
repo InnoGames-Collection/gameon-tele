@@ -9,6 +9,8 @@ export interface TelemetryEvent {
   action: 'bounce' | 'drop_through' | 'danger_smash';
   combo?: number;
   t: number; // millisecond timestamp relative to run start
+  sector?: number; // clock sector index [0..11]
+  angle?: number; // radial angle in radians
 }
 
 export interface RunSession {
@@ -67,7 +69,7 @@ export const HelixAntiCheatService = {
   /**
    * Generates deterministic procedural tower slices based on a server-issued tower_seed.
    */
-  generateTower(seed: string, floorCount: number = 38): GeneratedFloor[] {
+  generateTower(seed: string, floorCount: number = 40): GeneratedFloor[] {
     const rng = new DeterministicRNG(seed);
     const floors: GeneratedFloor[] = [];
     let currentGapPos = 0;
@@ -178,10 +180,11 @@ export const HelixAntiCheatService = {
    * Authoritative Physics Telemetry Verification and Anti-Cheat Engine.
    * Enforces:
    *  1. Single-use session nonce check (409 Conflict on replay).
-   *  2. Gravity/acceleration ballistic trajectory consistency.
-   *  3. Strict combo multiplier score mathematical reconstruction.
-   *  4. Duration integrity (elapsed clock vs physics lower bound).
-   *  5. PostgreSQL ACID persistence + Valkey Sorted Set leaderboard ranking with tie-breaking.
+   *  2. Gravity Delta: Free-fall minimum acceleration bound (v=g*t, d=0.5*g*t^2).
+   *  3. Procedural Tower Reconstruction & Danger Zone Collision Verification.
+   *  4. Strict Combo Multiplier Math Score Reconstruction.
+   *  5. Clock and speed boundary integrity.
+   *  6. PostgreSQL ACID persistence + Valkey Sorted Set leaderboard ranking with tie-breaking.
    */
   async verifyAndRecordRun(params: {
     msisdn: string;
@@ -238,33 +241,33 @@ export const HelixAntiCheatService = {
     const fraudReasons: string[] = [];
 
     // ── 2. Duration Integrity Check ──────────────────────────────────────────
-    // Zero tolerance for sub-second 50-floor completions
-    const minTheoreticalDuration = params.floorsCleared * 0.38; // absolute minimum fall duration per floor
+    // Zero tolerance for sub-second floor completions
+    const minTheoreticalDuration = params.floorsCleared * 0.35; // absolute minimum fall duration per floor
     if (params.durationSeconds < minTheoreticalDuration) {
-      fraudReasons.push(`IMPOSSIBLE_SPEED: ${params.floorsCleared} floors cleared in ${params.durationSeconds}s (min: ${minTheoreticalDuration.toFixed(2)}s)`);
+      fraudReasons.push(`IMPOSSIBLE_SPEED: ${params.floorsCleared} floors in ${params.durationSeconds}s (min: ${minTheoreticalDuration.toFixed(2)}s)`);
     }
 
     if (session) {
-      // Client duration must not vastly diverge from server clock elapsed time
-      const allowableDrift = 15000; // 15s leeway for network lag
-      if (Math.abs(serverDurationMs - clientDurationMs) > allowableDrift && clientDurationMs < serverDurationMs * 0.2) {
+      // Leeway for network latency
+      const allowableDrift = 20000;
+      if (Math.abs(serverDurationMs - clientDurationMs) > allowableDrift && clientDurationMs < serverDurationMs * 0.15) {
         fraudReasons.push(`CLOCK_DRIFT_MANIPULATION: Client claims ${clientDurationMs}ms, server elapsed ${serverDurationMs}ms`);
       }
     }
 
-    // ── 3. Procedural Tower Sanity Check ─────────────────────────────────────
-    if (session?.towerSeed) {
-      const tower = this.generateTower(session.towerSeed, 40);
-      if (params.floorsCleared > tower.length) {
-        fraudReasons.push(`EXCEEDED_MAX_FLOORS: Cleared ${params.floorsCleared} > generated tower ${tower.length}`);
-      }
+    // ── 3. Deterministic Procedural Tower Generation ─────────────────────────
+    const towerSeed = session?.towerSeed || 'default_seed_001';
+    const tower = this.generateTower(towerSeed, 40);
+
+    if (params.floorsCleared > tower.length) {
+      fraudReasons.push(`EXCEEDED_MAX_FLOORS: Cleared ${params.floorsCleared} > generated tower ${tower.length}`);
     }
 
-    // ── 4. Physics Telemetry & Gravity / Combo Verification ──────────────────
+    // ── 4. Physics Telemetry & Gravity / Hazard Collision Verification ────────
     let reconstructedScore = 0;
     let simulatedCombo = 0;
     let lastEventTime = -1;
-    let lastFloor = 0;
+    let lastFloor = -1;
 
     if (!params.telemetry || !Array.isArray(params.telemetry) || params.telemetry.length === 0) {
       if (params.floorsCleared > 3 || params.finalScore > 50) {
@@ -274,26 +277,56 @@ export const HelixAntiCheatService = {
       for (let i = 0; i < params.telemetry.length; i++) {
         const ev = params.telemetry[i];
 
-        // Timestamp monotonicity
+        // 4.1 Timestamp monotonicity
         if (ev.t < lastEventTime) {
-          fraudReasons.push(`RETROGRADE_TIME: Telemetry timestamp out of order at step ${i}`);
+          fraudReasons.push(`RETROGRADE_TIME: Telemetry timestamp out of order at step ${i} (t=${ev.t} < ${lastEventTime})`);
           break;
         }
 
         const deltaT = lastEventTime === -1 ? ev.t : ev.t - lastEventTime;
+        const currentFloorDef = tower[ev.floor];
 
+        // 4.2 Floor index boundary check
+        if (ev.floor < 0 || ev.floor >= tower.length) {
+          fraudReasons.push(`INVALID_FLOOR_INDEX: Telemetry references out-of-bounds floor ${ev.floor}`);
+          break;
+        }
+
+        // 4.3 Action Processing & Physics Validation
         if (ev.action === 'bounce') {
-          // Bouncing on platform awards 2 points and resets combo
+          // Bouncing on a platform awards 2 points and resets combo
           reconstructedScore += 2;
           simulatedCombo = 0;
+
+          // Hazard collision verification: Ball CANNOT bounce directly on a hazard sector!
+          if (ev.sector !== undefined && currentFloorDef) {
+            if (currentFloorDef.dangerSectors.includes(ev.sector)) {
+              fraudReasons.push(`HAZARD_COLLISION_BYPASS: Ball bounced on hazard sector ${ev.sector} at floor ${ev.floor}`);
+              break;
+            }
+          }
         } else if (ev.action === 'drop_through') {
-          // Downward gravity check: dropping through floor requires physical fall time
-          // Gravitational acceleration g = 26 units/s², floor height h = 2.2 units
-          // Theoretical free-fall time t = sqrt(2h/g) = sqrt(4.4/26) = ~0.41 seconds (410ms)
-          // With existing downward velocity, minimum deltaT is ~120ms
-          if (deltaT < 90 && i > 0) {
+          // 4.4 Gravity Delta check: Dropping through a floor requires physical fall time
+          // Gravitational acceleration g = 26 units/s², floor spacing h = 2.2 units
+          // Theoretical free-fall time t = sqrt(2h/g) = ~0.41s (410ms)
+          // With maximum existing downward terminal velocity, minimum deltaT is ~85ms
+          if (deltaT < 85 && i > 0 && lastFloor === ev.floor - 1) {
             fraudReasons.push(`GRAVITY_VIOLATION: Instantaneous floor drop ${ev.floor} in ${deltaT}ms`);
             break;
+          }
+
+          // Gap verification: Tower floor MUST have a gap
+          if (currentFloorDef && currentFloorDef.gapSectors.length === 0 && !currentFloorDef.isFinish) {
+            fraudReasons.push(`SOLID_FLOOR_BYPASS: Attempted drop_through on solid floor ${ev.floor}`);
+            break;
+          }
+
+          // If sector transmitted, ensure it was an actual gap sector
+          if (ev.sector !== undefined && currentFloorDef && currentFloorDef.gapSectors.length > 0) {
+            if (!currentFloorDef.gapSectors.includes(ev.sector)) {
+              fraudReasons.push(`WALL_COLLISION_BYPASS: Dropped through non-gap sector ${ev.sector} at floor ${ev.floor}`);
+              break;
+            }
           }
 
           simulatedCombo += 1;
@@ -307,18 +340,25 @@ export const HelixAntiCheatService = {
           reconstructedScore += 10 * simulatedCombo;
           lastFloor = ev.floor;
         } else if (ev.action === 'danger_smash') {
-          // Smashing through danger zone requires at least 3 combo
+          // Smashing through danger zone requires at least 3 combo streak!
           if (simulatedCombo < 3) {
-            fraudReasons.push(`ILLEGAL_DANGER_SMASH: Attempted smash with insufficient combo ${simulatedCombo} < 3`);
+            fraudReasons.push(`ILLEGAL_DANGER_SMASH: Attempted danger smash with insufficient combo ${simulatedCombo} < 3`);
             break;
           }
-          simulatedCombo = 0; // Combo consumed
+
+          // Verify floor has a danger sector
+          if (currentFloorDef && currentFloorDef.dangerSectors.length === 0) {
+            fraudReasons.push(`SMASH_TARGET_ABSENT: Floor ${ev.floor} has no hazard sectors to smash`);
+            break;
+          }
+
+          simulatedCombo = 0; // Combo consumed on power smash
         }
 
         lastEventTime = ev.t;
       }
 
-      // Reconstructed score must strictly equal client finalScore
+      // 4.5 Exact Score Summation Verification
       if (fraudReasons.length === 0 && reconstructedScore !== params.finalScore) {
         fraudReasons.push(`SCORE_MATH_MISMATCH: Client score ${params.finalScore} != telemetry sum ${reconstructedScore}`);
       }
@@ -367,7 +407,7 @@ export const HelixAntiCheatService = {
           params.durationSeconds,
           fraudFlag,
           session ? new Date(session.startedAt) : new Date(now - clientDurationMs),
-          session?.towerSeed || null,
+          towerSeed,
           JSON.stringify(params.telemetry || []),
           verified,
           fraudReason || null,
@@ -394,9 +434,9 @@ export const HelixAntiCheatService = {
            WHERE competition_id = $1 AND player_msisdn = $2`,
           [competitionId, norm]
         );
-        const sevenDayScore = parseInt(aggRes.rows[0]?.total_score || '0');
+        const sevenDayScore = parseInt(aggRes.rows[0]?.total_score || '0', 10);
 
-        // Upsert into cycle_leaderboard with initial placeholder rank
+        // Upsert into cycle_leaderboard
         await client.query(
           `INSERT INTO cycle_leaderboard (competition_id, player_msisdn, masked_msisdn, seven_day_score, rank)
            VALUES ($1, $2, $3, $4, 999)
@@ -407,7 +447,7 @@ export const HelixAntiCheatService = {
 
         // ── 6. Valkey 8 Sorted Set Cache & Deterministic Tie-Breaking ─────────
         // Tie-breaking formula: score + (1.0 - (now_timestamp / 1e13))
-        // Earlier timestamp gets higher fraction -> higher ranking!
+        // Earlier timestamp gets slightly higher fractional tie-breaker
         const tieBreaker = Math.max(0, 1.0 - (now / 10000000000000));
         const valkeyScore = sevenDayScore + tieBreaker;
         const zsetKey = `gameon:lb:cycle:${competitionId}`;

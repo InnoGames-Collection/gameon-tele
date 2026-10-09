@@ -52,12 +52,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   onOpenMenu,
   showToast,
 }) => {
-  const [phoneNumber, setPhoneNumber] = useState('0911428890');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [isRequestingOtp, setIsRequestingOtp] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [demoCodeHint, setDemoCodeHint] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
 
   // SMS composer fallback modal state
@@ -84,7 +83,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
     if (res.success) {
       setOtpSent(true);
-      setDemoCodeHint(res.demoOtp || '123456');
       setCountdown(60);
       showToast('info', 'Verification Code Sent', res.message);
     } else {
@@ -274,20 +272,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   {isRequestingOtp ? 'Sending...' : countdown > 0 ? `${countdown}s` : 'Get code'}
                 </button>
               </div>
-
-              {/* Demo Quick Hint with auto-fill helper */}
-              {demoCodeHint && (
-                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center justify-between">
-                  <span>Demo Code: <strong>{demoCodeHint}</strong></span>
-                  <button
-                    type="button"
-                    onClick={() => setOtpCode(demoCodeHint)}
-                    className="text-[#8BCB3D] underline text-[11px] font-black hover:text-[#7bb735] cursor-pointer"
-                  >
-                    Auto-Fill
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* Primary Action: SIGN IN (large enough for mobile, rounded, visible, centered) */}
