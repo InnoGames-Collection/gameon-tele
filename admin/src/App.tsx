@@ -252,7 +252,7 @@ export default function App() {
             </div>
 
             <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80 text-xs text-slate-400">
-              <span className="font-bold text-slate-200 block mb-0.5">Ethio Telecom Shortcode 9898 Portal</span>
+              <span className="font-bold text-slate-200 block mb-0.5">Ethio Telecom Shortcode 7198 Portal</span>
               <span>INSA and Telecom Operator Administrative Access</span>
             </div>
 
@@ -361,7 +361,7 @@ export default function App() {
                 activeTab === 'SUBSCRIBERS' ? 'bg-rose-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
-              <Users size={18} /> Subscriber Ledger (9898)
+              <Users size={18} /> Subscriber Ledger (7198)
             </button>
           </nav>
         </div>
@@ -398,7 +398,7 @@ export default function App() {
             <h2 className="text-2xl font-black tracking-tight text-white capitalize">
               {activeTab === 'CYCLES' ? '7-Day Competition Cycles & Prize Configuration' : activeTab.toLowerCase()}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">Ethio Telecom Shortcode 9898 • Production Administration</p>
+            <p className="text-xs text-slate-400 mt-1">Ethio Telecom Shortcode 7198 • Production Administration</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -418,7 +418,7 @@ export default function App() {
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Subscribers</span>
                 <div className="text-3xl font-black text-white mt-2">{metrics.activeSubscribers.toLocaleString()}</div>
                 <span className="inline-block mt-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                  Shortcode 9898 (2 ETB/day)
+                  Shortcode 7198 (2 ETB/day)
                 </span>
               </div>
               <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm">
@@ -732,7 +732,7 @@ export default function App() {
           <div className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden">
             <div className="p-4 border-b border-slate-800 flex justify-between items-center">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Subscriber Ledger (Shortcode 9898)</h3>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Subscriber Ledger (Shortcode 7198)</h3>
                 <span className="text-xs text-slate-400">Live records from PostgreSQL <code className="text-rose-400">subscriptions</code></span>
               </div>
               <span className="text-xs text-emerald-400 font-mono font-bold">2 ETB/day Billing Rate</span>

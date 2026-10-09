@@ -106,14 +106,14 @@ export const TermsAndPrivacyModal: React.FC<TermsAndPrivacyModalProps> = ({
                 All purchases, including Coin Packages (100 Coins / 5 ETB) and VIP Gaming Subscriptions (Daily, Weekly, Monthly passes), are billed directly via your linked TeleBirr balance or EthioTelecom airtime. Charges are explicitly authorized with transparent pricing.
               </p>
 
-              <h4 className="text-sm font-black text-slate-900">3. Tournament Rules & FairPlay Verification</h4>
+              <h4 className="text-sm font-black text-slate-900">3. FairPlay & Gameplay Verification</h4>
               <p>
-                Leaderboards and cash tournament prizes disbursed in ETB require server-authoritative score verification. Attempting to manipulate gameplay physics, reverse engineer payloads, or submit duplicate fraudulent tokens will result in immediate prize forfeiture and account suspension.
+                All 27 games on the platform are 100% free to play. Attempting to manipulate gameplay physics, reverse engineer payloads, or submit fraudulent score tokens will result in immediate account restriction.
               </p>
 
-              <h4 className="text-sm font-black text-slate-900">4. Cancellation & Auto-Renewal</h4>
+              <h4 className="text-sm font-black text-slate-900">4. Cancellation & Service Control</h4>
               <p>
-                You may cancel your recurring VIP subscription anytime directly from the Profile Settings tab without penalty. Unused tournament buy-ins remain valid until the expiration of the tournament cycle.
+                You may manage your service profile or unsubscribe anytime directly by sending STOP to 7198 without penalty.
               </p>
             </div>
           )}

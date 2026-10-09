@@ -70,6 +70,7 @@ services:
       SP_GATEWAY_URL: ${SP_GATEWAY_URL:-http://168.119.53.26:8484}
       SP_API_KEY: ${SP_API_KEY:-gameon-sp-api-key-2026}
       SP_WEBHOOK_SECRET: ${SP_WEBHOOK_SECRET:-gameon-hmac-webhook-secret-2026}
+      SHORTCODE: "7198"
     ports:
       - "127.0.0.1:3602:3602"
     deploy:

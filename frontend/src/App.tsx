@@ -25,8 +25,6 @@ import { MainMenuDrawer, MainMenuSection } from './components/MainMenuDrawer';
 import { LoginPage } from './pages/LoginPage';
 import { HomePage } from './pages/HomePage';
 import { GamesPage } from './pages/GamesPage';
-import { TournamentPage } from './pages/TournamentPage';
-import { LeaderboardPage } from './pages/LeaderboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { GamesContentPage } from './pages/content/GamesContentPage';
 import { FAQPage } from './pages/content/FAQPage';
@@ -316,21 +314,6 @@ export default function App() {
               />
             )}
 
-            {activeTab === 'tournament' && (
-              <TournamentPage
-                profile={profile}
-                onPlayGame={handlePlayGame}
-              />
-            )}
-
-            {activeTab === 'leaderboard' && (
-              <LeaderboardPage
-                profile={profile}
-                games={allGames}
-                onPlayGame={handlePlayGame}
-              />
-            )}
-
             {activeTab === 'profile' && (
               <ProfilePage
                 profile={profile}
@@ -370,15 +353,13 @@ export default function App() {
         isAuthenticated={true}
       />
 
-      {/* 4. Mobile-First Bottom Navigation Bar (5 Tabs) */}
+      {/* 4. Mobile-First Bottom Navigation Bar (3 Tabs: Home, Games, Profile) */}
       <BottomNav
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab)}
         labels={{
           home: 'HOME',
           games: 'GAMES',
-          tournament: 'TOURNAMENT',
-          leaderboard: 'LEADERBOARD',
           profile: 'PROFILE',
         }}
       />

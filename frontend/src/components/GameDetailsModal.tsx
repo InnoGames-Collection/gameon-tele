@@ -89,8 +89,8 @@ export const GameDetailsModal: React.FC<GameDetailsModalProps> = ({
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
               <div className="text-[10px] font-bold text-slate-400 uppercase">Access</div>
-              <div className="text-xs font-black text-[#17202A] mt-0.5">
-                {isCoinGame ? `🪙 ${coinCost} Coins` : isSubscriptionGame ? 'Subscription' : 'Free Access'}
+              <div className="text-xs font-black text-[#16A34A] mt-0.5">
+                100% Free
               </div>
             </div>
             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
@@ -100,9 +100,9 @@ export const GameDetailsModal: React.FC<GameDetailsModalProps> = ({
               </div>
             </div>
             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-              <div className="text-[10px] font-bold text-slate-400 uppercase">Ranking</div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase">Mode</div>
               <div className="text-xs font-black text-[#17202A] mt-0.5">
-                {game.leaderboardEnabled ? 'Per-Game' : 'Practice'}
+                Personal Best
               </div>
             </div>
           </div>
@@ -157,16 +157,10 @@ export const GameDetailsModal: React.FC<GameDetailsModalProps> = ({
                 onClose();
                 onPlayGame(game);
               }}
-              className={`w-full py-3.5 px-4 rounded-xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] ${
-                isCoinGame && !hasActiveAccess
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
-                  : 'bg-[#8BCB3D] hover:bg-[#7cb934] text-white shadow-[#8BCB3D]/20'
-              }`}
+              className="w-full py-3.5 px-4 rounded-xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] bg-[#8BCB3D] hover:bg-[#7cb934] text-white shadow-[#8BCB3D]/20"
             >
               <Play className="w-4 h-4 fill-current" />
-              <span>
-                {isCoinGame && !hasActiveAccess ? `Unlock & Play (${coinCost} Coins)` : 'Play Now'}
-              </span>
+              <span>Play Now (Free)</span>
             </button>
           </div>
         </div>

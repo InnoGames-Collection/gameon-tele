@@ -62,27 +62,33 @@ export const ALL_STANDARD_CATEGORIES = [
 ] as const;
 
 export const MANDATORY_CATALOG_ORDER = [
-  'helix-jump',            // 1. Helix
-  'emoji-iq',              // 2. Emoji
-  'royal-water-sort',      // 3. Water Sort
-  'archery-strike',        // 4. Pop Color
-  'halloween-fruit-slice', // 5. Fruit Ninja
-  'knife-madness',         // 6. Knife Hit
-  'sorting-balls',         // 7. Sort
-  'puzzle-block',          // 8. Block Puzzle
-  'memory-match',          // 9. Memory
-  'color-rush',            // 10. Color Quick
-  'soccer-shooter',        // 11. Soccer Hit
+  'helix-jump',            // 1. Helix Jump
+  'emoji-iq',              // 2. Emoji IQ
+  'royal-water-sort',      // 3. Royal Water Sort
+  'archery-strike',        // 4. Archery Strike 3D
+  'halloween-fruit-slice', // 5. Halloween Fruit Slice
+  'knife-madness',         // 6. Knife Madness
+  'sorting-balls',         // 7. Sorting Balls
+  'puzzle-block',          // 8. Puzzle Block
+  'memory-match',          // 9. Memory Match
+  'color-rush',            // 10. Color Rush
+  'soccer-shooter',        // 11. Soccer Shooter
   'button-soccer',         // 12. Button Soccer
   'moto-race',             // 13. Moto Race
-  'sky-hopper',            // 14. Sky Hopper
-  'solitaire',             // 15. Solitaire
-  'emoji-sorting-ball',    // 16. Emoji Sort
-  'hockey',                // 17. Hockey
-  'fruit-fancy',           // 18. Fruit Fancy
-  'picture-match',         // 19. Picture Match
-  'candy-bomb',            // 20. Candy Bomblink Color
-  'tap-rush',              // 21. Tap Rush
+  'solitaire',             // 14. Solitaire
+  'emoji-sorting-ball',    // 15. Emoji Sorting Ball
+  'bubble-shooter',        // 16. Bubble Shooter
+  'fruit-slice',           // 17. Fruit Slice
+  'juicy-match',           // 18. Juicy Match
+  'pop-piano',             // 19. Pop Piano
+  'candy-blast',           // 20. Candy Blast
+  'dama',                  // 21. Dama
+  'soccer-ping-pong',      // 22. Soccer Ping Pong
+  'crazy-colors',          // 23. Crazy Colors
+  'emoji-fun',             // 24. Emoji Fun
+  'pop-balloon',           // 25. Pop Balloon
+  'hill-rider',            // 26. Hill Rider
+  'world-legends',         // 27. World Legends
 ] as const;
 
 export const INITIAL_GAME_CATALOG: CatalogGame[] = [
@@ -949,49 +955,15 @@ export const INITIAL_GAME_CATALOG: CatalogGame[] = [
     controlsDescription: 'Tap source tube to select emoji, tap destination tube to transfer.',
   },
   {
-    gameId: 'sky-hopper',
-    gameName: 'Sky Hopper',
-    titleAmharic: 'ስካይ ሆፐር',
+    gameId: 'pop-balloon',
+    gameName: 'Pop Balloon',
+    titleAmharic: 'ፊኛ ፖፕ',
     category: 'Arcade',
-    genre: 'Precision Flight Arcade',
-    tagline: 'Flap, dodge green pipes, collect gold coins, and conquer all 40 levels!',
-    description: 'Fly through challenging obstacles in this thrilling arcade classic. Master smooth flight physics, collect golden coins, and advance through 40 deterministic levels to become the Sky Hopper Grandmaster.',
-    thumbnail: getGameArtworkUrl('sky-hopper'),
-    banner: getGameArtworkUrl('sky-hopper'),
-    accessType: 'FREE',
-    isFree: true,
-    requiresCoins: false,
-    coinCost: 0,
-    isFeatured: true,
-    isRecommended: true,
-    isActive: true,
-    isNew: true,
-    leaderboardEnabled: true,
-    sortOrder: 26,
-    providerId: 'prv_gameon_core',
-    providerName: 'GameON Studios',
-    rating: 4.95,
-    playsCount: 154000,
-    primaryColor: '#38BDF8',
-    secondaryColor: '#73BF2E',
-    instructions: [
-      'Tap, click, or press Spacebar to flap upward',
-      'Navigate safely between the upper and lower green pipes',
-      'Collect floating golden coins along your flight path',
-      'Pass the required number of pipes in each level to advance to the next level',
-    ],
-    controlsDescription: 'Tap anywhere on screen or press Spacebar / Up Arrow to flap upward.',
-  },
-  {
-    gameId: 'hockey',
-    gameName: 'Hockey',
-    titleAmharic: 'ሆኪ',
-    category: 'Sports',
-    genre: 'Neon Air Hockey Tournament',
-    tagline: 'Defend your goal, strike the glowing puck, and conquer all 40 Very Hard stages!',
-    description: 'High-octane neon air hockey tournament featuring 40 deterministic stages against competitive CPU opponents on permanent Very Hard difficulty.',
-    thumbnail: getGameArtworkUrl('hockey'),
-    banner: getGameArtworkUrl('hockey'),
+    genre: 'Fast Reflex Balloon Pop Arcade',
+    tagline: 'Tap vibrant balloons, build rapid combos, and conquer all 40 championship levels!',
+    description: 'Fast reflex skill-based arcade championship. Tap rising colorful balloons before they slip away, build precision combos, avoid touching empty space, and master 40 progressive tournament stages.',
+    thumbnail: getGameArtworkUrl('pop-balloon'),
+    banner: getGameArtworkUrl('pop-balloon'),
     accessType: 'FREE',
     isFree: true,
     requiresCoins: false,
@@ -1004,226 +976,18 @@ export const INITIAL_GAME_CATALOG: CatalogGame[] = [
     sortOrder: 27,
     providerId: 'prv_gameon_core',
     providerName: 'GameON Studios',
-    rating: 4.96,
-    playsCount: 168000,
-    primaryColor: '#06B6D4',
-    secondaryColor: '#EF4444',
-    instructions: [
-      'Drag your glowing mallet using touch or mouse within your defensive half',
-      'Strike the glowing puck past the CPU opponent and into their goal',
-      'Block oncoming ricochet shots and defend your goal net',
-      'Reach the target goal score to clear each stage and unlock the next challenge',
-    ],
-    controlsDescription: 'Touch drag or mouse drag your circular mallet within your half of the table.',
-  },
-  {
-    gameId: 'catch-up',
-    gameName: 'Catch Up',
-    titleAmharic: 'ኬች አፕ',
-    category: 'Arcade',
-    genre: 'Highway Speed Runner Tournament',
-    tagline: 'Steer the speeding ball, dodge barricades, collect diamonds, and conquer 40 Very Hard stages!',
-    description: 'Adrenaline-fueled 3D perspective highway speed runner. Steer the rolling ball through dense road barricades, hazard ramps, and brick pillars across 40 deterministic stages on permanent Very Hard difficulty.',
-    thumbnail: getGameArtworkUrl('catch-up'),
-    banner: getGameArtworkUrl('catch-up'),
-    accessType: 'FREE',
-    isFree: true,
-    requiresCoins: false,
-    coinCost: 0,
-    isFeatured: true,
-    isRecommended: true,
-    isActive: true,
-    isNew: true,
-    leaderboardEnabled: true,
-    sortOrder: 28,
-    providerId: 'prv_gameon_core',
-    providerName: 'GameON Studios',
     rating: 4.98,
-    playsCount: 215000,
-    primaryColor: '#0284C7',
-    secondaryColor: '#EF4444',
+    playsCount: 290000,
+    primaryColor: '#EC4899',
+    secondaryColor: '#8B5CF6',
     instructions: [
-      'Drag left or right using touch or mouse to steer the speeding ball',
-      'Pass between red/white construction barricades, brick pillars, and hazard ramps',
-      'Collect emerald diamonds along the highway to boost your score',
-      'Survive the distance target to conquer each stage and unlock the next challenge',
+      'Tap rising balloons before they reach the top or bottom of the arena',
+      'Never tap empty white space — any miss ends the game immediately',
+      'Chain consecutive balloon pops to build massive score multiplier streaks',
+      'Pop required number of balloons to clear each stage and conquer all 40 levels',
     ],
-    controlsDescription: 'Touch drag or mouse drag horizontally to steer the ball. Desktop: Left/Right arrows or A/D keys.',
+    controlsDescription: 'Tap or click balloons to pop. Avoid tapping empty background.',
   },
-  {
-    gameId: 'fruit-fancy',
-    gameName: 'Fruit Fancy',
-    titleAmharic: 'ፍሩት ፋንሲ',
-    category: 'Puzzle',
-    genre: 'Orchard Match-3 Puzzle Tournament',
-    tagline: 'Swap delicious fruits, blast wooden tree stumps, break ice, and conquer 40 challenging levels!',
-    description: 'Vibrant and challenging match-3 puzzle tournament set in a sunny fruit garden. Swap and match strawberries, blueberries, watermelons, and lemons. Clear tree stumps, ice, and crates across 40 handcrafted levels on progressive difficulty.',
-    thumbnail: getGameArtworkUrl('fruit-fancy'),
-    banner: getGameArtworkUrl('fruit-fancy'),
-    accessType: 'FREE',
-    isFree: true,
-    requiresCoins: false,
-    coinCost: 0,
-    isFeatured: true,
-    isRecommended: true,
-    isActive: true,
-    isNew: true,
-    leaderboardEnabled: true,
-    sortOrder: 29,
-    providerId: 'prv_gameon_core',
-    providerName: 'GameON Studios',
-    rating: 4.98,
-    playsCount: 248000,
-    primaryColor: '#16A34A',
-    secondaryColor: '#EAB308',
-    instructions: [
-      'Swap adjacent fruits horizontally or vertically to create lines of 3 or more matching fruits',
-      'Create 4-matches to produce line-clearing Arrow Fruits, and 5-matches for Rainbow Pinwheels',
-      'Match adjacent fruits to break wooden tree stumps, crates, and melt ice blocks',
-      'Fulfill all level objectives within the move limit to clear the stage and unlock the next challenge',
-    ],
-    controlsDescription: 'Touch drag or click adjacent fruits to swap. Mouse or touch controls fully supported.',
-  },
-  {
-    gameId: 'picture-match',
-    gameName: 'Picture Match',
-    titleAmharic: 'የስዕል ማዛመጃ',
-    category: 'Puzzle',
-    genre: 'Memory / Tournament Puzzle',
-    tagline: 'High-Stakes 40-Stage Picture Memory Tournament',
-    description: 'High-octane tournament memory challenge. Memorize revealed cards in seconds, find matching pictures under severe tournament timers, and conquer all 40 demanding stages.',
-    thumbnail: getGameArtworkUrl('picture-match'),
-    banner: getGameArtworkUrl('picture-match'),
-    accessType: 'FREE',
-    isFree: true,
-    requiresCoins: false,
-    coinCost: 0,
-    isFeatured: true,
-    isRecommended: true,
-    isActive: true,
-    isNew: true,
-    leaderboardEnabled: true,
-    sortOrder: 30,
-    providerId: 'prv_gameon_core',
-    providerName: 'GameON Studios',
-    rating: 4.96,
-    playsCount: 195000,
-    primaryColor: '#00897B',
-    secondaryColor: '#004D40',
-    instructions: [
-      'Memorize all card pictures during the countdown reveal window before cards turn face-down',
-      'Tap any two cards to reveal them and match identical pictures',
-      'Earn +5 bonus seconds added to your tournament timer for every pair matched',
-      'Complete all pairs before the timer expires to unlock the next tournament stage',
-    ],
-    controlsDescription: 'Tap or click cards to flip and match pairs. 100% touch and mouse supported.',
-  },
-  {
-    gameId: 'candy-bomb',
-    gameName: 'Candy Bomblink Color',
-    titleAmharic: 'ከረሜላ ቦምብ',
-    category: 'Puzzle',
-    genre: 'Tournament Match-3 & Candy Blast',
-    tagline: 'Conquer 40 tournament match-3 challenges, explosive candy bombs and rainbow combos!',
-    description: 'Experience high-stakes match-3 tournament gameplay across 40 hand-crafted stages. Match delicious glossy candies, trigger horizontal and vertical striped blasts, wrapped candy bomb detonations, and dazzling rainbow chocolate sprinkle color bombs to achieve high-score mastery under tight move limits.',
-    thumbnail: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=600&auto=format&fit=crop&q=80',
-    banner: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=1200&auto=format&fit=crop&q=80',
-    accessType: 'FREE',
-    isFree: true,
-    requiresCoins: false,
-    coinCost: 0,
-    isFeatured: true,
-    isRecommended: true,
-    isNew: true,
-    isActive: true,
-    leaderboardEnabled: true,
-    sortOrder: 31,
-    providerId: 'prv_gameon_core',
-    providerName: 'GameON Studios',
-    rating: 4.98,
-    playsCount: 220000,
-    primaryColor: '#0284C7',
-    secondaryColor: '#F59E0B',
-    instructions: [
-      'Swap adjacent candies horizontally or vertically to match 3 or more of the same color',
-      'Match 4 in a line to forge a Striped Candy that clears an entire row or column with light beams',
-      'Match 5 in T or L shape to forge a Wrapped Candy Bomb that detonates a 3x3 blast area',
-      'Match 5 in a row to forge a Rainbow Chocolate Sprinkle Ball that clears all candies of any color you swap it with',
-      'Combine special candies together for devastating screen-clearing combos',
-      'Reach target color counts before running out of moves to advance through 40 tournament levels',
-    ],
-    controlsDescription: 'Tap or swipe adjacent candies to swap. Tap boosters to clear obstacles. 100% mobile touch & desktop mouse friendly.',
-  },
-  {
-    gameId: 'link-color',
-    gameName: 'LINK COLOR',
-    titleAmharic: 'የቀለም ማገናኛ',
-    category: 'Puzzle',
-    genre: 'Tournament Color Link & Connect',
-    tagline: 'Connect adjacent glossy color orbs, trigger vibrant paint splatters and master 40 tournament stages!',
-    description: 'A tournament puzzle challenge built for elite spatial memory and chain matching. Drag across 3 or more adjacent same-color orbs to forge glowing links, burst juicy paint splatters, unleash devastating rainbow bombs, and complete high-difficulty color collection targets across 40 stages.',
-    thumbnail: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=600&auto=format&fit=crop&q=80',
-    banner: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&auto=format&fit=crop&q=80',
-    accessType: 'FREE',
-    isFree: true,
-    requiresCoins: false,
-    coinCost: 0,
-    isFeatured: false,
-    isRecommended: false,
-    isNew: false,
-    isActive: false,
-    leaderboardEnabled: false,
-    sortOrder: 32,
-    providerId: 'prv_gameon_core',
-    providerName: 'GameON Studios',
-    rating: 4.97,
-    playsCount: 185000,
-    primaryColor: '#0284C7',
-    secondaryColor: '#10B981',
-    instructions: [
-      'Drag your finger or mouse across 3 or more adjacent balls of the same color to link them',
-      'Trace your path backwards to undo or change your link sequence before releasing',
-      'Release to trigger vibrant paint splatters, collecting the matched color toward your level targets',
-      'Chain 6 or more balls together to forge a Rainbow Bomb that obliterates entire colors',
-      'Complete all required color quotas within the allotted moves to unlock the next tournament level',
-    ],
-    controlsDescription: 'Click or touch and drag across adjacent matching colors to link. Release to pop. Boosters tap to activate.',
-  },
-  {
-    gameId: 'tap-rush',
-    gameName: 'Tap Rush',
-    titleAmharic: 'ፈጣን ንክኪ',
-    category: 'Arcade',
-    genre: 'Ultra Fast Reflex Reaction Arcade',
-    tagline: 'Tap rapid glowing targets, dodge treacherous hazard decoys, and chain rush combos across escalating levels!',
-    description: 'An adrenaline-fueled reflex reaction arcade experience engineered for tournament gaming. Tap shrinking target spheres with lightning-fast hand-eye coordination, evade dangerous red hazard decoys, rack up streak multipliers in Rush Mode, and survive through escalating level speeds to claim the top high score.',
-    thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80',
-    banner: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
-    accessType: 'FREE',
-    isFree: true,
-    requiresCoins: false,
-    coinCost: 0,
-    isFeatured: true,
-    isRecommended: true,
-    isNew: true,
-    isActive: true,
-    leaderboardEnabled: true,
-    sortOrder: 34,
-    providerId: 'prv_gameon_core',
-    providerName: 'GameON Studios',
-    rating: 4.96,
-    playsCount: 165000,
-    primaryColor: '#06B6D4',
-    secondaryColor: '#3B82F6',
-    instructions: [
-      'Rapidly tap the glowing target spheres before their outer countdown ring shrinks to the center',
-      'Never tap red hazard decoys or skulls — detonating a decoy costs 1 life instantly',
-      'Do not let valid targets expire and vanish, or you will lose a heart and reset your combo streak',
-      'Chain rapid taps without mistakes to trigger 2x, 3x, and 4x score multipliers and bonus points',
-      'Fill the Level Progress Bar to conquer stages and survive into ultra-speed reflex levels',
-    ],
-    controlsDescription: 'Tap or click glowing targets before they vanish. Avoid red hazard decoys. 100% mobile touch and desktop mouse responsive.',
-  }
 ];
 
 export const GameCatalog = {

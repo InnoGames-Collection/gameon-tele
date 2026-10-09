@@ -6,7 +6,7 @@
  * - ONLY ONE SUBSCRIPTION: Daily (2 Birr/day)
  * - NO Weekly subscription
  * - NO Monthly subscription
- * - Tapping Subscribe opens device SMS composer to 9595 with message OK
+ * - Tapping Subscribe opens device SMS composer to 7198 with message OK
  * - Zero fake payment success screens
  */
 
@@ -43,7 +43,7 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
       /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const separator = isIOS ? '&' : '?';
-    const smsUrl = `sms:9595${separator}body=OK`;
+    const smsUrl = `sms:7198${separator}body=OK`;
 
     try {
       const link = document.createElement('a');
@@ -133,11 +133,11 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
           </div>
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-[#8BCB3D] shrink-0" />
-            <span>National leaderboard rankings & daily competitions</span>
+            <span>All 27 games 100% free with unlimited play</span>
           </div>
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-[#8BCB3D] shrink-0" />
-            <span>SMS-based activation: Send <strong>OK</strong> to <strong>9595</strong></span>
+            <span>SMS-based activation: Send <strong>OK</strong> to <strong>7198</strong></span>
           </div>
         </div>
 
@@ -166,7 +166,7 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
           <div className="grid grid-cols-2 gap-2 text-center font-mono">
             <div className="p-2 rounded-xl bg-white border border-blue-100 shadow-2xs">
               <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">Recipient</span>
-              <strong className="text-sm font-black text-[#1688C9]">9595</strong>
+              <strong className="text-sm font-black text-[#1688C9]">7198</strong>
             </div>
             <div className="p-2 rounded-xl bg-white border border-blue-100 shadow-2xs">
               <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">Message</span>
@@ -175,11 +175,11 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
           </div>
           <div className="pt-1 flex gap-2">
             <a
-              href="sms:9595?body=OK"
+              href="sms:7198?body=OK"
               className="flex-1 py-2 rounded-xl bg-[#1688C9] hover:bg-[#1272aa] text-white text-center font-black text-xs transition-colors flex items-center justify-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
-              <span>Open SMS App (9595)</span>
+              <span>Open SMS App (7198)</span>
             </a>
             <button
               type="button"
@@ -196,7 +196,7 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
       {/* Safety & Compliance Notice */}
       <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-bold">
         <ShieldCheck className="w-3.5 h-3.5 text-[#8BCB3D]" />
-        <span>GameOn Tele • 2 Birr/day • Send OK to 9595</span>
+        <span>GameOn Tele • 2 Birr/day • Send OK to 7198</span>
       </div>
     </div>
   );

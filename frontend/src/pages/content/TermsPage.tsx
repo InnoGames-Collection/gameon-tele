@@ -15,86 +15,65 @@ interface TermSection {
 const GOPLAY_TERMS: TermSection[] = [
   {
     number: '1.0',
-    title: 'TelePlus Service Description',
+    title: 'GameOn Tele Service Description',
     paragraphs: [
-      'TelePlus is an official interactive mobile gaming service integrated within the telebirr SuperApp ecosystem.',
-      'TelePlus provides access to 16 skill-based games, weekly competitive tournaments, verified real-time leaderboards, game coin transactions, and national championship rewards.',
+      'GameOn Tele is an official interactive mobile gaming Value-Added Service (VAS) operated in partnership with EthioTelecom.',
+      'GameOn Tele provides instant, unlimited mobile access to 27 skill-based games with zero downloads required and 100% free gameplay across all titles.',
     ],
   },
   {
     number: '2.0',
-    title: 'Payment & Billing Terms',
+    title: 'Subscription & SMS Service Shortcode 7198',
     paragraphs: [
-      'All purchases, coin pack top-ups, and subscription fees are debited directly from the subscriber’s verified telebirr SuperApp wallet balance in Ethiopian Birr (ETB).',
-      'No SMS shortcodes or third-party premium SMS billing mechanisms are used. All transactions require direct authorization through the telebirr SuperApp interface and are instantaneous and non-refundable once activated.',
+      'Subscribers activate the service by sending SMS "OK" to shortcode 7198 from an active EthioTelecom mobile line, or via official online authorization.',
+      'The service subscription fee is 2 ETB per day, charged directly via standard mobile airtime deduction. All 27 games remain 100% free to play with unlimited retries and no pay-per-play barriers.',
     ],
   },
   {
     number: '3.0',
-    title: 'Subscription Terms & Validity',
+    title: 'Cancellation & Service Management',
     paragraphs: [
-      'TelePlus offers three distinct subscription plans:',
-    ],
-    bulletPoints: [
-      'Daily Plan: 5 Birr per 24 hours of unlimited catalog gameplay.',
-      'Weekly Plan: 20 Birr per 7 days of unlimited catalog gameplay.',
-      'Monthly Plan: 50 Birr per 30 days of unlimited catalog gameplay.',
-      'Subscriptions remain active throughout their designated validity period.',
-      'Subscribers may manage or cancel auto-renewal at any time without penalty directly within the Profile > Subscription tab.',
+      'Subscribers may cancel their subscription at any time without penalty by sending SMS "STOP" to shortcode 7198.',
+      'Upon cancellation, service access continues until the end of the current paid billing cycle. Subscribers may reactivate at any time by sending "OK" to 7198.',
     ],
   },
   {
     number: '4.0',
-    title: 'Coin Packages & Usage',
+    title: 'Free Catalog & Gameplay Access',
     paragraphs: [
-      'Users can purchase game coins directly from their telebirr balance at standard package rates:',
-    ],
-    bulletPoints: [
-      '10 Birr = 10 Coins',
-      '25 Birr = 25 Coins',
-      '50 Birr = 50 Coins',
-      'Game coins can be utilized to enter coin-entry challenges or continue active gameplay sessions.',
+      'All 27 titles in the GameOn Tele catalog are free to play. There are no coin deductions, no paywalls, and no hidden micro-transactions.',
+      'Players can enjoy full arcade, puzzle, sports, board, and racing titles as many times as desired.',
     ],
   },
   {
     number: '5.0',
-    title: 'Weekly Tournament Participation Rules',
+    title: 'Fair Play & Anti-Cheating Policy',
     paragraphs: [
-      'Weekly tournaments feature 4 designated games selected for that competition cycle.',
-      'Any user with an active subscription or required entry entitlement may participate in any of the 4 tournament games during the tournament window.',
-      'The Leaderboard tracks performance across each individual game tab as well as an "Overall Best" tab ranking the highest single score achieved across any of the 4 tournament games.',
+      'All games are skill-based. Players must achieve scores solely through legitimate manual gameplay on mobile browsers.',
+      'Any use of automated scripts, bots, modified client software, network tampering, or fraudulent score submissions is strictly prohibited and will result in immediate account restriction.',
     ],
   },
   {
     number: '6.0',
-    title: 'Fair Play & Anti-Cheating Policy',
+    title: 'Privacy & MSISDN Protection',
     paragraphs: [
-      'All tournament games are strictly skill-based. Players must achieve scores solely through legitimate manual gameplay.',
-      'Any use of automated scripts, bots, modified client software, network manipulation, score tampering, or multiple accounts to distort leaderboard outcomes is strictly prohibited.',
-      'Violation of this Fair Play Policy will result in immediate disqualification, forfeiture of prizes, and permanent suspension of the account.',
+      'GameOn Tele strictly protects subscriber privacy. Phone numbers (MSISDNs) are kept confidential and protected in strict compliance with telecommunications regulations and Ethiopian data protection laws.',
+      'Personal data collected is limited strictly to subscriber authentication, session management, and service delivery.',
     ],
   },
   {
     number: '7.0',
-    title: 'Privacy & Data Protection',
+    title: 'Disputes & Customer Support',
     paragraphs: [
-      'TelePlus respects player confidentiality. All mobile phone numbers (MSISDNs) are masked across all public leaderboard views (e.g., 091*****890) to prevent unauthorized identification.',
-      'Personal data collected is limited to account authentication, score verification, and prize distribution in strict compliance with applicable Ethiopian data protection laws.',
+      'For customer assistance, billing questions, or technical support, subscribers can consult the Help & Support section or reach out via EthioTelecom customer care.',
+      'GameOn Tele reserves the right to perform routine maintenance, optimize performance, and deliver updates to ensure uninterrupted quality.',
     ],
   },
   {
     number: '8.0',
-    title: 'Disputes & Customer Care',
-    paragraphs: [
-      'In the event of gameplay interruptions, score discrepancies, or billing questions, players should consult Help & Customer Care from within the Profile tab.',
-      'TelePlus reserves the right to make technical updates to games and tournaments to ensure smooth operation and fair competition.',
-    ],
-  },
-  {
-    number: '9.0',
     title: 'Acceptance of Terms',
     paragraphs: [
-      'By accessing TelePlus, subscribing to packages, or participating in tournaments, the player acknowledges and agrees to be bound by these Terms & Conditions.',
+      'By accessing GameOn Tele or subscribing via shortcode 7198, the subscriber acknowledges and agrees to be bound by these Terms & Conditions.',
     ],
   },
 ];
@@ -134,10 +113,10 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
       {/* 2. Top Summary Card */}
       <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed mb-4">
         <p className="font-bold text-[#17202A]">
-          Official TelePlus Gaming Terms & Conditions
+          Official GameOn Tele Gaming Terms & Conditions
         </p>
         <p className="text-[11px] text-slate-500 mt-1">
-          Governing tournament participation, fair play, telebirr billing, and data protection.
+          Governing EthioTelecom VAS Shortcode 7198 subscription, fair play, and subscriber data protection.
         </p>
       </div>
 

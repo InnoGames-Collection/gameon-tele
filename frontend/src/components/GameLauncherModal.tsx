@@ -20,6 +20,7 @@ import { SoccerPingPongGame } from '../games/soccerPingPong/SoccerPingPongGame';
 import { SortingBallsGame } from '../games/sortingBalls/SortingBallsGame';
 import { EmojiSortingBallGame } from '../games/emojiSortingBall/EmojiSortingBallGame';
 import { BubbleShooterGame } from '../games/bubbleShooter/BubbleShooterGame';
+import { ArcheryStrikeGame } from '../games/archeryStrike/ArcheryStrikeGame';
 import { SoccerShooterGame } from '../games/soccerShooter';
 import { MotoRaceGame } from '../games/motoRace';
 import { FruitSliceGame } from '../games/fruitSlice';
@@ -449,6 +450,20 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
     );
   }
 
+  // Archery Strike features full 3D ballistic archery, physics, wind deflection, targets
+  if (game.id === 'archery-strike') {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#071B2D] flex flex-col justify-start items-center overflow-hidden animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif] touch-none overscroll-none select-none">
+        <ArcheryStrikeGame
+          game={game}
+          onGameOver={onGameOver}
+          onExit={onClose}
+          isAudioEnabled={isAudioEnabled}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col justify-between overflow-y-auto animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif]">
       
@@ -468,9 +483,9 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1 rounded-xl bg-white/15 text-white text-xs font-mono font-bold flex items-center gap-1.5">
-            <Coins className="w-3.5 h-3.5 fill-current text-amber-300" />
-            <span>{profile.coins} Coins</span>
+          <div className="px-3 py-1 rounded-xl bg-white/15 text-white text-xs font-bold flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#8BCB3D]" />
+            <span>Free Play</span>
           </div>
           <button
             onClick={onClose}
@@ -483,62 +498,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
 
       {/* Main Game Stage / Session Container */}
       <div className={`flex-1 w-full mx-auto p-2 sm:p-4 flex flex-col justify-center items-center ${game.id === 'memory-match' ? 'max-w-2xl' : 'max-w-xl'}`}>
-        {/* For Candy Blast, Color Rush, World Legends, Pop Piano, and Hill Climb 3D, let their in-game state manager render their rich HUD and final screen */}
-        {game.id === 'candy-blast' ? (
-          <div className="w-full">
-            <CandyBlastGame
-              game={game}
-              onGameOver={onGameOver}
-              onExit={onClose}
-              isAudioEnabled={isAudioEnabled}
-            />
-          </div>
-        ) : game.id === 'color-rush' ? (
-          <div className="w-full">
-            <ColorRushGame
-              game={game}
-              onGameOver={onGameOver}
-              onExit={onClose}
-              isAudioEnabled={isAudioEnabled}
-            />
-          </div>
-        ) : game.id === 'world-legends' ? (
-          <div className="w-full">
-            <WorldLegendsGame
-              game={game}
-              onGameOver={onGameOver}
-              onExit={onClose}
-              isAudioEnabled={isAudioEnabled}
-            />
-          </div>
-        ) : game.id === 'pop-piano' ? (
-          <div className="w-full">
-            <PopPianoGame
-              game={game}
-              onGameOver={onGameOver}
-              onExit={onClose}
-              isAudioEnabled={isAudioEnabled}
-            />
-          </div>
-        ) : game.id === 'hill-rider' ? (
-          <div className="w-full">
-            <HillRiderGame
-              game={game}
-              onGameOver={onGameOver}
-              onExit={onClose}
-              isAudioEnabled={isAudioEnabled}
-            />
-          </div>
-        ) : game.id === 'archery-strike' ? (
-          <div className="w-full">
-            <PopBalloonGame
-              game={game}
-              onGameOver={onGameOver}
-              onExit={onClose}
-              isAudioEnabled={isAudioEnabled}
-            />
-          </div>
-        ) : !lastResult ? (
+        {!lastResult ? (
           /* ACTIVE PLAYING VIEW FOR OTHER GAMES */
           <div className="w-full">
             <InteractiveGameRunner
@@ -574,7 +534,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
             {/* Results Matrix */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               <div className="bg-slate-900/80 rounded-xl p-3 border border-slate-800 text-left">
-                <div className="text-[10px] text-slate-400 font-semibold uppercase">TOURNAMENT POINTS</div>
+                <div className="text-[10px] text-slate-400 font-semibold uppercase">MATCH SCORE</div>
                 <div className="text-base font-bold text-[#78BE20] font-mono">
                   +{lastResult.score} PTS
                 </div>

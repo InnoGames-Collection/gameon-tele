@@ -47,8 +47,8 @@ ON CONFLICT (msisdn) DO NOTHING;
 -- 5. Active Subscriptions for Seeded Players
 INSERT INTO subscriptions (msisdn, shortcode, service_id, status, plan_type, price_etb, renew_count)
 VALUES
-    ('251911998890', '9898', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 39),
-    ('251922334412', '9898', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 24),
-    ('251933445589', '9898', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 15),
-    ('251911428890', '9898', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 5)
+    ('251911998890', '7198', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 39),
+    ('251922334412', '7198', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 24),
+    ('251933445589', '7198', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 15),
+    ('251911428890', '7198', 'srv_gameon_daily', 'ACTIVE', 'daily', 2.00, 5)
 ON CONFLICT (msisdn, service_id) DO NOTHING;

@@ -60,24 +60,9 @@ export const ProfessionalGameCard: React.FC<ProfessionalGameCardProps> = ({
   // Format rating to standard 2-decimal display (e.g. 4.90, 4.99)
   const formattedRating = Number(game.rating || 4.99).toFixed(2);
 
-  // Status configuration for the clean white information panel
-  let statusText = 'FREE';
-  let statusColor = 'text-[#16A34A]';
-
-  if (hasActiveAccess) {
-    statusText = 'UNLOCKED';
-    statusColor = 'text-[#16A34A]';
-  } else if (isCoinGame) {
-    statusText = `🪙 ${coinCost} COINS`;
-    statusColor = 'text-amber-600';
-  } else if (game.isFree) {
-    statusText = 'FREE';
-    statusColor = 'text-[#16A34A]';
-  } else if (isSubscriptionGame) {
-    const dailyPrice = game.subscriptionOptions?.daily?.priceETB || 5;
-    statusText = `FROM ${dailyPrice} ETB`;
-    statusColor = 'text-[#1688C9]';
-  }
+  // Status configuration: All games are 100% free per specification
+  const statusText = 'FREE';
+  const statusColor = 'text-[#16A34A]';
 
   return (
     <div

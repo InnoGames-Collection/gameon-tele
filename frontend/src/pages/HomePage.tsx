@@ -10,12 +10,11 @@
  * - Followed by Featured, Recently Played, and Categories.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { GameDefinition, UserProfile } from '../types';
 import { GameCatalog } from '../services/gameCatalog';
 import { EntitlementService } from '../services/entitlementService';
 import { catalogGameToDefinition, GameRegistry } from '../games/registry';
-import { HelixCompetitionService } from '../services/helixCompetitionService';
 import { FeaturedHeroCarousel } from '../components/FeaturedHeroCarousel';
 import { RecentlyPlayedSection } from '../components/RecentlyPlayedSection';
 import { GameCategorySection } from '../components/GameCategorySection';
@@ -37,11 +36,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   onNavigateToGames,
   activeEntitlements = {},
 }) => {
-  // Real competition data from HelixCompetitionService
-  const helixUserScores = useMemo(() => {
-    return HelixCompetitionService.getUserScores(profile);
-  }, [profile]);
-
   const handlePlayHelixChallenge = () => {
     const helix = GameRegistry.getGameById('helix-jump');
     if (helix) {
@@ -76,41 +70,41 @@ export const HomePage: React.FC<HomePageProps> = ({
             4. HELIX [ PLAY NOW ]
            ========================================================================= */}
         <section id="home-daily-challenge-top" className="px-3.5 sm:px-4 space-y-3">
-          {/* Top Score Cards: 1. Daily Score, 2. Total 7-Day Score */}
+          {/* Top Score Cards: 1. Games Played, 2. Personal Best Score */}
           <div className="grid grid-cols-2 gap-3">
-            {/* 1. Daily Score */}
+            {/* 1. Games Played */}
             <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
               <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider">
-                Daily Score
+                Games Played
               </span>
               <div className="text-2xl sm:text-3xl font-black text-[#1688C9] font-mono mt-1">
-                {helixUserScores.dailyScore.toLocaleString()}
+                {(profile.matchesPlayed || 0).toLocaleString()}
               </div>
             </div>
 
-            {/* 2. Total 7-Day Score */}
+            {/* 2. Personal Best Score */}
             <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
               <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider">
-                Total 7-Day Score
+                Personal Best
               </span>
               <div className="text-2xl sm:text-3xl font-black text-[#8BCB3D] font-mono mt-1">
-                {helixUserScores.sevenDayScore.toLocaleString()}
+                {((Object.values(profile.highScores || {}) as number[]).length > 0 ? Math.max(...(Object.values(profile.highScores || {}) as number[])) : 0).toLocaleString()}
               </div>
             </div>
           </div>
 
-          {/* 3. Daily Challenge -> 4. Helix [ PLAY NOW ] */}
+          {/* Featured Game -> Helix [ PLAY NOW ] */}
           <div className="p-4 sm:p-5 rounded-3xl bg-[#1688C9] text-white shadow-sm border border-blue-600/30 relative overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1 relative z-10">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8BCB3D] text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
                 <Sparkles className="w-3 h-3" />
-                <span>DAILY CHALLENGE</span>
+                <span>FEATURED GAME</span>
               </div>
               <h2 className="text-2xl font-black text-white tracking-tight">
-                Helix
+                Helix Jump
               </h2>
               <p className="text-xs text-blue-50 font-medium">
-                Compete in the rolling 7-day championship and climb the leaderboard!
+                Bounce through revolving platforms in stunning 3D! Free to play anytime.
               </p>
             </div>
 

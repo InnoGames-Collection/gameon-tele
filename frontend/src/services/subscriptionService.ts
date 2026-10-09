@@ -1,6 +1,6 @@
 /**
  * TelePlus Subscription Service
- * Manages the single official Daily Subscription (2 Birr/day) via SMS shortcode 9898.
+ * Manages the single official Daily Subscription (2 Birr/day) via SMS shortcode 7198.
  */
 
 import { SubscriptionPlan, UserProfile } from '../types';
@@ -34,15 +34,15 @@ export const SUBSCRIPTION_PLANS: PlanDetails[] = [
     priceETB: 2,
     durationLabel: '24 Hours (2 Birr/day)',
     durationDays: 1,
-    smsRecipient: '9898',
-    smsShortcode: '9898',
+    smsRecipient: '7198',
+    smsShortcode: '7198',
     smsBody: 'OK',
     unsubscribeBody: 'STOP',
     badge: 'Official',
     features: [
-      'Unlimited match plays for 24h across all 8 games',
-      'Helix Jump 7-Day Weekly Tournament access',
-      'Billed via SMS shortcode 9898 (2 Birr/day)',
+      'Unlimited match plays across all games',
+      'All games 100% free with unlimited play',
+      'Billed via SMS shortcode 7198 (2 Birr/day)',
     ],
   },
 ];
@@ -79,7 +79,7 @@ export const SubscriptionService = {
 
     return {
       success: true,
-      message: 'Subscribed to Daily Plan (2 Birr/day)! Send OK to 9898.',
+      message: 'Subscribed to Daily Plan (2 Birr/day)! Send OK to 7198.',
       updatedProfile,
     };
   },

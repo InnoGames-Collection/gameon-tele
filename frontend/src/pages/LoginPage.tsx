@@ -111,12 +111,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     }
   };
 
-  // Section 10: Subscribe Function - open device's SMS composer prefilled with Recipient 9898, Message OK
+  // Section 10: Subscribe Function - open device's SMS composer prefilled with Recipient 7198, Message OK
   const handleSubscribe = () => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const separator = isIOS ? '&' : '?';
-    const smsUrl = `sms:9898${separator}body=OK`;
+    const smsUrl = `sms:7198${separator}body=OK`;
 
     try {
       const link = document.createElement('a');
@@ -136,7 +136,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const handleCopySmsDetails = () => {
     navigator.clipboard.writeText('OK');
     setCopiedSms(true);
-    showToast('info', 'Copied', 'Message "OK" copied to clipboard. Send to 9898.');
+    showToast('info', 'Copied', 'Message "OK" copied to clipboard. Send to 7198.');
     setTimeout(() => setCopiedSms(false), 2500);
   };
 
@@ -188,11 +188,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
 
             <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              Play & Win Airtime & TeleBirr Prizes
+              Play All Games 100% Free
             </h1>
 
             <p className="text-xs text-blue-50 leading-relaxed max-w-xs font-medium">
-              Compete in weekly tournaments, climb the leaderboards and claim national championship rewards.
+              Enjoy unlimited instant access to exciting 3D and arcade games with zero ads or limits.
             </p>
           </div>
 
@@ -306,7 +306,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         {/* ============================================================
             4. SUBSCRIBE BUTTON (Placed BELOW the login card)
             Wording must be EXACTLY: Subscribe
-            Tapping opens device SMS composer to recipient 9898, body OK
+            Tapping opens device SMS composer to recipient 7198, body OK
             ============================================================ */}
         <div className="pt-1">
           <button
@@ -330,12 +330,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
       {/* BOTTOM FOOTER */}
       <footer className="w-full max-w-md mx-auto text-center py-2 text-[11px] text-slate-400 font-medium">
-        <span>Official Teleplus Service • Shortcode 9898 • EthioTelecom</span>
+        <span>Official Teleplus Service • Shortcode 7198 • EthioTelecom</span>
       </footer>
 
       {/* ============================================================
           SMS COMPOSER / FALLBACK MODAL
-          Customer reviews and presses Send to 9898 with OK.
+          Customer reviews and presses Send to 7198 with OK.
           ============================================================ */}
       {isSmsModalOpen && (
         <div 
@@ -380,7 +380,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <div className="grid grid-cols-2 gap-2 text-center pt-1 font-mono">
                 <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
                   <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">Recipient</span>
-                  <strong className="text-sm font-black text-[#1688C9]">9898</strong>
+                  <strong className="text-sm font-black text-[#1688C9]">7198</strong>
                 </div>
                 <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs">
                   <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">Message</span>
@@ -395,11 +395,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             {/* Actions: Re-open SMS composer or Copy info */}
             <div className="space-y-2">
               <a
-                href="sms:9898?body=OK"
+                href="sms:7198?body=OK"
                 className="w-full py-3 rounded-2xl bg-[#8BCB3D] hover:bg-[#7cb934] text-white font-black text-xs active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>Open SMS Composer (9898)</span>
+                <span>Open SMS Composer (7198)</span>
               </a>
 
               <button

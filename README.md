@@ -1,6 +1,6 @@
 # GameOn Tele — 3D Rolling 7-Day Competition Game (Helix Jump)
 
-Enterprise Tier-0 Telecom VAS Service featuring 3D Helix Jump physics gameplay, integrating with Ethio Telecom Shortcode `9898` (2 ETB/day) and the SP Messaging Gateway.
+Enterprise Tier-0 Telecom VAS Service featuring 3D Helix Jump physics gameplay, integrating with Ethio Telecom Shortcode `7198` (2 ETB/day) and the SP Messaging Gateway.
 
 ## Topology & Ports (`innoserver-serv001: 34.41.116.217`)
 - **Player Web Client (`3600`)**: `https://gameon.innopulseplatform.com`

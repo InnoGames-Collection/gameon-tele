@@ -352,43 +352,43 @@ export const TELEPLUS_FAQ_ITEMS: FAQItem[] = [
     id: 'faq-1',
     question: 'What is GameOn Tele?',
     answer:
-      'GameOn Tele is the premier mobile gaming entertainment portal for EthioTelecom users, offering skill-based games, tournaments, leaderboards, and prize competitions.',
+      'GameOn Tele is the premier mobile gaming entertainment portal for EthioTelecom users, offering instant access to high-quality skill-based games with zero ads or coin limits.',
   },
   {
     id: 'faq-2',
     question: 'What is the subscription price?',
     answer:
-      'GameOn Tele costs 2 Birr per day. To subscribe, send OK to 9595. It provides unlimited access to all games without ads, coins, or interruptions.',
+      'GameOn Tele costs 2 Birr per day. To subscribe, send OK to 7198. It provides unlimited access to all games without ads, coins, or interruptions.',
   },
   {
     id: 'faq-3',
     question: 'How do I subscribe to GameOn Tele?',
     answer:
-      'To subscribe, send OK to 9595 from your mobile device. GameOn Tele costs 2 Birr per day and gives you full access to all games.',
+      'To subscribe, send OK to 7198 from your mobile device. GameOn Tele costs 2 Birr per day and gives you full access to all games.',
   },
   {
     id: 'faq-4',
     question: 'How do I cancel or stop my subscription?',
     answer:
-      'You can stop or cancel your GameOn Tele subscription at any time by sending STOP to 9595.',
+      'You can stop or cancel your GameOn Tele subscription at any time by sending STOP to 7198.',
   },
   {
     id: 'faq-5',
-    question: 'How does the competition and tournament work?',
+    question: 'Are all games free to play?',
     answer:
-      'Each week, featured games are active in the tournament: Candy Blast, Color Rush, Emoji Sorting Ball, and Knife Smash. You can compete across any of these games to set your highest scores.',
+      'Yes! All 27 games on GameOn Tele are 100% free to play. Once subscribed, you have unlimited access to every single game without coin requirements or entry fees.',
   },
   {
     id: 'faq-6',
-    question: 'How does the Tournament Leaderboard work?',
+    question: 'How do I track my high scores?',
     answer:
-      'The Leaderboard tab features dedicated tabs for each active tournament game ranking players by high score, plus an "Overall Best" tab that ranks players nationwide by their single highest score.',
+      'Your personal records and best scores are automatically tracked. You can view all your personal best scores directly in the Profile tab under "My High Scores".',
   },
   {
     id: 'faq-7',
-    question: 'How is my privacy protected on the leaderboard?',
+    question: 'How is my privacy protected?',
     answer:
-      'To ensure complete user privacy, all player phone numbers (MSISDNs) are masked across all leaderboard rankings (for example: 091*****890). Your full mobile number is never publicly shown.',
+      'To ensure complete user privacy, all player phone numbers (MSISDNs) are masked across all screens (for example: 091*****890). Your full mobile number is never publicly exposed.',
   },
   {
     id: 'faq-8',
@@ -421,7 +421,7 @@ export const TELEPLUS_SUPPORT_TOPICS: SupportTopic[] = [
     title: 'Subscription Support',
     content: [
       'GameOn Tele costs 2 Birr per day.',
-      'Subscription shortcode: 9595 (Send OK to 9595).',
+      'Subscription shortcode: 7198 (Send OK to 7198).',
       'For subscription-related problems, provide:',
       '• Mobile number',
       '• Approximate subscription time',
@@ -433,8 +433,8 @@ export const TELEPLUS_SUPPORT_TOPICS: SupportTopic[] = [
     id: 'unsub-support',
     title: 'Unsubscription Support',
     content: [
-      'To unsubscribe from GameOn Tele, send STOP to 9595.',
-      'If the service does not stop after sending STOP to 9595, provide:',
+      'To unsubscribe from GameOn Tele, send STOP to 7198.',
+      'If the service does not stop after sending STOP to 7198, provide:',
       '• Mobile number',
       '• Approximate time sent',
       '• Any error received',
@@ -545,22 +545,22 @@ export const TELEPLUS_SUBSCRIPTION_PACKAGES: SubscriptionPackage[] = [
   {
     package: 'Daily',
     price: '2 Birr/day',
-    subscribeCmd: 'Send OK to 9595',
-    unsubscribeCmd: 'Send STOP to 9595',
+    subscribeCmd: 'Send OK to 7198',
+    unsubscribeCmd: 'Send STOP to 7198',
     smsBody: 'OK',
     unsubBody: 'STOP',
-    recipient: '9595',
+    recipient: '7198',
   },
 ];
 
 export const TELEPLUS_SUBSCRIPTION_INFO = {
-  ussdInfo: 'Subscription is available by sending OK to 9595.',
+  ussdInfo: 'Subscription is available by sending OK to 7198.',
   afterSubscription:
     'After successful subscription, the user can access GameOn Tele games. GameOn Tele costs 2 Birr per day. Subscription charges and renewal operate daily.',
   renewal:
     'The daily package renews at 2 Birr per day. Users should ensure sufficient mobile balance is available for renewal.',
   unsubscription:
-    'Users can cancel or stop the service at any time by sending STOP to 9595.',
+    'Users can cancel or stop the service at any time by sending STOP to 7198.',
 };
 
 // =========================================================================
@@ -633,7 +633,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     ],
     bulletPoints: [
       'Daily subscription — 2 Birr/day',
-      'Subscribe by sending OK to 9595',
+      'Subscribe by sending OK to 7198',
       'Full, unlimited access to all games without coin restrictions.',
     ],
   },
@@ -649,7 +649,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.7',
     title: 'Unsubscription',
     paragraphs: [
-      'Users may stop their subscription by sending STOP to 9595 at any time without penalty.',
+      'Users may stop their subscription by sending STOP to 7198 at any time without penalty.',
     ],
   },
   {
@@ -686,54 +686,40 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
   },
   {
     number: '14.12',
-    title: 'Leaderboard',
+    title: 'Daily Gameplay & Scoring',
     paragraphs: [
-      'For each calendar day, only the user’s highest valid score among the applicable games contributes to that day’s leaderboard score.',
-      'Scores from multiple games are not added together.',
-      'Multiple attempts on the same day do not create multiple leaderboard entries; only the highest valid score counts.',
+      'For each game played, the user’s personal best score is recorded and tracked.',
+      'All 27 games offer unlimited gameplay attempts with immediate score recording and personal achievement tracking.',
     ],
   },
   {
     number: '14.13',
-    title: 'Tournament Competition',
+    title: 'Free Catalog Access',
     paragraphs: [
-      'The leaderboard tracks top performance across featured competition games.',
-      'Leaderboards are updated in real time to recognize top players.',
+      'All 27 games are 100% free to play for active subscribers to shortcode 7198.',
+      'There are no paywalls, entry fees, or coin deductions to enjoy any title.',
     ],
   },
   {
     number: '14.14',
-    title: 'Prizes',
+    title: 'Skill-Based Gaming Experience',
     paragraphs: [
-      'The Top-10 prize structure is:',
-    ],
-    table: [
-      { col1: 'Rank 1', col2: '50,000 ETB' },
-      { col1: 'Rank 2', col2: '40,000 ETB' },
-      { col1: 'Rank 3', col2: '35,000 ETB' },
-      { col1: 'Rank 4', col2: '30,000 ETB' },
-      { col1: 'Rank 5', col2: '25,000 ETB' },
-      { col1: 'Rank 6', col2: '20,000 ETB' },
-      { col1: 'Rank 7', col2: '15,000 ETB' },
-      { col1: 'Rank 8', col2: '10,000 ETB' },
-      { col1: 'Rank 9', col2: '5,000 ETB' },
-      { col1: 'Rank 10', col2: '3,000 ETB' },
+      'Every game is purely skill-based, allowing subscribers to test reflexes, problem-solving, and strategy in a safe, ad-free mobile environment.',
     ],
   },
   {
     number: '14.15',
-    title: 'Instant Prizes',
+    title: 'FairPlay Integrity',
     paragraphs: [
-      'GameOn Tele may provide instant prizes separately from leaderboard prizes.',
-      'Instant prizes are governed by the applicable game or promotional rules.',
+      'GameOn Tele maintains strict fair play guidelines across all games.',
+      'Automated bots, scripts, and score manipulation are prohibited.',
     ],
   },
   {
     number: '14.16',
-    title: 'Prize Verification',
+    title: 'Account Verification',
     paragraphs: [
-      'Before prize delivery, GameOn Tele may verify: User participation, Mobile number, Score, Ranking, Identity, Eligibility, and Compliance with applicable game rules.',
-      'A prize may be withheld until required verification is successfully completed.',
+      'GameOn Tele verifies active EthioTelecom mobile line subscriptions via shortcode 7198 to ensure seamless, secure access.',
     ],
   },
   {
@@ -872,14 +858,13 @@ export const TELEPLUS_PRIVACY_POLICY = {
       ],
       bulletPoints: [
         'Mobile phone number (MSISDN) for subscription management and authentication.',
-        'Game session scores, accuracy metrics, and tournament leaderboard timestamps.',
-        'Prize delivery and eligibility verifications.',
+        'Game session scores, accuracy metrics, and gameplay timestamps.',
       ],
     },
     {
       title: 'Masked Identity & Public Display Protection',
       paragraphs: [
-        'To protect subscriber identity, phone numbers are masked across all public leaderboard views (e.g., 091*****890). Your full mobile number is never publicly displayed.',
+        'To protect subscriber identity, phone numbers are masked across all views (e.g., 091*****890). Your full mobile number is never publicly displayed.',
       ],
     },
     {

@@ -98,16 +98,10 @@ export const FeaturedHeroCarousel: React.FC<FeaturedHeroCarouselProps> = ({
             {/* Play Button */}
             <button
               onClick={() => onPlayGame(currentGame)}
-              className={`py-2.5 px-5 rounded-xl font-black text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95 ${
-                isCoinGame && !hasAccess
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/30'
-                  : 'bg-[#8BCB3D] hover:bg-[#7cb934] text-white shadow-[#8BCB3D]/30'
-              }`}
+              className="py-2.5 px-5 rounded-xl font-black text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95 bg-[#8BCB3D] hover:bg-[#7cb934] text-white shadow-[#8BCB3D]/30"
             >
               <Play className="w-4 h-4 fill-current" />
-              <span>
-                {isCoinGame && !hasAccess ? `Play (${coinCost} Coins)` : 'Play Now'}
-              </span>
+              <span>Play (Free)</span>
             </button>
 
             {/* Details Button */}

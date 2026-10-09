@@ -23,7 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_gameon_players_msisdn ON players(msisdn);
 CREATE TABLE IF NOT EXISTS subscriptions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     msisdn VARCHAR(20) NOT NULL,
-    shortcode VARCHAR(10) NOT NULL DEFAULT '9898',
+    shortcode VARCHAR(10) NOT NULL DEFAULT '7198',
     service_id VARCHAR(50) NOT NULL DEFAULT 'srv_gameon_daily',
     status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'EXPIRED', 'UNSUBSCRIBED', 'SUSPENDED')),
     plan_type VARCHAR(20) NOT NULL DEFAULT 'daily',

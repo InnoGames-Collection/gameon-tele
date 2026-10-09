@@ -4,8 +4,8 @@
  * Strict Requirement:
  * - Brand: GameOn Tele
  * - Daily subscription: 2 Birr/day
- * - Subscription shortcode: 9595
- * - SMS: Send OK to 9595
+ * - Subscription shortcode: 7198
+ * - SMS: Send OK to 7198
  * - Zero references to Weekly pricing, Monthly pricing, Coins, Coin packages, Top Up, Tele Plus, GoPlay, or old shortcodes.
  */
 
@@ -33,7 +33,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
       /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const separator = isIOS ? '&' : '?';
-    window.location.href = `sms:9595${separator}body=OK`;
+    window.location.href = `sms:7198${separator}body=OK`;
   };
 
   return (
@@ -101,11 +101,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#8BCB3D] shrink-0" />
-              <span>Participate in rolling tournaments and daily championships</span>
+              <span>All 27 games 100% free with unlimited gameplay</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#8BCB3D] shrink-0" />
-              <span>Official leaderboards with full ranking visibility</span>
+              <span>Personal high scores and record tracking</span>
             </div>
           </div>
 
@@ -117,7 +117,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
             <div className="grid grid-cols-2 gap-2 text-center font-mono">
               <div className="p-2 rounded-xl bg-white border border-slate-200">
                 <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">Shortcode</span>
-                <strong className="text-sm font-black text-[#1688C9]">9595</strong>
+                <strong className="text-sm font-black text-[#1688C9]">7198</strong>
               </div>
               <div className="p-2 rounded-xl bg-white border border-slate-200">
                 <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">SMS Message</span>
@@ -125,7 +125,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
               </div>
             </div>
             <p className="text-[11px] text-slate-600 text-center pt-0.5">
-              Send <strong>OK</strong> to <strong>9595</strong> from your mobile device.
+              Send <strong>OK</strong> to <strong>7198</strong> from your mobile device.
             </p>
           </div>
 
@@ -136,14 +136,14 @@ export const PricingPage: React.FC<PricingPageProps> = ({
             className="w-full py-3 rounded-2xl bg-[#8BCB3D] hover:bg-[#7cb934] text-white font-black text-xs transition-transform active:scale-98 shadow-xs flex items-center justify-center gap-2 cursor-pointer"
           >
             <Send className="w-3.5 h-3.5" />
-            <span>Send OK to 9595</span>
+            <span>Send OK to 7198</span>
           </button>
         </div>
 
         {/* Regulatory Footer */}
         <div className="pt-2 flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-bold">
           <ShieldCheck className="w-3.5 h-3.5 text-[#8BCB3D]" />
-          <span>GameOn Tele • Official EthioTelecom VAS Service • Shortcode 9595</span>
+          <span>GameOn Tele • Official EthioTelecom VAS Service • Shortcode 7198</span>
         </div>
       </div>
     </div>

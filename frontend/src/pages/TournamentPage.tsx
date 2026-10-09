@@ -410,7 +410,7 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
           <ul className="list-disc pl-4 space-y-1 text-[11px] leading-relaxed">
             <li><strong>Continuous 7-Day Cycle:</strong> Each tournament runs for 7 consecutive days starting Monday 00:00 UTC.</li>
             <li><strong>Daily Score Retention:</strong> Only your highest valid score on each calendar day contributes toward your 7-day total score.</li>
-            <li><strong>Prize Distribution:</strong> 1st: 20,000 ETB, 2nd: 10,000 ETB, 3rd: 5,000 ETB, 4th–8th: 1,000 ETB each. Distributed via Ethio Telecom Shortcode 9898 / TeleBirr.</li>
+            <li><strong>Prize Distribution:</strong> 1st: 20,000 ETB, 2nd: 10,000 ETB, 3rd: 5,000 ETB, 4th–8th: 1,000 ETB each. Distributed via Ethio Telecom Shortcode 7198 / TeleBirr.</li>
             <li><strong>Privacy Protected:</strong> All player mobile numbers are masked in strict 091*****890 format across all public standings.</li>
             <li><strong>Physics Anti-Cheat:</strong> Scores are verified through server physics validation with zero artificial score multipliers.</li>
           </ul>

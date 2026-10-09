@@ -2,12 +2,12 @@
  * EthioTelecom Airtime Subscription Management Modal (Phase 2 Specification)
  * 
  * Strict Plans:
- * - DAILY: 5 ETB -> SMS '1' to 977
- * - WEEKLY: 15 ETB -> SMS '2' to 977
- * - MONTHLY: 35 ETB -> SMS '3' to 977
+ * - DAILY: 5 ETB -> SMS '1' to 7198
+ * - WEEKLY: 15 ETB -> SMS '2' to 7198
+ * - MONTHLY: 35 ETB -> SMS '3' to 7198
  * 
  * When user clicks Subscribe:
- * - Open device SMS composer: recipient = 977, body = 1 or 2 or 3
+ * - Open device SMS composer: recipient = 7198, body = 1 or 2 or 3
  * - No automatic SMS, no SMS permissions (no READ_SMS, RECEIVE_SMS, SEND_SMS, WRITE_SMS)
  * - NO unsubscribe buttons in customer interface
  * - On confirmed subscription: Grants 25 one-time initial coins
@@ -93,7 +93,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             EthioTelecom Gaming Pass
           </h3>
           <p className="text-xs text-slate-600 max-w-sm mx-auto mt-0.5">
-            Billed via Airtime SMS to <strong className="text-[#0057A8] font-bold">977</strong>.
+            Billed via Airtime SMS to <strong className="text-[#0057A8] font-bold">7198</strong>.
           </p>
         </div>
 
@@ -196,7 +196,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             <div className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-blue-100 text-xs font-mono">
               <div className="flex-1">
                 <span className="text-slate-500">Recipient: </span>
-                <strong className="text-slate-900 font-bold">977</strong>
+                <strong className="text-slate-900 font-bold">7198</strong>
                 <span className="mx-2 text-slate-300">|</span>
                 <span className="text-slate-500">Message: </span>
                 <strong className="text-[#0057A8] text-base font-black">{currentPlan.smsBody}</strong>
@@ -222,14 +222,14 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </div>
           </div>
 
-          {/* Primary Action Button: Open SMS Composer to 977 with body (1, 2, or 3) */}
+          {/* Primary Action Button: Open SMS Composer to 7198 with body (1, 2, or 3) */}
           <button
             id="subscribe-open-sms-btn"
-            onClick={() => handleOpenSmsComposer(currentPlan.smsRecipient, currentPlan.smsBody, currentPlan.id)}
+            onClick={() => handleOpenSmsComposer('7198', currentPlan.smsBody, currentPlan.id)}
             className="w-full py-3.5 rounded-2xl bg-[#78BE20] hover:bg-[#68a81b] text-white font-black text-sm active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
           >
             <Send className="w-4 h-4" />
-            <span>SEND SMS '{currentPlan.smsBody}' TO 977 ({currentPlan.priceETB} ETB)</span>
+            <span>SEND SMS '{currentPlan.smsBody}' TO 7198 ({currentPlan.priceETB} ETB)</span>
           </button>
 
           {smsTriggered && (
@@ -245,7 +245,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         {/* Regulatory & Safety Footer */}
         <div className="mt-4 pt-3 border-t border-slate-100 text-center text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-[#0057A8]" />
-          <span>Official EthioTelecom VAS Service • Shortcode 977 • Airtime Billed</span>
+          <span>Official EthioTelecom VAS Service • Shortcode 7198 • Airtime Billed</span>
         </div>
       </div>
     </div>

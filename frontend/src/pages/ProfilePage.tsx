@@ -49,7 +49,6 @@ import { PrivacyPage } from './content/PrivacyPage';
 import { EntitlementService } from '../services/entitlementService';
 import { GameCatalog } from '../services/gameCatalog';
 import { catalogGameToDefinition } from '../games/registry';
-import { TournamentService } from '../services/tournamentService';
 
 export type ProfileSubView =
   | null
@@ -131,10 +130,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Real highest valid competitive game score from existing system
   const bestScore = useMemo(() => {
     const scores = Object.values(profile.highScores || {}) as number[];
-    const maxProfileScore = scores.length > 0 ? Math.max(...scores) : 0;
-    const tournamentSummary = TournamentService.getTournamentSummary(profile);
-    const tournamentBest = tournamentSummary.currentUserBestScore || 0;
-    return Math.max(maxProfileScore, tournamentBest);
+    return scores.length > 0 ? Math.max(...scores) : 0;
   }, [profile]);
 
   // Played or unlocked games

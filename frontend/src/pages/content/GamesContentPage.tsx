@@ -47,19 +47,11 @@ export const GamesContentPage: React.FC<GamesContentPageProps> = ({
   onBack,
   showHeader = true,
 }) => {
-  const [filterPeriod, setFilterPeriod] = useState<'all' | 'weekly' | 'monthly'>('all');
   const [expandedGameId, setExpandedGameId] = useState<string | null>(null);
 
   const toggleExpand = (gameId: string) => {
     setExpandedGameId((prev) => (prev === gameId ? null : gameId));
   };
-
-  const allowedGameIds = new Set(games.map((g) => g.id));
-  const filteredGames = TELEPLUS_GAMES_CONTENT.filter((g) => {
-    if (allowedGameIds.size > 0 && !allowedGameIds.has(g.id)) return false;
-    if (filterPeriod === 'all') return true;
-    return g.competitionCycle === filterPeriod;
-  });
 
   const handlePlayClick = (contentGame: GameContentDetails) => {
     if (!onLaunchGame) return;
@@ -90,49 +82,15 @@ export const GamesContentPage: React.FC<GamesContentPageProps> = ({
             )}
             <div className="flex items-center gap-2">
               <Gamepad2 className="w-5 h-5 text-[#8BCB3D] shrink-0" />
-              <h1 className="text-base font-black tracking-tight">Teleplus Games</h1>
+              <h1 className="text-base font-black tracking-tight">GameOn Tele Games</h1>
             </div>
           </div>
         </div>
       )}
 
-      {/* 2. Competition Period Filter */}
-      <div className="grid grid-cols-3 gap-2 p-1 rounded-2xl bg-slate-100 border border-slate-200 mb-4">
-        <button
-          onClick={() => setFilterPeriod('all')}
-          className={`py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
-            filterPeriod === 'all'
-              ? 'bg-[#1688C9] text-white shadow-xs'
-              : 'bg-transparent text-[#17202A] hover:text-[#1688C9]'
-          }`}
-        >
-          All (6)
-        </button>
-        <button
-          onClick={() => setFilterPeriod('weekly')}
-          className={`py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
-            filterPeriod === 'weekly'
-              ? 'bg-[#8BCB3D] text-white shadow-xs'
-              : 'bg-transparent text-[#17202A] hover:text-[#1688C9]'
-          }`}
-        >
-          Weekly (3)
-        </button>
-        <button
-          onClick={() => setFilterPeriod('monthly')}
-          className={`py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
-            filterPeriod === 'monthly'
-              ? 'bg-[#8BCB3D] text-white shadow-xs'
-              : 'bg-transparent text-[#17202A] hover:text-[#1688C9]'
-          }`}
-        >
-          Monthly (3)
-        </button>
-      </div>
-
-      {/* 3. 6 Games Cards with Full Detail */}
+      {/* 2. Game Guide Cards with Full Detail */}
       <div className="space-y-4">
-        {filteredGames.map((game, idx) => {
+        {TELEPLUS_GAMES_CONTENT.map((game, idx) => {
           const isExpanded = expandedGameId === game.id;
           const personalBest = profile?.highScores?.[game.id] || 0;
 
@@ -151,8 +109,8 @@ export const GamesContentPage: React.FC<GamesContentPageProps> = ({
 
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-md bg-blue-50 text-[#1688C9] border border-blue-100">
-                        {game.competitionCycle} Tournament
+                      <span className="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        100% Free
                       </span>
                       <span className="text-[10px] text-slate-500 font-bold">
                         {game.genre}

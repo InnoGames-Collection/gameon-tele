@@ -28,5 +28,5 @@ export const env = cleanEnv(process.env, {
   SP_WEBHOOK_SECRET: str({ default: 'gameon-hmac-webhook-secret-2026' }),
   PORTAL_WEBHOOK_SECRET: str({ default: 'gameon-hmac-webhook-secret-2026' }),
   SP_SERVICE_ID: str({ default: 'srv_gameon_daily' }),
-  SHORTCODE: str({ default: '9898' }),
+  SHORTCODE: str({ default: '7198' }),
 });
