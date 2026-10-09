@@ -19,6 +19,7 @@ export interface PlanDetails {
   unsubscribeBody: string;
   features: string[];
   badge?: string;
+  recommended?: boolean;
 }
 
 export const getSmsUrl = (smsRecipient: string, smsBody: string): string => {
@@ -40,7 +41,7 @@ export const SUBSCRIPTION_PLANS: PlanDetails[] = [
     badge: 'Official',
     features: [
       'Unlimited match plays for 24h across all 8 games',
-      'Color Switch 7-Day Weekly Competition access',
+      'Helix Jump 7-Day Weekly Tournament access',
       'Billed via SMS shortcode 9898 (2 Birr/day)',
     ],
   },

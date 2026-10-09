@@ -2,7 +2,7 @@
  * Core type definitions for TelePlay Ethiopia (EthioTelecom Gaming Portal)
  */
 
-export type NavigationTab = 'home' | 'games' | 'leaderboard' | 'profile';
+export type NavigationTab = 'home' | 'tournament' | 'games' | 'leaderboard' | 'profile';
 
 export type GameCategory = 
   | 'all' 

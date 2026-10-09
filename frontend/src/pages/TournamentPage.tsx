@@ -8,16 +8,20 @@
  * - Real-time countdown timer & cycle indicator
  * - Official TelePlus Cash Prize Structure:
  *   • 1st Place: 20,000 ETB Cash Prize
- *   • 2nd Place: 12,000 ETB Cash Prize
+ *   • 2nd Place: 10,000 ETB Cash Prize
  *   • 3rd Place: 5,000 ETB Cash Prize
- *   • 4th - 10th Place: 1,000 ETB Cash Prize
+ *   • 4th - 8th Place: 1,000 ETB Cash Prize each
  * - Strict Privacy: MSISDNs masked in 091*****890 format, zero player names/emails
  * - Direct instant "PLAY HELIX NOW" CTA launcher
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, GameDefinition } from '../types';
-import { HelixCompetitionService, HELIX_PRIZE_RULES } from '../services/helixCompetitionService';
+import { 
+  HelixCompetitionService, 
+  HELIX_PRIZE_RULES,
+  HelixLeaderboardEntry 
+} from '../services/helixCompetitionService';
 import { GameRegistry } from '../games/registry';
 import { 
   Trophy, 
@@ -25,12 +29,8 @@ import {
   Play, 
   Crown, 
   Medal, 
-  Sparkles, 
   ShieldCheck, 
-  Calendar,
-  Flame,
-  ChevronRight,
-  Info
+  Calendar
 } from 'lucide-react';
 
 interface TournamentPageProps {
@@ -60,9 +60,44 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
     return HelixCompetitionService.getUserScores(profile);
   }, [profile, ticker]);
 
-  const leaderboardEntries = useMemo(() => {
-    return HelixCompetitionService.getLeaderboard(profile);
+  // 3. Live remote competition data & dynamic prize config from PostgreSQL
+  const [remoteLeaderboard, setRemoteLeaderboard] = useState<HelixLeaderboardEntry[]>([]);
+  const [remotePoolEtb, setRemotePoolEtb] = useState<number>(40000);
+  const [remotePrizes, setRemotePrizes] = useState<Record<string, number>>({
+    '1': 20000,
+    '2': 10000,
+    '3': 5000,
+    '4': 1000,
+    '5': 1000,
+    '6': 1000,
+    '7': 1000,
+    '8': 1000,
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    HelixCompetitionService.fetchCurrentCompetition(profile).then((data) => {
+      if (data && isMounted) {
+        if (data.leaderboard && data.leaderboard.length > 0) {
+          setRemoteLeaderboard(data.leaderboard);
+        }
+        if (data.prizeConfig) {
+          setRemotePoolEtb(data.prizeConfig.total_pool_etb || 40000);
+          if (data.prizeConfig.prize_map) {
+            setRemotePrizes(data.prizeConfig.prize_map);
+          }
+        }
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [profile, ticker]);
+
+  const displayLeaderboard = useMemo(() => {
+    if (remoteLeaderboard.length > 0) return remoteLeaderboard;
+    return HelixCompetitionService.getLeaderboard(profile);
+  }, [remoteLeaderboard, profile]);
 
   const maskedPhone = useMemo(() => {
     return HelixCompetitionService.maskMsisdn(profile.phoneNumber);
@@ -87,7 +122,6 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
             1. HELIX 7-DAY COMPETITION HERO BANNER & TIMER
            ========================================================================= */}
         <div className="relative rounded-3xl bg-gradient-to-br from-[#1688C9] via-[#0e6fa7] to-[#07476e] text-white p-4.5 sm:p-6 shadow-md overflow-hidden">
-          {/* Subtle Ambient Light Glows */}
           <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-44 h-44 bg-white/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute left-1/3 bottom-0 w-48 h-24 bg-[#8BCB3D]/25 rounded-full blur-2xl pointer-events-none" />
 
@@ -97,7 +131,7 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
               <div className="flex items-center gap-1.5">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8BCB3D] text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
                   <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                  <span>7-DAY WEEKLY COMPETITION • LIVE</span>
+                  <span>7-DAY WEEKLY TOURNAMENT • LIVE</span>
                 </span>
                 <span className="px-2.5 py-1 rounded-full bg-white/20 text-white text-[10px] font-black uppercase backdrop-blur-xs">
                   Day {competitionPeriod.currentDay} of 7
@@ -113,10 +147,10 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
             {/* Title & Description */}
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight tracking-tight">
-                Helix 7-Day Weekly Competition
+                Helix 7-Day Tournament
               </h1>
               <p className="text-xs sm:text-sm text-sky-100 font-medium mt-1 leading-relaxed max-w-xl">
-                Compete daily in <strong className="text-white font-extrabold">Helix</strong>. Your tournament ranking is calculated from the sum of your daily best scores across this 7-day cycle.
+                Compete daily in <strong className="text-white font-extrabold">Helix Jump</strong>. Your official tournament ranking is calculated from your daily best scores across this rolling 7-day cycle.
               </p>
             </div>
 
@@ -124,11 +158,11 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
             <div className="grid grid-cols-3 gap-2 pt-1 text-center">
               <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-2.5 border border-white/15">
                 <div className="text-[9px] uppercase font-bold text-sky-200">Total Prize Pool</div>
-                <div className="text-xs sm:text-base font-black text-amber-300">47,000 ETB</div>
+                <div className="text-xs sm:text-base font-black text-amber-300">{remotePoolEtb.toLocaleString()} ETB</div>
               </div>
               <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-2.5 border border-white/15">
-                <div className="text-[9px] uppercase font-bold text-sky-200">Active Game</div>
-                <div className="text-xs sm:text-base font-black text-white">Helix</div>
+                <div className="text-[9px] uppercase font-bold text-sky-200">Tournament Game</div>
+                <div className="text-xs sm:text-base font-black text-white">Helix Jump</div>
               </div>
               <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-2.5 border border-white/15">
                 <div className="text-[9px] uppercase font-bold text-sky-200">Current Period</div>
@@ -145,7 +179,7 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
                   className="w-full py-3 px-4 rounded-2xl bg-[#8BCB3D] hover:bg-[#7db737] active:scale-[0.99] text-white font-black text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  <span>PLAY HELIX TO COMPETE NOW</span>
+                  <span>PLAY HELIX TOURNAMENT NOW</span>
                 </button>
               </div>
             )}
@@ -226,7 +260,7 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
         </div>
 
         {/* =========================================================================
-            3. PRIZE DISTRIBUTION TABLE
+            3. PRIZE DISTRIBUTION TABLE (Dynamic 40,000 ETB pool)
            ========================================================================= */}
         <div className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
@@ -236,32 +270,54 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-black uppercase tracking-tight text-[#17202A]">
-                  Weekly Prize Pool
+                  Weekly Prize Pool Allocation
                 </h2>
                 <p className="text-[11px] text-slate-500 font-medium">
-                  Guaranteed rewards distributed at the end of Day 7
+                  Guaranteed official rewards distributed at the end of Day 7
                 </p>
               </div>
             </div>
             <span className="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-black">
-              47,000 ETB
+              {remotePoolEtb.toLocaleString()} ETB
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-            {HELIX_PRIZE_RULES.map((prize) => (
-              <div
-                key={prize.rank}
-                className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center hover:border-amber-300 transition-colors"
-              >
-                <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
-                  {prize.label}
-                </div>
-                <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
-                  {prize.reward}
-                </div>
+            <div className="p-3 rounded-2xl bg-amber-50/50 border border-amber-200 text-center">
+              <div className="text-[10px] font-black uppercase text-amber-800 tracking-wider">
+                1st Place
               </div>
-            ))}
+              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+                {(remotePrizes['1'] || 20000).toLocaleString()} ETB Cash
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+              <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                2nd Place
+              </div>
+              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+                {(remotePrizes['2'] || 10000).toLocaleString()} ETB Cash
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+              <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                3rd Place
+              </div>
+              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+                {(remotePrizes['3'] || 5000).toLocaleString()} ETB Cash
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+              <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                4th – 8th Place
+              </div>
+              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+                {(remotePrizes['4'] || 1000).toLocaleString()} ETB each
+              </div>
+            </div>
           </div>
         </div>
 
@@ -277,7 +333,7 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
               </h3>
             </div>
             <span className="text-[10px] font-bold text-slate-500">
-              Ranked by 7-Day Total
+              Ranked by 7-Day Cumulative Score
             </span>
           </div>
 
@@ -290,7 +346,7 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
 
           {/* Leaderboard Rows */}
           <div className="divide-y divide-slate-100">
-            {leaderboardEntries.slice(0, 10).map((entry) => {
+            {displayLeaderboard.slice(0, 10).map((entry) => {
               const isFirst = entry.rank === 1;
               const isSecond = entry.rank === 2;
               const isThird = entry.rank === 3;
@@ -354,8 +410,9 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
           <ul className="list-disc pl-4 space-y-1 text-[11px] leading-relaxed">
             <li><strong>Continuous 7-Day Cycle:</strong> Each tournament runs for 7 consecutive days starting Monday 00:00 UTC.</li>
             <li><strong>Daily Score Retention:</strong> Only your highest valid score on each calendar day contributes toward your 7-day total score.</li>
+            <li><strong>Prize Distribution:</strong> 1st: 20,000 ETB, 2nd: 10,000 ETB, 3rd: 5,000 ETB, 4th–8th: 1,000 ETB each. Distributed via Ethio Telecom Shortcode 9898 / TeleBirr.</li>
             <li><strong>Privacy Protected:</strong> All player mobile numbers are masked in strict 091*****890 format across all public standings.</li>
-            <li><strong>Skill-Based Play:</strong> Scores are verified through client physics validation with zero artificial score multipliers.</li>
+            <li><strong>Physics Anti-Cheat:</strong> Scores are verified through server physics validation with zero artificial score multipliers.</li>
           </ul>
         </div>
 

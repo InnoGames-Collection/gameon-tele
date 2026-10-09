@@ -4,7 +4,7 @@
  * statistics, settings, leaderboard, and in-game navigation.
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { GameState, HelixJumpSaveData } from './types';
 import { STORAGE_KEY } from './constants';
 import { HELIX_LEVELS, generateProceduralLevelFromSeed } from './levels';

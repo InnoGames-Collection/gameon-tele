@@ -56,7 +56,9 @@ async function main() {
   await fastify.register(authRoutes, { prefix: '/api/auth' });
   await fastify.register(helixRoutes, { prefix: '/api/helix' });
   await fastify.register(competitionRoutes, { prefix: '/api/competition' });
+  await fastify.register(competitionRoutes, { prefix: '/api' });
   await fastify.register(webhookRoutes, { prefix: '/api/webhooks' });
+  await fastify.register(webhookRoutes, { prefix: '/api/v1/webhooks' });
   await fastify.register(adminRoutes, { prefix: '/api' });
 
   // Start 7-Day Competition Cycle Settlement Worker

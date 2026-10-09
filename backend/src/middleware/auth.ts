@@ -32,6 +32,7 @@ export async function verifyAuth(req: FastifyRequest, reply: FastifyReply) {
 
 export async function verifyAdmin(req: FastifyRequest, reply: FastifyReply) {
   await verifyAuth(req, reply);
+  if (reply.sent) return;
   if (!req.user || !['SUPER_ADMIN', 'OPERATOR', 'AUDITOR'].includes(req.user.role || '')) {
     reply.status(403).send({ error: 'Forbidden: Insufficient privileges' });
     return;

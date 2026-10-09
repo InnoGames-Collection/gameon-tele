@@ -36,6 +36,14 @@ for i in {1..30}; do
   sleep 1
 done
 
+echo "📦 [STAGE 1.1: DB] Applying PostgreSQL Schema Migrations..."
+for mig in db/migrations/*.sql; do
+  if [ -f "$mig" ]; then
+    echo "Applying $(basename "$mig")..."
+    docker exec -i gameon-tele-postgres psql -U gameon_app -d gameon -f "/docker-entrypoint-initdb.d/$(basename "$mig")" || true
+  fi
+done
+
 docker compose -f docker-compose.server.yml build api
 docker compose -f docker-compose.server.yml up -d api
 

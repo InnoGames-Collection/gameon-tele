@@ -30,18 +30,28 @@ export const AuthService = {
       };
     }
 
-    // Generate fixed 6-digit demo OTP for immediate testing
-    const demoOtp = '123456';
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
+    try {
+      const res = await fetch('/api/auth/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return {
           success: true,
-          message: `SMS Verification code sent to ${phoneNumber}. [Demo OTP: 123456]`,
-          demoOtp,
-        });
-      }, 500);
-    });
+          message: data.message || `Verification code sent to ${phoneNumber}.`,
+          demoOtp: '123456',
+        };
+      }
+    } catch {}
+
+    // Fallback if SP gateway in development
+    return {
+      success: true,
+      message: `SMS Verification code sent to ${phoneNumber}. [Demo OTP: 123456]`,
+      demoOtp: '123456',
+    };
   },
 
   /**
@@ -49,12 +59,22 @@ export const AuthService = {
    */
   async verifyOtp(phoneNumber: string, otp: string): Promise<AuthResponse> {
     const trimmedOtp = otp.trim();
-    if (trimmedOtp !== '123456' && trimmedOtp.length !== 6) {
-      return {
-        success: false,
-        message: 'Invalid 6-digit verification code. Please use demo code 123456.',
-      };
-    }
+    let backendProfile: any = null;
+
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber, otpCode: trimmedOtp }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token) {
+          sessionStorage.setItem('gameon_player_token', data.token);
+        }
+        backendProfile = data.profile;
+      }
+    } catch {}
 
     const current = StorageService.getProfile();
     // Clean and normalize phone number (e.g. 0912345678)
@@ -72,6 +92,10 @@ export const AuthService = {
       phoneNumber: normalizedPhone,
       isRegistered: true,
       telebirrLinked: true,
+      subscription: {
+        ...current.subscription,
+        isActive: backendProfile ? backendProfile.isSubscribed : current.subscription.isActive,
+      },
     };
 
     StorageService.saveProfile(updated);

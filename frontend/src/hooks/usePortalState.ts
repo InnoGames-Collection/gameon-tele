@@ -361,8 +361,8 @@ export function usePortalState() {
   // Subscribe to VIP Pass
   const handleSubscribe = useCallback(async (plan: SubscriptionPlan) => {
     const res = await SubscriptionService.subscribe(plan);
-    if (res.success && res.profile) {
-      setProfile(res.profile);
+    if (res.success && res.updatedProfile) {
+      setProfile(res.updatedProfile);
       setIsSubscriptionModalOpen(false);
       showToast('success', 'VIP Activated', res.message);
     } else {

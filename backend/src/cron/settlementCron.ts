@@ -5,17 +5,15 @@ import { cache } from '../config/cache.js';
 import { SpService } from '../services/spService.js';
 import { maskMsisdn } from '../services/helixEngine.js';
 
-const PRIZE_STRUCTURE: Record<number, number> = {
+const DEFAULT_PRIZE_STRUCTURE: Record<number, number> = {
   1: 20000,
-  2: 12000,
+  2: 10000,
   3: 5000,
   4: 1000,
   5: 1000,
   6: 1000,
   7: 1000,
   8: 1000,
-  9: 1000,
-  10: 1000,
 };
 
 const RELEASE_LOCK_LUA = `
@@ -77,13 +75,18 @@ export const CycleSettlementEngine = {
         [cycle.competition_id]
       );
 
+      // Fetch dynamic prize configuration
+      const prizeConfigRes = await client.query(
+        `SELECT total_pool_etb, prize_map FROM prize_configurations WHERE id = 'default_weekly' LIMIT 1`
+      );
+      const prizeMap = prizeConfigRes.rows[0]?.prize_map || DEFAULT_PRIZE_STRUCTURE;
       const winners = topPlayersRes.rows;
 
       // 4. Record finalized rankings into leaderboard_snapshots & queue airtime payouts
       for (let i = 0; i < winners.length; i++) {
         const rank = i + 1;
         const player = winners[i];
-        const prize = PRIZE_STRUCTURE[rank] || 0;
+        const prize = Number(prizeMap[rank] || prizeMap[String(rank)] || 0);
         const txId = `tx_payout_${cycle.competition_id}_r${rank}_${Date.now()}`;
 
         // Insert permanent snapshot

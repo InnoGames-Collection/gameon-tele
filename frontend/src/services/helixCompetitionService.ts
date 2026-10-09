@@ -48,9 +48,9 @@ export interface TelemetryPoint {
 
 export const HELIX_PRIZE_RULES: CompetitionPrize[] = [
   { rank: 1, label: '1st Place', reward: '20,000 ETB Cash Prize' },
-  { rank: 2, label: '2nd Place', reward: '12,000 ETB Cash Prize' },
+  { rank: 2, label: '2nd Place', reward: '10,000 ETB Cash Prize' },
   { rank: 3, label: '3rd Place', reward: '5,000 ETB Cash Prize' },
-  { rank: 4, label: '4th - 10th Place', reward: '1,000 ETB Cash Prize' },
+  { rank: 4, label: '4th - 8th Place', reward: '1,000 ETB Cash Prize' },
 ];
 
 const STORAGE_KEYS = {
@@ -200,6 +200,45 @@ export const HelixCompetitionService = {
     }
 
     return this.getLeaderboard(profile);
+  },
+
+  /**
+   * Fetches active cycle metadata, dynamic prize pool and top contenders from PostgreSQL.
+   */
+  async fetchCurrentCompetition(profile?: UserProfile): Promise<{
+    cycle: any;
+    prizeConfig: { total_pool_etb: number; prize_map: Record<string, number> };
+    leaderboard: HelixLeaderboardEntry[];
+  } | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/competition/current`);
+      if (res.ok) {
+        const data = await res.json();
+        const maskedUserPhone = profile?.phoneNumber ? this.maskMsisdn(profile.phoneNumber) : null;
+        const mappedLb: HelixLeaderboardEntry[] = (data.leaderboard || []).map((item: any, idx: number) => ({
+          rank: item.rank || idx + 1,
+          playerId: `player_${idx + 1}`,
+          maskedMsisdn: item.masked_msisdn || item.maskedMsisdn,
+          sevenDayScore: item.seven_day_score || item.score || 0,
+          dailyScores: {},
+          lastUpdated: new Date().toISOString(),
+          isCurrentUser: Boolean(
+            maskedUserPhone && (item.masked_msisdn === maskedUserPhone || item.maskedMsisdn === maskedUserPhone)
+          ),
+        }));
+        return {
+          cycle: data.cycle,
+          prizeConfig: data.prizeConfig || {
+            total_pool_etb: 40000,
+            prize_map: { '1': 20000, '2': 10000, '3': 5000, '4': 1000, '5': 1000, '6': 1000, '7': 1000, '8': 1000 },
+          },
+          leaderboard: mappedLb,
+        };
+      }
+    } catch (e) {
+      console.warn('[HelixCompetitionService] Failed to load remote competition:', e);
+    }
+    return null;
   },
 
   /**

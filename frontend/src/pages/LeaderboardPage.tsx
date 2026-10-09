@@ -36,9 +36,24 @@ export const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
     return HelixCompetitionService.getUserScores(profile);
   }, [profile]);
 
-  const helixLeaderboard = useMemo(() => {
-    return HelixCompetitionService.getLeaderboard(profile);
+  const [remoteEntries, setRemoteEntries] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    HelixCompetitionService.fetchCurrentCompetition(profile).then((data) => {
+      if (data && data.leaderboard && data.leaderboard.length > 0 && isMounted) {
+        setRemoteEntries(data.leaderboard);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [profile]);
+
+  const helixLeaderboard = useMemo(() => {
+    if (remoteEntries.length > 0) return remoteEntries;
+    return HelixCompetitionService.getLeaderboard(profile);
+  }, [remoteEntries, profile]);
 
   const maskedUserPhone = useMemo(() => {
     return HelixCompetitionService.maskMsisdn(profile.phoneNumber);

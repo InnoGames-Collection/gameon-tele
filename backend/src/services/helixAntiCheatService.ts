@@ -353,10 +353,10 @@ export const HelixAntiCheatService = {
       await client.query(
         `INSERT INTO helix_runs (
           id, competition_id, player_msisdn, run_token, floors_cleared, 
-          final_score, duration_seconds, verified, fraud_flag, 
-          started_at, completed_at, tower_seed, telemetry_data, 
-          telemetry_verified, fraud_reason, client_duration_ms, server_duration_ms
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), $11, $12, $13, $14, $15, $16)`,
+          final_score, duration_seconds, fraud_flag, started_at, completed_at, 
+          tower_seed, telemetry_data, telemetry_verified, fraud_reason, 
+          client_duration_ms, server_duration_ms
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10, $11, $12, $13, $14, $15)`,
         [
           runId,
           competitionId,
@@ -365,7 +365,6 @@ export const HelixAntiCheatService = {
           params.floorsCleared,
           params.finalScore,
           params.durationSeconds,
-          verified,
           fraudFlag,
           session ? new Date(session.startedAt) : new Date(now - clientDurationMs),
           session?.towerSeed || null,
