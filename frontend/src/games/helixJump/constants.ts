@@ -20,8 +20,8 @@ export const HELIX_PHYSICS = {
   BOUNCE_IMPULSE: 11.2,
   TERMINAL_VELOCITY: -42.0,
   COMBO_SMASH_SPEED: -22.0,
-  ROTATION_SENSITIVITY: 0.0058, // radians per pixel dragged
-  ROTATION_DAMPING: 0.92,
+  ROTATION_SENSITIVITY: 0.016, // radians per pixel dragged for fluid, natural responsiveness
+  ROTATION_DAMPING: 0.94,
 };
 
 export const STORAGE_KEY = 'teleplay_helix_jump_savedata_v1';

@@ -449,10 +449,14 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
       });
     }
 
-    // 6. Pointer Drag Input for Continuous Smooth Rotation
+    // 6. Fluid Pointer, Touch & Keyboard Controls for Continuous Smooth Rotation
     const onPointerDown = (e: PointerEvent) => {
       if (isPausedRef.current || state.gameOverTriggered || state.levelCompleteTriggered) return;
-      container.setPointerCapture(e.pointerId);
+      try {
+        container.setPointerCapture(e.pointerId);
+      } catch {
+        // fallback
+      }
       dragRef.current.isDragging = true;
       dragRef.current.lastX = e.clientX;
       dragRef.current.lastTime = performance.now();
@@ -465,10 +469,9 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
       const deltaX = e.clientX - dragRef.current.lastX;
       const dt = Math.max(1, now - dragRef.current.lastTime);
 
-      // Rotate helix structure: drag left -> CCW (rotate left), drag right -> CW (rotate right)
       const rotDelta = deltaX * HELIX_PHYSICS.ROTATION_SENSITIVITY;
       state.helixAngle += rotDelta;
-      state.helixAngularVelocity = (rotDelta / dt) * 16; // approximate per-frame velocity
+      state.helixAngularVelocity = (rotDelta / dt) * 16;
 
       dragRef.current.lastX = e.clientX;
       dragRef.current.lastTime = now;
@@ -485,10 +488,63 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
       }
     };
 
+    // Dedicated Touch Event listeners for flawless mobile browser responsiveness
+    const onTouchStart = (e: TouchEvent) => {
+      if (isPausedRef.current || state.gameOverTriggered || state.levelCompleteTriggered) return;
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        dragRef.current.isDragging = true;
+        dragRef.current.lastX = touch.clientX;
+        dragRef.current.lastTime = performance.now();
+        state.helixAngularVelocity = 0;
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!dragRef.current.isDragging || isPausedRef.current || e.touches.length === 0) return;
+      if (e.cancelable) e.preventDefault();
+      const touch = e.touches[0];
+      const now = performance.now();
+      const deltaX = touch.clientX - dragRef.current.lastX;
+      const dt = Math.max(1, now - dragRef.current.lastTime);
+
+      const rotDelta = deltaX * HELIX_PHYSICS.ROTATION_SENSITIVITY;
+      state.helixAngle += rotDelta;
+      state.helixAngularVelocity = (rotDelta / dt) * 16;
+
+      dragRef.current.lastX = touch.clientX;
+      dragRef.current.lastTime = now;
+    };
+
+    const onTouchEnd = () => {
+      dragRef.current.isDragging = false;
+    };
+
+    // Keyboard support for desktop / laptop arrow keys & A/D
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (isPausedRef.current || state.gameOverTriggered || state.levelCompleteTriggered) return;
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        state.helixAngle -= 0.15;
+        state.helixAngularVelocity = -0.05;
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        state.helixAngle += 0.15;
+        state.helixAngularVelocity = 0.05;
+      }
+    };
+
+    renderer.domElement.style.touchAction = 'none';
+
     container.addEventListener('pointerdown', onPointerDown);
-    container.addEventListener('pointermove', onPointerMove);
-    container.addEventListener('pointerup', onPointerUp);
-    container.addEventListener('pointercancel', onPointerUp);
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerup', onPointerUp, { passive: true });
+    window.addEventListener('pointercancel', onPointerUp, { passive: true });
+
+    container.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    window.addEventListener('keydown', onKeyDown);
 
     // 7. Physics Simulation & Animation Loop (60 FPS)
     let animationFrameId: number;
@@ -553,6 +609,7 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
 
             for (let rIdx = 0; rIdx < level.rings.length; rIdx++) {
               if (state.ringsDestroyed.has(rIdx)) continue;
+              if (rIdx <= state.lastRingPassedIndex) continue; // CRITICAL: Skip any platform the ball has already dropped through!
               const ring = level.rings[rIdx];
               const platformTop = ring.y + HELIX_DIMENSIONS.PLATFORM_THICKNESS;
               const platformBottom = ring.y;
@@ -930,9 +987,16 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
       container.removeEventListener('pointerdown', onPointerDown);
-      container.removeEventListener('pointermove', onPointerMove);
-      container.removeEventListener('pointerup', onPointerUp);
-      container.removeEventListener('pointercancel', onPointerUp);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+
+      container.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
+
+      window.removeEventListener('keydown', onKeyDown);
 
       // Mobile WebGL Optimization: Comprehensive GPU VRAM disposal
       scene.traverse((obj) => {

@@ -151,7 +151,6 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
       setCurrentLevelId(levelId);
       setScore(0);
       setProgressPercent(0);
-      setRenderKey((k) => k + 1);
       updateAndPersistSaveData((prev) => ({
         ...prev,
         totalGames: (prev.totalGames || 0) + 1,
@@ -160,15 +159,18 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
       const effectiveProfile = profile || StorageService.getProfile();
       const phone = effectiveProfile?.phoneNumber || '0911428890';
 
+      let seed: string | null = null;
       try {
         const session = await HelixCompetitionService.startRunSession(phone);
         activeSessionRef.current = session;
-        setActiveSeed(session.towerSeed);
+        seed = session?.towerSeed || null;
       } catch {
         activeSessionRef.current = null;
-        setActiveSeed(null);
+        seed = null;
       }
 
+      setActiveSeed(seed);
+      setRenderKey((k) => k + 1);
       setGameState('PLAYING');
     },
     [profile, updateAndPersistSaveData]

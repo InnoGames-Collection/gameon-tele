@@ -100,11 +100,11 @@ function buildAll40Levels(): LevelDefinition[] {
       const y = -r * spacing;
 
       if (r === 0) {
-        // First ring: ball spawns here. Guaranteed safe landing with clear gap.
-        const gapS = [0, 1]; // 60-degree gap
-        const dangerS = [4, 5]; // danger placed safely away from spawn
+        // First ring: ball spawns here. Guaranteed safe landing with clear gap adjacent to ball.
+        const gapS = [10, 11]; // 60-degree gap visibly adjacent to spawn
+        const dangerS = [3, 4]; // danger placed safely opposite from spawn
         rings.push(createRing(y, gapS, dangerS));
-        currentGapPos = 1;
+        currentGapPos = 11;
       } else if (r === ringCount - 1) {
         // Final checkered completion platform
         rings.push(createRing(y, [], [], true));
@@ -218,8 +218,8 @@ export function generateProceduralLevelFromSeed(seed: string, lvl: number = 1): 
     const y = -r * spacing;
 
     if (r === 0) {
-      rings.push(createRing(y, [0, 1], [4, 5]));
-      currentGapPos = 1;
+      rings.push(createRing(y, [10, 11], [3, 4]));
+      currentGapPos = 11;
     } else if (r === ringCount - 1) {
       rings.push(createRing(y, [], [], true));
     } else {

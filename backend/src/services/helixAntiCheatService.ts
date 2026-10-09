@@ -77,11 +77,11 @@ export const HelixAntiCheatService = {
         // Floor 0: Safe spawn
         floors.push({
           floorIndex: 0,
-          gapSectors: [0, 1],
-          dangerSectors: [4, 5],
+          gapSectors: [10, 11],
+          dangerSectors: [3, 4],
           isFinish: false,
         });
-        currentGapPos = 1;
+        currentGapPos = 11;
       } else if (floor === floorCount - 1) {
         // Final finish floor
         floors.push({
