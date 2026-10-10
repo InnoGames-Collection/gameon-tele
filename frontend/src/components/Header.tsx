@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, Coins } from 'lucide-react';
 import { GameSwiperLogo } from './GameOnTeleLogo';
 
 interface HeaderProps {
@@ -20,6 +20,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onOpenMenu,
   profile,
+  onOpenBuyCoins,
 }) => {
   return (
     <header className="sticky top-0 z-40 w-full bg-[#0B2234]/95 backdrop-blur-md border-b border-[#244558] shadow-[0_4px_16px_rgba(7,24,39,0.5)] select-none">
@@ -51,9 +52,28 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* 2. TOP RIGHT: Compact User Profile Status Indicator */}
+        {/* 2. TOP RIGHT: User Balance & Status Indicator */}
         {profile && (
           <div className="flex items-center gap-2 shrink-0">
+            {/* Coins Balance Pill */}
+            {onOpenBuyCoins && (
+              <button
+                type="button"
+                id="header-coins-btn"
+                onClick={onOpenBuyCoins}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#102C40] hover:bg-[#15374A] border border-[#244558] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs"
+                title="Tap to add coins"
+              >
+                <Coins className="w-3.5 h-3.5 text-[#F7C85B]" />
+                <span className="font-mono text-xs font-bold text-[#F7C85B]">
+                  {(profile.coinsBalance ?? 1250).toLocaleString()}
+                </span>
+                <span className="w-3.5 h-3.5 rounded-full bg-[#00BFA6] text-[#071827] flex items-center justify-center text-[10px] font-black leading-none ml-0.5">
+                  +
+                </span>
+              </button>
+            )}
+
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#102C40] border border-[#244558] text-xs font-bold text-[#F5FAFC] shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-[#63F5C8] shadow-[0_0_6px_#63F5C8] shrink-0" />
               <span className="truncate max-w-[85px] xs:max-w-[120px] font-mono text-[11px] font-semibold text-[#A9C0CE]">
@@ -67,3 +87,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+
