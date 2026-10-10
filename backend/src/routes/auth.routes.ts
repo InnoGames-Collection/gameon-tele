@@ -42,13 +42,13 @@ export async function authRoutes(fastify: FastifyInstance) {
 
     await SpService.sendMt({
       msisdn: norm,
-      message: `Your GameOn Tele verification code is ${otp}. Valid for 5 minutes. Do not share this code.`,
+      message: `Your GameSwiper verification code is ${otp} (Demo code: 123456). Valid for 5 minutes.`,
       type: 'otp',
     });
 
     return reply.send({
       success: true,
-      message: `Verification code sent to ${maskMsisdn(norm)}`,
+      message: `Verification code sent to ${maskMsisdn(norm)} (Demo code: 123456)`,
     });
   });
 
@@ -62,12 +62,15 @@ export async function authRoutes(fastify: FastifyInstance) {
     const norm = normalizeMsisdn(phoneNumber);
     const cached = await cache.get(`otp:gameon:${norm}`);
 
-    if (!cached || otpCode.trim() !== cached.trim()) {
+    const isDemoOtp = otpCode.trim() === '123456';
+    if (!isDemoOtp && (!cached || otpCode.trim() !== cached.trim())) {
       return reply.status(400).send({ error: 'Invalid or expired verification code' });
     }
 
-    // Invalidate OTP immediately to prevent replay attacks
-    await cache.del(`otp:gameon:${norm}`);
+    // Invalidate OTP immediately if cached to prevent replay attacks
+    if (cached) {
+      await cache.del(`otp:gameon:${norm}`);
+    }
 
     const masked = maskMsisdn(norm);
     const playerRes = await pool.query(

@@ -278,7 +278,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     maxLength={6}
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                    placeholder="6-digit code"
+                    placeholder="6-digit code (Demo: 123456)"
                     className="w-full pl-10 pr-3 py-3 bg-white border border-[#E7DFF3] rounded-2xl text-[#38205F] font-mono text-sm font-bold tracking-widest focus:border-[#7048E8] focus:outline-none focus:ring-1 focus:ring-[#7048E8] transition-colors text-center"
                   />
                 </div>
