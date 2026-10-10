@@ -19,23 +19,24 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenMenu,
+  profile,
 }) => {
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#E7DFF3] shadow-[0_2px_12px_rgba(56,32,95,0.04)] select-none">
-      <div className="max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 min-h-[58px]">
+      <div className="max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-between gap-2 h-14">
         
-        {/* 1. TOP LEFT: Three-Line Menu Button & Brand Header */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* 1. TOP LEFT: Hamburger Menu Button & Brand Header */}
+        <div className="flex items-center gap-2 shrink-0">
           {onOpenMenu && (
             <button
               id="header-main-menu-btn"
               type="button"
               onClick={onOpenMenu}
               aria-label="Open GameSwiper Menu"
-              className="w-10 h-10 rounded-xl border border-[#E7DFF3] bg-white text-[#38205F] hover:bg-[#F1ECFF] hover:text-[#7048E8] active:scale-95 transition-all flex items-center justify-center cursor-pointer shadow-xs"
+              className="w-9 h-9 rounded-xl border border-[#E7DFF3] bg-white text-[#38205F] hover:bg-[#F1ECFF] hover:text-[#7048E8] active:scale-95 transition-all flex items-center justify-center cursor-pointer shadow-xs"
               title="Menu"
             >
-              <Menu className="w-5 h-5 stroke-[2.2]" />
+              <Menu className="w-4.5 h-4.5 stroke-[2.2]" />
             </button>
           )}
 
@@ -49,6 +50,18 @@ export const Header: React.FC<HeaderProps> = ({
             <GameSwiperLogo size="sm" />
           </div>
         </div>
+
+        {/* 2. TOP RIGHT: Compact User Profile Status Indicator */}
+        {profile && (
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F1ECFF] border border-[#E7DFF3] text-xs font-bold text-[#38205F] shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#C6F36B] shadow-[0_0_6px_#C6F36B] shrink-0" />
+              <span className="truncate max-w-[85px] xs:max-w-[120px] font-mono text-[11px] font-semibold text-[#45365F]">
+                {profile.phoneNumber ? profile.phoneNumber.replace(/^\+?251/, '') : 'VIP Player'}
+              </span>
+            </div>
+          </div>
+        )}
 
       </div>
     </header>
