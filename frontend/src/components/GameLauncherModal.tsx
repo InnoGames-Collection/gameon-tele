@@ -571,8 +571,8 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
       </div>
 
       {/* Footer Branding */}
-      <div className="px-4 py-2 bg-[#1688C9] text-center text-xs text-white/90 border-t border-blue-600">
-        GameON Tele • Official Mobile Gaming Portal
+      <div className="px-4 py-2 bg-[#7048E8] text-center text-xs text-white/90 border-t border-[#38205F]">
+        GameSwiper • Official Mobile Gaming Portal
       </div>
     </div>
   );

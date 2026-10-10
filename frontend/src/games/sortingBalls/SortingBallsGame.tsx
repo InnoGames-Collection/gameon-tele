@@ -226,6 +226,27 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
     }
   }, []);
 
+  // Guard against rapid duplicate taps
+  const isStartingRef = useRef(false);
+
+  /**
+   * Direct Single-Tap Game Launcher
+   * Ensures puzzle level is fully loaded and 3D tubes are populated
+   * before transitioning directly into PLAYING state.
+   */
+  const handleStartGame = useCallback((targetLevelNumber?: number) => {
+    if (isStartingRef.current) return;
+    isStartingRef.current = true;
+    setTimeout(() => {
+      isStartingRef.current = false;
+    }, 400);
+
+    const targetLvl = targetLevelNumber || currentLevelNumber || progress.unlockedLevel || 1;
+    sortingAudio.playButton();
+    loadLevel(targetLvl);
+    setGameState('PLAYING');
+  }, [currentLevelNumber, progress.unlockedLevel, loadLevel]);
+
   // Mount load initial tubes
   useEffect(() => {
     loadLevel(progress.unlockedLevel || 1);
@@ -247,6 +268,13 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
       renderer3DRef.current = null;
     };
   }, []);
+
+  // Reactive sync to 3D renderer whenever tubes or selection update
+  useEffect(() => {
+    if (renderer3DRef.current && currentTubes.length > 0) {
+      renderer3DRef.current.setLevelState(currentTubes, selectedTubeIndex, selectedGroupCount);
+    }
+  }, [currentTubes, selectedTubeIndex, selectedGroupCount]);
 
   // Fullscreen toggle
   const toggleFullscreen = () => {
@@ -925,7 +953,7 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={handleReset}
-                className="w-10 h-10 rounded-xl bg-slate-900/70 hover:bg-slate-800/80 active:scale-95 text-slate-300 hover:text-white flex items-center justify-center border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
+                className="w-10 h-10 rounded-full bg-slate-900/70 hover:bg-slate-800/80 active:scale-95 text-slate-300 hover:text-white flex items-center justify-center border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
                 aria-label="Restart Level"
                 title="Restart Level"
               >
@@ -933,11 +961,10 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
               </button>
             </div>
 
-            {/* Center: Moves & Par Pill */}
-            <button
-              onClick={() => setGameState('LEVEL_SELECT')}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900/70 border border-white/10 hover:border-cyan-500/30 backdrop-blur-md shadow-sm active:scale-98 transition-all cursor-pointer"
-              title="Choose Level"
+            {/* Center: Moves & Par Status Pill (Informational indicator, not a screen switcher) */}
+            <div
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/70 border border-white/10 backdrop-blur-md shadow-sm select-none"
+              title="Current Moves and Par Target"
             >
               <div className="flex items-center gap-2 text-xs font-mono font-medium">
                 <span className="text-slate-400">
@@ -951,7 +978,7 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
                   Par: {currentConfig.optimalMoves}
                 </span>
               </div>
-            </button>
+            </div>
 
             {/* Right: Hint, Undo & Add Extra Tube */}
             <div className="flex items-center gap-2">
@@ -1046,10 +1073,7 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
       {gameState === 'MENU' && (
         <SortingMenuModal
           progress={progress}
-          onPlay={() => {
-            sortingAudio.playButton();
-            setGameState('PLAYING');
-          }}
+          onPlay={() => handleStartGame()}
           onOpenLevels={() => {
             sortingAudio.playButton();
             setGameState('LEVEL_SELECT');
@@ -1140,13 +1164,11 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
          =================================================================== */}
       <SortingLevelSelectModal
         isOpen={gameState === 'LEVEL_SELECT'}
-        onClose={() => setGameState(gameState === 'LEVEL_SELECT' ? 'PLAYING' : 'MENU')}
+        onClose={() => setGameState('MENU')}
         progress={progress}
         currentLevel={currentLevelNumber}
         onSelectLevel={(lvl) => {
-          sortingAudio.playButton();
-          loadLevel(lvl);
-          setGameState('PLAYING');
+          handleStartGame(lvl);
         }}
       />
 
@@ -1161,18 +1183,14 @@ export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
         cumulativeTotalScore={progress.totalCumulativeScore}
         isNewBest={isNewBestScore}
         onNextLevel={() => {
-          sortingAudio.playButton();
           if (currentLevelNumber < TOTAL_SORTING_LEVELS) {
-            loadLevel(currentLevelNumber + 1);
-            setGameState('PLAYING');
+            handleStartGame(currentLevelNumber + 1);
           } else {
             setGameState('LEADERBOARD');
           }
         }}
         onReplay={() => {
-          sortingAudio.playButton();
-          loadLevel(currentLevelNumber);
-          setGameState('PLAYING');
+          handleStartGame(currentLevelNumber);
         }}
         onGoToMenu={() => {
           sortingAudio.playButton();

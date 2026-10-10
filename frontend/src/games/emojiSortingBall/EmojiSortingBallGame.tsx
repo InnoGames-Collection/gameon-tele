@@ -222,6 +222,27 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
     }
   }, []);
 
+  // Guard against rapid duplicate taps
+  const isStartingRef = useRef(false);
+
+  /**
+   * Direct Single-Tap Game Launcher
+   * Ensures puzzle level is fully loaded and 3D tubes are populated
+   * before transitioning directly into PLAYING state.
+   */
+  const handleStartGame = useCallback((targetLevelNumber?: number) => {
+    if (isStartingRef.current) return;
+    isStartingRef.current = true;
+    setTimeout(() => {
+      isStartingRef.current = false;
+    }, 400);
+
+    const targetLvl = targetLevelNumber || currentLevelNumber || progress.unlockedLevel || 1;
+    emojiSortingAudio.playButton();
+    loadLevel(targetLvl);
+    setGameState('PLAYING');
+  }, [currentLevelNumber, progress.unlockedLevel, loadLevel]);
+
   // Mount load initial tubes
   useEffect(() => {
     loadLevel(progress.unlockedLevel || 1);
@@ -243,6 +264,13 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
       renderer3DRef.current = null;
     };
   }, []);
+
+  // Reactive sync to 3D renderer whenever tubes or selection update
+  useEffect(() => {
+    if (renderer3DRef.current && currentTubes.length > 0) {
+      renderer3DRef.current.setLevelState(currentTubes, selectedTubeIndex, selectedGroupCount);
+    }
+  }, [currentTubes, selectedTubeIndex, selectedGroupCount]);
 
   // Fullscreen toggle
   const toggleFullscreen = () => {
@@ -901,7 +929,7 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={handleReset}
-                className="w-10 h-10 rounded-xl bg-white/90 hover:bg-white active:scale-95 text-slate-700 hover:text-slate-900 flex items-center justify-center border border-purple-100 hover:border-violet-300 transition-all cursor-pointer shadow-xs"
+                className="w-10 h-10 rounded-full bg-white/90 hover:bg-white active:scale-95 text-slate-700 hover:text-slate-900 flex items-center justify-center border border-purple-100 hover:border-violet-300 transition-all cursor-pointer shadow-xs"
                 aria-label="Restart Level"
                 title="Restart Level"
               >
@@ -909,11 +937,10 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
               </button>
             </div>
 
-            {/* Center: Moves & Par Pill */}
-            <button
-              onClick={() => setGameState('LEVEL_SELECT')}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/90 border border-purple-100 hover:border-violet-300 backdrop-blur-md shadow-xs active:scale-98 transition-all cursor-pointer"
-              title="Choose Level"
+            {/* Center: Moves & Par Status Pill (Informational indicator, not a screen switcher) */}
+            <div
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-purple-100 backdrop-blur-md shadow-xs select-none"
+              title="Current Moves and Par Target"
             >
               <div className="flex items-center gap-2 text-xs font-mono font-medium">
                 <span className="text-slate-500">
@@ -927,7 +954,7 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
                   Par: {currentConfig.optimalMoves}
                 </span>
               </div>
-            </button>
+            </div>
 
             {/* Right: Hint, Undo & Add Extra Tube */}
             <div className="flex items-center gap-2">
@@ -1022,10 +1049,7 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
       {gameState === 'MENU' && (
         <EmojiSortingMenuModal
           progress={progress}
-          onPlay={() => {
-            emojiSortingAudio.playButton();
-            setGameState('PLAYING');
-          }}
+          onPlay={() => handleStartGame()}
           onOpenLevels={() => {
             emojiSortingAudio.playButton();
             setGameState('LEVEL_SELECT');
@@ -1116,13 +1140,11 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
          =================================================================== */}
       <EmojiSortingLevelSelectModal
         isOpen={gameState === 'LEVEL_SELECT'}
-        onClose={() => setGameState(gameState === 'LEVEL_SELECT' ? 'PLAYING' : 'MENU')}
+        onClose={() => setGameState('MENU')}
         progress={progress}
         currentLevel={currentLevelNumber}
         onSelectLevel={(lvl) => {
-          emojiSortingAudio.playButton();
-          loadLevel(lvl);
-          setGameState('PLAYING');
+          handleStartGame(lvl);
         }}
       />
 
@@ -1137,18 +1159,14 @@ export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
         cumulativeTotalScore={progress.totalCumulativeScore}
         isNewBest={isNewBestScore}
         onNextLevel={() => {
-          emojiSortingAudio.playButton();
           if (currentLevelNumber < TOTAL_EMOJI_SORTING_LEVELS) {
-            loadLevel(currentLevelNumber + 1);
-            setGameState('PLAYING');
+            handleStartGame(currentLevelNumber + 1);
           } else {
             setGameState('LEADERBOARD');
           }
         }}
         onReplay={() => {
-          emojiSortingAudio.playButton();
-          loadLevel(currentLevelNumber);
-          setGameState('PLAYING');
+          handleStartGame(currentLevelNumber);
         }}
         onGoToMenu={() => {
           emojiSortingAudio.playButton();
