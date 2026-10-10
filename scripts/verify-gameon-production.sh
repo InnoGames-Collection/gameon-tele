@@ -42,7 +42,11 @@ echo -e "${BOLD}${CYAN}=========================================================
 echo -e "\n${BOLD}Phase 1: Running Cryptographic & Physics Specification Harness...${NC}"
 if [ -d "$REPO_DIR/backend" ]; then
   cd "$REPO_DIR/backend"
-  if NODE_PATH=./node_modules npx tsx ../scripts/verify-tier0.ts; then
+  if [ ! -d "node_modules/jsonwebtoken" ] && docker ps | grep -q "gameon-tele-api"; then
+    echo "Copying node_modules from running API container for specification verification..."
+    docker cp gameon-tele-api:/app/node_modules ./ || true
+  fi
+  if NODE_PATH=./node_modules npx --yes tsx ../scripts/verify-tier0.ts; then
     log_pass "Tier-0 Mathematical, Physics Anti-Cheat & Cryptographic Invariants Verified"
   else
     log_fail "Specification Harness" "Failed to verify core cryptographic invariants"
