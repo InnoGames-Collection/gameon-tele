@@ -179,28 +179,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         
         {/* ============================================================
             2. BRANDING & PROMOTIONAL AREA
-            Clean, rounded card with subtle shadow and border.
+            Official GameSwiper Promotional Banner
             ============================================================ */}
         <div 
           id="login-promo-banner"
-          className="relative rounded-3xl bg-gradient-to-br from-[#7048E8] to-[#38205F] text-white p-5 shadow-sm overflow-hidden border border-[#7048E8]/30"
+          className="relative rounded-3xl overflow-hidden border border-[#E7DFF3] shadow-sm bg-slate-900 aspect-[3/1] w-full"
         >
-          <div className="relative z-10 space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#C6F36B] text-[#38205F] text-[10px] font-black uppercase tracking-wider shadow-xs">
-              <Sparkles className="w-3 h-3" />
-              <span>OFFICIAL ETHIOTELECOM GAMING</span>
-            </div>
-
-            <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              Play All Games 100% Free
-            </h1>
-
-            <p className="text-xs text-[#F1ECFF] leading-relaxed max-w-xs font-medium">
-              Enjoy unlimited instant access to exciting 3D and arcade games on GameSwiper with zero ads or limits.
-            </p>
-          </div>
-
-          <div className="absolute -right-6 -bottom-8 w-28 h-28 bg-[#C6F36B]/20 rounded-full blur-xl pointer-events-none" />
+          <img
+            src="/banners/login-banner.webp"
+            alt="GameSwiper Play and Win Big - Up to 50,000 ETB Grand Prize"
+            className="w-full h-full object-cover block rounded-3xl"
+            loading="eager"
+          />
         </div>
 
         {/* ============================================================

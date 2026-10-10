@@ -2671,10 +2671,35 @@ function renderEmojiSortingBallArt(ctx: CanvasRenderingContext2D, w: number, h: 
   drawSparkle(ctx, w * 0.67, ty + 15, 15, '#f472b6');
 }
 
+// Official WebP Banners for GameON Tele Games
+export const GAME_BANNER_MAP: Record<string, string> = {
+  'helix-jump': '/banners/helix-jump.webp',
+  'memory-match': '/banners/memory-match.webp',
+  'color-rush': '/banners/color-rush.webp',
+  'emoji-iq': '/banners/emoji-iq.webp',
+  'royal-water-sort': '/banners/royal-water-sort.webp',
+  'pop-balloon': '/banners/pop-balloon.webp',
+  'pop-ballon': '/banners/pop-balloon.webp',
+  'knife-madness': '/banners/knife-madness.webp',
+  'sorting-balls': '/banners/sorting-balls.webp',
+  'puzzle-block': '/banners/puzzle-block.webp',
+  'soccer-shooter': '/banners/soccer-shooter.webp',
+  'button-soccer': '/banners/button-soccer.webp',
+  'moto-race': '/banners/moto-race.webp',
+  'solitaire': '/banners/solitaire.webp',
+  'emoji-sorting-ball': '/banners/emoji-sorting-ball.webp',
+  'dama': '/banners/dama.webp',
+  'soccer-ping-pong': '/banners/soccer-ping-pong.webp',
+};
+
 // =============================================================================
 // Public Artwork Dispatcher & Cached Master Generator
 // =============================================================================
 export function getGameArtworkUrl(gameId: string): string {
+  if (GAME_BANNER_MAP[gameId]) {
+    return GAME_BANNER_MAP[gameId];
+  }
+
   if (artworkCache[gameId]) {
     return artworkCache[gameId];
   }

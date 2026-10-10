@@ -119,19 +119,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Promotional Banner */}
-        <div className="relative rounded-2xl bg-[#0057A8] text-white p-4 shadow-md overflow-hidden border border-blue-800 mb-4">
-          <div className="relative z-10 space-y-1">
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#78BE20] text-white text-[9px] font-black uppercase tracking-wider">
-              <Sparkles className="w-2.5 h-2.5" />
-              <span>ETHIOTELECOM GAMING</span>
-            </div>
-            <h3 className="text-base font-black text-white">
-              Play & Win Airtime Rewards
-            </h3>
-            <p className="text-[11px] text-blue-100">
-              Join weekly tournaments and climb the national leaderboard.
-            </p>
-          </div>
+        <div className="relative rounded-2xl overflow-hidden border border-[#E7DFF3] mb-4 bg-slate-900 aspect-[3/1] w-full shadow-sm">
+          <img
+            src="/banners/login-banner.webp"
+            alt="GameSwiper Play and Win Big - Up to 50,000 ETB Grand Prize"
+            className="w-full h-full object-cover block rounded-2xl"
+            loading="eager"
+          />
         </div>
 
         {/* Compact White Sign In Card */}
