@@ -98,11 +98,25 @@ export const AuthService = {
         normalizedPhone = '0' + normalizedPhone;
       }
 
+      let serverHighScores: Record<string, number> = {};
+      try {
+        const scoresRes = await fetch(`/api/scores/player/${normalizedPhone}`);
+        if (scoresRes.ok) {
+          const scoresData = await scoresRes.json();
+          if (scoresData && scoresData.scores) {
+            serverHighScores = scoresData.scores;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load server high scores on sign-in:', err);
+      }
+
       const updated: UserProfile = {
         ...current,
         phoneNumber: normalizedPhone,
         isRegistered: true,
         telebirrLinked: true,
+        highScores: serverHighScores,
         coins: backendProfile?.coins ?? current.coins,
         subscription: {
           ...current.subscription,

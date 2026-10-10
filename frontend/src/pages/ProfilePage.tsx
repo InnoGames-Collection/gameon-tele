@@ -133,6 +133,31 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     return scores.length > 0 ? Math.max(...scores) : 0;
   }, [profile]);
 
+  // Active catalog games (16 standard games in exact order)
+  const activeCatalogGames = useMemo(() => {
+    return GameCatalog.getAll().map(catalogGameToDefinition);
+  }, []);
+
+  // Sync latest verified scores from backend
+  useEffect(() => {
+    if (profile.phoneNumber) {
+      fetch(`/api/scores/player/${profile.phoneNumber}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && data.scores && onProfileUpdate) {
+            onProfileUpdate({
+              ...profile,
+              highScores: {
+                ...(profile.highScores || {}),
+                ...data.scores,
+              },
+            });
+          }
+        })
+        .catch((err) => console.warn('[ProfilePage] Failed to fetch server scores:', err));
+    }
+  }, [profile.phoneNumber]);
+
   // Played or unlocked games
   const recentlyPlayedIds = EntitlementService.getRecentlyPlayedIds();
   const myGamesList = GameCatalog.getRecentlyPlayed(recentlyPlayedIds).map(catalogGameToDefinition);
@@ -185,11 +210,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   }
 
   if (subView === 'my_games') {
-    const allAvailableGames = games && games.length > 0 ? games : GameCatalog.getAll().map(catalogGameToDefinition);
+    const allAvailableGames = activeCatalogGames;
 
     return (
-      <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4">
-        <div className="flex items-center justify-between gap-3 bg-[#1688C9] text-white p-3.5 rounded-2xl shadow-xs">
+      <div className="min-h-screen bg-[#FFF8EE]/50 text-[#38205F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs">
           <div className="flex items-center gap-3">
             <button
               id="my-games-back-btn"
@@ -203,7 +228,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </button>
             <h1 className="text-base font-black tracking-tight">My Games</h1>
           </div>
-          <span className="text-xs font-bold text-blue-100">
+          <span className="text-xs font-bold text-[#F1ECFF]">
             {allAvailableGames.length} Games
           </span>
         </div>
@@ -214,21 +239,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             return (
               <div
                 key={g.id}
-                className="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200 hover:border-[#1688C9] transition-all shadow-xs"
+                className="flex items-center justify-between p-3 rounded-2xl bg-white border border-[#E7DFF3] hover:border-[#7048E8] transition-all shadow-xs"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
                     src={g.thumbnailUrl || g.bannerUrl}
                     alt={g.title}
-                    className="w-12 h-12 rounded-xl object-cover bg-slate-900 shrink-0"
+                    className="w-12 h-12 rounded-xl object-cover bg-[#F1ECFF] shrink-0"
                   />
                   <div className="min-w-0">
-                    <h4 className="text-sm font-black text-[#17202A] truncate">{g.title}</h4>
+                    <h4 className="text-sm font-black text-[#38205F] truncate">{g.title}</h4>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-slate-500 capitalize">{g.category}</span>
-                      <span className="text-[10px] text-slate-300">•</span>
-                      <span className="text-[11px] font-extrabold text-[#1688C9]">
-                        Best: {personalHighScore > 0 ? `${personalHighScore.toLocaleString()} pts` : '-'}
+                      <span className="text-[11px] text-[#827695] capitalize">{g.category}</span>
+                      <span className="text-[10px] text-[#E7DFF3]">•</span>
+                      <span className="text-[11px] font-extrabold text-[#7048E8]">
+                        Best: {personalHighScore > 0 ? `${personalHighScore.toLocaleString()} pts` : 'No score yet'}
                       </span>
                     </div>
                   </div>
@@ -236,7 +261,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <button
                   type="button"
                   onClick={() => onPlayGame(g)}
-                  className="px-3.5 py-1.5 rounded-xl bg-[#8BCB3D] hover:bg-[#7cb934] active:scale-95 text-white text-xs font-black shrink-0 transition-transform cursor-pointer shadow-xs"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#7048E8] hover:bg-[#5f3dc4] active:scale-95 text-white text-xs font-black shrink-0 transition-transform cursor-pointer shadow-xs"
                 >
                   Play
                 </button>
@@ -249,34 +274,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   }
 
   if (subView === 'my_scores') {
-    const scoreItems = (() => {
-      const allCatalog = GameCatalog.getAll();
-      const userScores = profile.highScores || {};
-      const scoredIds = Object.keys(userScores);
-
-      if (scoredIds.length > 0) {
-        return scoredIds.map((gameId) => {
-          const catalogGame = GameCatalog.getById(gameId);
-          return {
-            id: gameId,
-            name: catalogGame?.gameName || gameId,
-            category: catalogGame?.category || 'Standard Game',
-            score: userScores[gameId] || 0,
-          };
-        }).sort((a, b) => b.score - a.score);
-      }
-
-      return allCatalog.map((g) => ({
-        id: g.gameId,
-        name: g.gameName,
-        category: g.category,
-        score: userScores[g.gameId] || 0,
-      }));
-    })();
-
     return (
-      <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4">
-        <div className="flex items-center justify-between gap-3 bg-[#1688C9] text-white p-3.5 rounded-2xl shadow-xs">
+      <div className="min-h-screen bg-[#FFF8EE]/50 text-[#38205F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs">
           <div className="flex items-center gap-3">
             <button
               id="my-scores-back-btn"
@@ -288,50 +288,56 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
               <span className="sr-only">Go Back</span>
             </button>
-            <h1 className="text-base font-black tracking-tight">My Scores</h1>
+            <h1 className="text-base font-black tracking-tight">Personal Best Scores</h1>
           </div>
+          <span className="text-xs font-bold text-[#F1ECFF]">
+            {activeCatalogGames.length} Games
+          </span>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-2xs divide-y divide-slate-100">
-          {scoreItems.map((entry) => (
-            <div key={entry.id} className="p-3.5 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-black text-[#17202A]">
-                  {entry.name}
+        <div className="rounded-2xl border border-[#E7DFF3] overflow-hidden bg-white shadow-2xs divide-y divide-[#E7DFF3]/60">
+          {activeCatalogGames.map((g) => {
+            const score = profile.highScores?.[g.id] ?? 0;
+            return (
+              <div key={g.id} className="p-3.5 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-black text-[#38205F]">
+                    {g.title}
+                  </div>
+                  <div className="text-[10px] text-[#827695] capitalize">
+                    {g.category}
+                  </div>
                 </div>
-                <div className="text-[10px] text-slate-400 capitalize">
-                  {entry.category}
+                <div className="text-sm font-black text-[#7048E8] font-mono">
+                  {score > 0 ? `${score.toLocaleString()} pts` : 'No score yet'}
                 </div>
               </div>
-              <div className="text-sm font-black text-[#1688C9] font-mono">
-                {entry.score.toLocaleString()} pts
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
   }
 
   // =========================================================================
-  // MAIN PROFILE VIEW (Exactly ONE GameOn Tele Logo in top Header)
+  // MAIN PROFILE VIEW (Clean GameSwiper Gaming Portal Design)
   // =========================================================================
   return (
-    <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 space-y-4 select-none">
+    <div className="min-h-screen bg-[#FFF8EE]/50 text-[#38205F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 space-y-4 select-none">
       
-      {/* 1. TOP: Authenticated Account Card (with User Avatar - exactly ONE visible GameOn Tele logo in top Header) */}
+      {/* 1. TOP: Authenticated Account Card */}
       <div 
         id="profile-account-card"
-        className="rounded-3xl bg-[#1688C9] text-white p-4.5 shadow-sm"
+        className="rounded-3xl bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-4.5 shadow-sm"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 text-white flex items-center justify-center shadow-xs shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 text-white flex items-center justify-center shadow-xs shrink-0 border border-white/20">
               <User className="w-6 h-6 text-white stroke-[2.2]" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="px-2 py-0.5 rounded-md bg-[#8BCB3D] text-white text-[9px] font-black uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-md bg-[#C6F36B] text-[#38205F] text-[9px] font-black uppercase tracking-wider">
                   VERIFIED ACCOUNT
                 </span>
               </div>
@@ -341,40 +347,95 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
           </div>
 
-          <div className="px-3 py-1.5 rounded-full bg-white/15 text-white text-[11px] font-bold">
+          <div className="px-3 py-1.5 rounded-full bg-white/15 text-white text-[11px] font-bold border border-white/20">
             Daily Player
           </div>
         </div>
       </div>
 
-      {/* 2. STATS: BEST SCORE CARD (Coin system completely removed per final spec) */}
+      {/* 2. STATS: BEST SCORE SUMMARY CARD */}
       <div 
         id="profile-stat-best-score"
         onClick={() => openSubView('my_scores')}
-        className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs hover:border-[#1688C9]/50 transition-all cursor-pointer flex items-center justify-between"
+        className="bg-white rounded-2xl p-4 border border-[#E7DFF3] shadow-2xs hover:border-[#7048E8]/50 transition-all cursor-pointer flex items-center justify-between"
       >
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
-            <Trophy className="w-5 h-5 text-[#1688C9]" />
+          <div className="w-11 h-11 rounded-2xl bg-[#F1ECFF] border border-[#E7DFF3] flex items-center justify-center shrink-0">
+            <Trophy className="w-5 h-5 text-[#7048E8]" />
           </div>
           <div>
-            <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-wider uppercase block">
-              Personal Best Score
+            <span className="text-[10px] sm:text-[11px] font-bold text-[#827695] tracking-wider uppercase block">
+              Top Personal Best
             </span>
-            <div className="text-xl sm:text-2xl font-black text-[#17202A] font-mono flex items-baseline gap-1 mt-0.5">
-              <span>{bestScore.toLocaleString()}</span>
-              <span className="text-xs font-bold text-slate-400 font-sans">pts</span>
+            <div className="text-xl sm:text-2xl font-black text-[#38205F] font-mono flex items-baseline gap-1 mt-0.5">
+              <span>{bestScore > 0 ? bestScore.toLocaleString() : 'No score yet'}</span>
+              {bestScore > 0 && <span className="text-xs font-bold text-[#827695] font-sans">pts</span>}
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-bold text-[#1688C9]">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-[#7048E8]">
           <span>View Scores</span>
           <ChevronRight className="w-4 h-4" />
         </div>
       </div>
 
-      {/* 3. PROFILE MENU ITEMS */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden divide-y divide-slate-100">
+      {/* 3. PERSONAL BEST SCORES UNDER EACH GAME */}
+      <div className="bg-white rounded-3xl p-4.5 border border-[#E7DFF3] shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-[#7048E8]" />
+            <h3 className="text-sm font-black text-[#38205F] tracking-tight">
+              Personal Best Scores
+            </h3>
+          </div>
+          <span className="text-[11px] font-bold text-[#827695]">
+            {activeCatalogGames.length} Games
+          </span>
+        </div>
+
+        <div className="divide-y divide-[#E7DFF3]/60">
+          {activeCatalogGames.map((g) => {
+            const personalHighScore = profile.highScores?.[g.id] ?? 0;
+            return (
+              <div key={g.id} className="py-2.5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <img
+                    src={g.thumbnailUrl || g.bannerUrl}
+                    alt={g.title}
+                    className="w-10 h-10 rounded-xl object-cover bg-[#F1ECFF] shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <h4 className="text-xs sm:text-sm font-black text-[#38205F] truncate">
+                      {g.title}
+                    </h4>
+                    <p className="text-[11px] font-semibold text-[#827695]">
+                      Personal Best:{' '}
+                      {personalHighScore > 0 ? (
+                        <span className="font-extrabold text-[#7048E8] font-mono">
+                          {personalHighScore.toLocaleString()}
+                        </span>
+                      ) : (
+                        <span className="text-[#827695]/70">No score yet</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onPlayGame(g)}
+                  className="px-3.5 py-1.5 rounded-xl bg-[#7048E8] hover:bg-[#5f3dc4] active:scale-95 text-white text-xs font-black shrink-0 transition-transform cursor-pointer shadow-xs"
+                >
+                  Play
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 4. PROFILE MENU ITEMS */}
+      <div className="bg-white rounded-2xl border border-[#E7DFF3] shadow-2xs overflow-hidden divide-y divide-[#E7DFF3]/60">
         {[
           { id: 'subscriptions', label: 'Subscription', icon: CreditCard },
           { id: 'pricing', label: 'Pricing', icon: Tag },
@@ -391,19 +452,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               key={item.id}
               id={`profile-menu-item-${item.id}`}
               onClick={() => openSubView(item.id as ProfileSubView)}
-              className="w-full px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left group cursor-pointer"
+              className="w-full px-4 py-3.5 flex items-center justify-between hover:bg-[#F1ECFF]/40 transition-colors text-left group cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#1688C9] flex items-center justify-center group-hover:bg-[#1688C9] group-hover:text-white transition-colors">
+                <div className="w-8 h-8 rounded-xl bg-[#F1ECFF] text-[#7048E8] flex items-center justify-center group-hover:bg-[#7048E8] group-hover:text-white transition-colors">
                   <Icon className="w-4 h-4 stroke-[2.2]" />
                 </div>
-                <span className="text-xs sm:text-sm font-black text-[#17202A] group-hover:text-[#1688C9] transition-colors">
+                <span className="text-xs sm:text-sm font-black text-[#38205F] group-hover:text-[#7048E8] transition-colors">
                   {item.label}
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
-                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#1688C9] transition-transform" />
+                <ChevronRight className="w-4 h-4 text-[#827695] group-hover:text-[#7048E8] transition-transform" />
               </div>
             </button>
           );
@@ -411,19 +472,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       </div>
 
       {/* Sound & Preference Settings */}
-      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+      <div className="p-3.5 rounded-2xl bg-white border border-[#E7DFF3] flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           {isSoundOn ? (
-            <Volume2 className="w-4 h-4 text-[#1688C9]" />
+            <Volume2 className="w-4 h-4 text-[#7048E8]" />
           ) : (
-            <VolumeX className="w-4 h-4 text-slate-400" />
+            <VolumeX className="w-4 h-4 text-[#827695]" />
           )}
-          <span className="text-xs font-bold text-slate-700">Game Sound Effects</span>
+          <span className="text-xs font-bold text-[#38205F]">Game Sound Effects</span>
         </div>
         <button
           onClick={toggleSound}
           className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-            isSoundOn ? 'bg-[#8BCB3D]' : 'bg-slate-300'
+            isSoundOn ? 'bg-[#7048E8]' : 'bg-slate-200'
           }`}
         >
           <div

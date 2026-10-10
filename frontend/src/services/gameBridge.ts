@@ -76,19 +76,19 @@ export const GameBridgeService = {
       } catch (err) {
         console.warn('Failed to record Helix competition score:', err);
       }
-    } else {
-      // Persist non-tournament catalog game score in PostgreSQL (without prizes)
-      if (profile.phoneNumber) {
-        fetch('/api/scores', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            msisdn: profile.phoneNumber,
-            gameId,
-            score: validScore,
-          }),
-        }).catch((err) => console.warn('[GameBridge] Non-tournament score sync failed:', err));
-      }
+    }
+
+    // Persist catalog game score in PostgreSQL player_game_scores table
+    if (profile.phoneNumber) {
+      fetch('/api/scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          msisdn: profile.phoneNumber,
+          gameId,
+          score: validScore,
+        }),
+      }).catch((err) => console.warn('[GameBridge] Score sync failed:', err));
     }
 
     const currentHighScore = profile.highScores?.[gameId] || 0;

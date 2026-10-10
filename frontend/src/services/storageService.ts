@@ -106,7 +106,10 @@ export const StorageService = {
     const current = this.getProfile();
     const unauthenticated: UserProfile = {
       ...current,
+      phoneNumber: '',
       isRegistered: false,
+      telebirrLinked: false,
+      highScores: {},
     };
 
     this.saveProfile(unauthenticated);
