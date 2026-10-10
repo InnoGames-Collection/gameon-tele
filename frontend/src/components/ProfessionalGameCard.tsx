@@ -62,13 +62,13 @@ export const ProfessionalGameCard: React.FC<ProfessionalGameCardProps> = ({
 
   // Status configuration: All games are 100% free per specification
   const statusText = 'FREE';
-  const statusColor = 'text-[#16A34A]';
+  const statusColor = 'text-[#7048E8] font-extrabold';
 
   return (
     <div
       id={`game-card-${game.id}`}
       onClick={handleCardClick}
-      className={`game-card group relative rounded-[20px] bg-white border border-slate-200/90 hover:border-[#1688C9]/60 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer flex flex-col select-none ${
+      className={`game-card group relative rounded-[20px] bg-white border border-[#E7DFF3] hover:border-[#7048E8]/60 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer flex flex-col select-none ${
         layout === 'carousel'
           ? 'w-[290px] xs:w-[310px] sm:w-[330px] shrink-0 snap-start'
           : 'w-full'
@@ -80,7 +80,7 @@ export const ProfessionalGameCard: React.FC<ProfessionalGameCardProps> = ({
           - Unaltered, approved promotional key art
           - Zero overlay obstructions
          ========================================================================= */}
-      <div className="game-card-image relative w-full aspect-[16/9] overflow-hidden bg-slate-100 shrink-0">
+      <div className="game-card-image relative w-full aspect-[16/9] overflow-hidden bg-[#F1ECFF] shrink-0">
         <OriginalGameArtwork 
           gameId={game.id} 
           alt={`${game.title} promotional key art`}
@@ -92,46 +92,46 @@ export const ProfessionalGameCard: React.FC<ProfessionalGameCardProps> = ({
           ZONE 2: CLEAN WHITE INFORMATION PANEL (BELOW ARTWORK)
           - Pure white background (#FFFFFF)
           - Uniform fixed height (124px) ensuring all cards align identically
-          - Dark navy title, gold rating, green status, gray description, green PLAY
+          - Deep plum title, gold rating, purple status, muted description, purple PLAY
          ========================================================================= */}
-      <div className="game-card-info flex flex-col justify-between p-3.5 sm:p-4 bg-white h-[124px] shrink-0 border-t border-slate-100/90">
+      <div className="game-card-info flex flex-col justify-between p-3.5 sm:p-4 bg-white h-[124px] shrink-0 border-t border-[#E7DFF3]/80">
         
-        {/* ROW 1: GAME TITLE (NAVY) & RATING BADGE (GOLD ACCENT) */}
+        {/* ROW 1: GAME TITLE (DEEP PLUM) & RATING BADGE (GOLD ACCENT) */}
         <div className="flex items-start justify-between gap-2.5 min-w-0">
           <h3 
             title={game.title}
-            className="text-[17px] sm:text-[18px] font-extrabold text-[#111827] tracking-tight leading-tight line-clamp-1 flex-1 min-w-0"
+            className="text-[17px] sm:text-[18px] font-extrabold text-[#38205F] tracking-tight leading-tight line-clamp-1 flex-1 min-w-0"
           >
             {game.title}
           </h3>
           
           {/* Compact Gold Rating Pill */}
-          <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-50 text-slate-800 text-xs font-bold shrink-0 border border-slate-200/90 shadow-2xs mt-0.5">
+          <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F1ECFF] text-[#38205F] text-xs font-bold shrink-0 border border-[#E7DFF3] shadow-2xs mt-0.5">
             <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
-            <span className="font-bold text-slate-800 text-[12px]">{formattedRating}</span>
+            <span className="font-bold text-[#38205F] text-[12px]">{formattedRating}</span>
           </div>
         </div>
 
-        {/* ROW 2: STATUS (GREEN), DESCRIPTION (GRAY) & GREEN PLAY BUTTON */}
+        {/* ROW 2: STATUS (PURPLE), DESCRIPTION (MUTED TEXT) & PURPLE PLAY BUTTON */}
         <div className="flex items-center justify-between gap-3 min-w-0">
           <div className="min-w-0 flex-1 pr-1 flex flex-col justify-center">
-            <span className={`text-[11px] font-extrabold uppercase tracking-wider leading-none mb-1 ${statusColor}`}>
+            <span className={`text-[11px] uppercase tracking-wider leading-none mb-1 ${statusColor}`}>
               {statusText}
             </span>
             <p 
               title={game.tagline || game.description}
-              className="text-[13px] text-[#64748B] font-normal leading-tight line-clamp-1"
+              className="text-[13px] text-[#827695] font-medium leading-tight line-clamp-1"
             >
               {game.tagline || game.description}
             </p>
           </div>
 
-          {/* Signature GameON Tele Green PLAY Action */}
+          {/* Signature GameSwiper Purple PLAY Action */}
           <button
             type="button"
             onClick={handlePlayClick}
             aria-label={`Play ${game.title}`}
-            className="shrink-0 h-[42px] px-4 sm:px-4.5 rounded-xl sm:rounded-2xl bg-[#8BCB3D] hover:bg-[#7db737] active:scale-95 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm shadow-[#8BCB3D]/30 transition-all cursor-pointer border border-lime-400/30"
+            className="shrink-0 h-[42px] px-4 sm:px-4.5 rounded-xl sm:rounded-2xl bg-[#7048E8] hover:bg-[#5f3dc4] active:scale-95 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm shadow-[#7048E8]/30 transition-all cursor-pointer border border-[#7048E8]"
           >
             <Play className="w-3.5 h-3.5 fill-current text-white" />
             <span className="tracking-wider">PLAY</span>

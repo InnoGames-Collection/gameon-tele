@@ -62,33 +62,22 @@ export const ALL_STANDARD_CATEGORIES = [
 ] as const;
 
 export const MANDATORY_CATALOG_ORDER = [
-  'helix-jump',            // 1. Helix Jump
-  'emoji-iq',              // 2. Emoji IQ
-  'royal-water-sort',      // 3. Royal Water Sort
-  'archery-strike',        // 4. Archery Strike 3D
-  'halloween-fruit-slice', // 5. Halloween Fruit Slice
-  'knife-madness',         // 6. Knife Madness
-  'sorting-balls',         // 7. Sorting Balls
-  'puzzle-block',          // 8. Puzzle Block
-  'memory-match',          // 9. Memory Match
-  'color-rush',            // 10. Color Rush
-  'soccer-shooter',        // 11. Soccer Shooter
-  'button-soccer',         // 12. Button Soccer
-  'moto-race',             // 13. Moto Race
-  'solitaire',             // 14. Solitaire
-  'emoji-sorting-ball',    // 15. Emoji Sorting Ball
-  'bubble-shooter',        // 16. Bubble Shooter
-  'fruit-slice',           // 17. Fruit Slice
-  'juicy-match',           // 18. Juicy Match
-  'pop-piano',             // 19. Pop Piano
-  'candy-blast',           // 20. Candy Blast
-  'dama',                  // 21. Dama
-  'soccer-ping-pong',      // 22. Soccer Ping Pong
-  'crazy-colors',          // 23. Crazy Colors
-  'emoji-fun',             // 24. Emoji Fun
-  'pop-balloon',           // 25. Pop Balloon
-  'hill-rider',            // 26. Hill Rider
-  'world-legends',         // 27. World Legends
+  'helix-jump',          // 1. Helix
+  'memory-match',        // 2. Memory
+  'color-rush',          // 3. Color Quick
+  'emoji-iq',            // 4. Emoji
+  'royal-water-sort',    // 5. Water Sort
+  'pop-balloon',         // 6. Pop Balloon
+  'knife-madness',       // 7. Knife Hit
+  'sorting-balls',       // 8. Sorting Ball
+  'puzzle-block',        // 9. Block Puzzle
+  'soccer-shooter',      // 10. Soccer Hit
+  'button-soccer',       // 11. Button Soccer
+  'moto-race',           // 12. Motor Race
+  'solitaire',           // 13. Solitaire
+  'emoji-sorting-ball',  // 14. Emoji Sort
+  'dama',                // 15. Dama
+  'soccer-ping-pong',    // 16. Soccer Ping Pong
 ] as const;
 
 export const INITIAL_GAME_CATALOG: CatalogGame[] = [
@@ -473,9 +462,9 @@ export const INITIAL_GAME_CATALOG: CatalogGame[] = [
     coinCost: 0,
     isFeatured: false,
     isRecommended: false,
-    isActive: true,
+    isActive: false,
     isNew: false,
-    leaderboardEnabled: true,
+    leaderboardEnabled: false,
     sortOrder: 11,
     providerId: 'prv_gameon_core',
     providerName: 'GameON Studios',
@@ -504,11 +493,11 @@ export const INITIAL_GAME_CATALOG: CatalogGame[] = [
     isFree: true,
     requiresCoins: false,
     coinCost: 0,
-    isFeatured: true,
-    isRecommended: true,
-    isActive: true,
-    isNew: true,
-    leaderboardEnabled: true,
+    isFeatured: false,
+    isRecommended: false,
+    isActive: false,
+    isNew: false,
+    leaderboardEnabled: false,
     sortOrder: 12,
     providerId: 'prv_gameon_core',
     providerName: 'GameON Studios',
@@ -592,7 +581,7 @@ export const INITIAL_GAME_CATALOG: CatalogGame[] = [
   },
   {
     gameId: 'sorting-balls',
-    gameName: 'Sort',
+    gameName: 'Sorting Ball',
     titleAmharic: 'ሶርት',
     category: 'Puzzle',
     genre: '3D Color Sorting Puzzle',
@@ -856,7 +845,7 @@ export const INITIAL_GAME_CATALOG: CatalogGame[] = [
   },
   {
     gameId: 'moto-race',
-    gameName: 'Moto Race',
+    gameName: 'Motor Race',
     titleAmharic: 'ሞተር ሬስ',
     category: 'Racing',
     genre: '3D First-Person Highway Racing',
