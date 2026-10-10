@@ -103,6 +103,24 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
     }, 700);
   }, []);
 
+  const callbacksRef = useRef({
+    onScoreChange,
+    onProgressChange,
+    onGameOver,
+    onLevelComplete,
+    addFloatingScore,
+  });
+
+  useEffect(() => {
+    callbacksRef.current = {
+      onScoreChange,
+      onProgressChange,
+      onGameOver,
+      onLevelComplete,
+      addFloatingScore,
+    };
+  });
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -423,9 +441,9 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
       state.ringsDestroyed.add(ringIndex);
 
       helixAudio.playComboSmash();
-      addFloatingScore(`+50 POWER SMASH!`, '#f59e0b');
+      callbacksRef.current.addFloatingScore(`+50 POWER SMASH!`, '#f59e0b');
       state.score += 50;
-      onScoreChange(state.score);
+      callbacksRef.current.onScoreChange(state.score);
 
       // Animate fragments outward
       const fragments = ringObj.group.children;
@@ -663,16 +681,16 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
 
                     const bonus = 10 * state.comboCount;
                     state.score += bonus;
-                    onScoreChange(state.score);
+                    callbacksRef.current.onScoreChange(state.score);
 
                     const progress = Math.min(100, Math.round(((rIdx + 1) / level.rings.length) * 100));
-                    onProgressChange(progress);
+                    callbacksRef.current.onProgressChange(progress);
 
                     if (state.comboCount >= 3) {
                       state.isComboSmashing = true;
-                      addFloatingScore(`x${state.comboCount} COMBO!`, '#f59e0b');
+                      callbacksRef.current.addFloatingScore(`x${state.comboCount} COMBO!`, '#f59e0b');
                     } else {
-                      addFloatingScore(`+${bonus}`, '#38bdf8');
+                      callbacksRef.current.addFloatingScore(`+${bonus}`, '#38bdf8');
                     }
 
                     helixAudio.playGapPass(state.comboCount);
@@ -771,7 +789,7 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                     // 7. Transition to failure after natural recoil, tumble, and fall (680ms)
                     setTimeout(() => {
                       const dur = Math.max(0.1, (Date.now() - state.startTime) / 1000);
-                      onGameOver(state.score, state.telemetry, state.floorsCleared, dur);
+                      callbacksRef.current.onGameOver(state.score, state.telemetry, state.floorsCleared, dur);
                     }, 680);
                     break;
                   }
@@ -784,12 +802,12 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                     state.ballY = platformTop + HELIX_DIMENSIONS.BALL_RADIUS;
                     state.ballVy = HELIX_PHYSICS.BOUNCE_IMPULSE * 0.8;
                     collidedThisStep = true;
-                    onProgressChange(100);
+                    callbacksRef.current.onProgressChange(100);
                     helixAudio.playLevelComplete();
 
                     setTimeout(() => {
                       const dur = Math.max(0.1, (Date.now() - state.startTime) / 1000);
-                      onLevelComplete(state.score, state.telemetry, state.floorsCleared, dur);
+                      callbacksRef.current.onLevelComplete(state.score, state.telemetry, state.floorsCleared, dur);
                     }, 750);
                     break;
                   } else if (state.isComboSmashing) {
@@ -813,7 +831,7 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                     state.squashTime = 0.08; // trigger contact compression squash
                     state.activePlatformY = ring.y;
 
-                    state.score += 2;
+                    // FIX BUG A: Do NOT increment score on repeated platform bounces!
                     state.telemetry.push({
                       floor: rIdx,
                       action: 'bounce',
@@ -821,7 +839,6 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                       sector: centerIndex,
                       angle: centerAngle,
                     });
-                    onScoreChange(state.score);
                     helixAudio.playBounce();
                     addPaintSplatter(ring.y, state.helixAngle);
                     break;
@@ -843,7 +860,7 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
           state.gameOverTriggered = true;
           state.ballVy = 0;
           const dur = Math.max(0.1, (Date.now() - state.startTime) / 1000);
-          onGameOver(state.score, state.telemetry, state.floorsCleared, dur);
+          callbacksRef.current.onGameOver(state.score, state.telemetry, state.floorsCleared, dur);
         }
       }
 
@@ -1035,7 +1052,7 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [level, onScoreChange, onProgressChange, onGameOver, onLevelComplete, addFloatingScore]);
+  }, [level.id]);
 
   return (
     <div
