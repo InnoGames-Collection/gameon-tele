@@ -295,10 +295,10 @@ export const StorageService = {
   wipeAllData(): UserProfile {
     try {
       localStorage.clear();
-      this.saveProfile(DEMO_USER_PROFILE);
-      return DEMO_USER_PROFILE;
+      this.saveProfile(INITIAL_GUEST_PROFILE);
+      return INITIAL_GUEST_PROFILE;
     } catch {
-      return DEMO_USER_PROFILE;
+      return INITIAL_GUEST_PROFILE;
     }
   },
 };

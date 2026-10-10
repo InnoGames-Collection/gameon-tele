@@ -348,6 +348,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
         <HelixJumpGame
           onExit={onClose}
           profile={profile}
+          onGameOver={onGameOver}
         />
       </div>
     );

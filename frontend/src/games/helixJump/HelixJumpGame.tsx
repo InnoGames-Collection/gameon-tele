@@ -30,6 +30,7 @@ import { LeaderboardModal } from './components/LeaderboardModal';
 interface HelixJumpGameProps {
   onExit: () => void;
   profile?: UserProfile;
+  onGameOver?: (finalScore: number, durationSeconds?: number) => void;
 }
 
 const DEFAULT_SAVE_DATA: HelixJumpSaveData = {
@@ -72,7 +73,7 @@ function evaluateAchievements(data: HelixJumpSaveData): HelixJumpSaveData {
   };
 }
 
-export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile }) => {
+export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile, onGameOver }) => {
   // Load saved progress from localStorage
   const [saveData, setSaveData] = useState<HelixJumpSaveData>(() => {
     if (typeof window !== 'undefined') {
@@ -176,13 +177,31 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
     [profile, updateAndPersistSaveData]
   );
 
-  // Handle Game Over with telemetry submission
+  // Handle Game Over with telemetry submission and profile high score persistence
   const handleGameOver = useCallback(
     (finalScore: number, telemetry: any[] = [], floorsCleared: number = 0, durationSeconds: number = 1) => {
       setScore(finalScore);
 
-      const effectiveProfile = profile || StorageService.getProfile();
-      const phone = effectiveProfile?.phoneNumber || '0911428890';
+      // Notify parent GameLauncher / GameBridge to persist high score into profile
+      const elapsedDur = Math.max(1, Math.round(durationSeconds));
+      onGameOver?.(finalScore, elapsedDur);
+
+      // Directly update local storage profile high scores for immediate reflection
+      const activeProf = profile || StorageService.getProfile();
+      if (activeProf) {
+        const curBest = activeProf.highScores?.['helix-jump'] || 0;
+        if (finalScore > curBest) {
+          StorageService.saveProfile({
+            ...activeProf,
+            highScores: {
+              ...(activeProf.highScores || {}),
+              'helix-jump': finalScore,
+            },
+          });
+        }
+      }
+
+      const phone = activeProf?.phoneNumber || '0911428890';
       const session = activeSessionRef.current;
 
       if (session && telemetry.length > 0) {
@@ -191,7 +210,7 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
           runToken: session.runToken,
           floorsCleared: floorsCleared || 1,
           finalScore,
-          durationSeconds: durationSeconds || 1,
+          durationSeconds: elapsedDur,
           telemetry,
         }).catch((err) => console.warn('[Run Submit Warning]', err));
         activeSessionRef.current = null;
@@ -213,16 +232,33 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
       });
       setGameState('GAME_OVER');
     },
-    [currentLevelId, profile, updateAndPersistSaveData]
+    [currentLevelId, onGameOver, profile, updateAndPersistSaveData]
   );
 
-  // Handle Level Complete with telemetry submission
+  // Handle Level Complete with telemetry submission and profile persistence
   const handleLevelComplete = useCallback(
     (finalScore: number, telemetry: any[] = [], floorsCleared: number = 0, durationSeconds: number = 1) => {
       setScore(finalScore);
 
-      const effectiveProfile = profile || StorageService.getProfile();
-      const phone = effectiveProfile?.phoneNumber || '0911428890';
+      // Notify parent GameLauncher / GameBridge to persist high score into profile
+      const elapsedDur = Math.max(1, Math.round(durationSeconds));
+      onGameOver?.(finalScore, elapsedDur);
+
+      const activeProf = profile || StorageService.getProfile();
+      if (activeProf) {
+        const curBest = activeProf.highScores?.['helix-jump'] || 0;
+        if (finalScore > curBest) {
+          StorageService.saveProfile({
+            ...activeProf,
+            highScores: {
+              ...(activeProf.highScores || {}),
+              'helix-jump': finalScore,
+            },
+          });
+        }
+      }
+
+      const phone = activeProf?.phoneNumber || '0911428890';
       const session = activeSessionRef.current;
 
       if (session && telemetry.length > 0) {
@@ -231,7 +267,7 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
           runToken: session.runToken,
           floorsCleared: floorsCleared || currentLevelDef.ringCount,
           finalScore,
-          durationSeconds: durationSeconds || 1,
+          durationSeconds: elapsedDur,
           telemetry,
         }).catch((err) => console.warn('[Run Submit Warning]', err));
         activeSessionRef.current = null;
@@ -276,7 +312,7 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
         setGameState('LEVEL_COMPLETE');
       }
     },
-    [currentLevelDef, currentLevelId, profile, updateAndPersistSaveData]
+    [currentLevelDef, currentLevelId, onGameOver, profile, updateAndPersistSaveData]
   );
 
   // Reset Progress
@@ -288,6 +324,27 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
       hapticsEnabled: saveData.hapticsEnabled,
     }));
   }, [saveData.soundEnabled, saveData.musicEnabled, saveData.hapticsEnabled, updateAndPersistSaveData]);
+
+  // Handle Exit Game
+  const handleExitGame = useCallback(() => {
+    if (score > 0) {
+      onGameOver?.(score, 1);
+      const activeProf = profile || StorageService.getProfile();
+      if (activeProf) {
+        const curBest = activeProf.highScores?.['helix-jump'] || 0;
+        if (score > curBest) {
+          StorageService.saveProfile({
+            ...activeProf,
+            highScores: {
+              ...(activeProf.highScores || {}),
+              'helix-jump': score,
+            },
+          });
+        }
+      }
+    }
+    onExit();
+  }, [score, onGameOver, profile, onExit]);
 
   return (
     <div
@@ -333,7 +390,7 @@ export const HelixJumpGame: React.FC<HelixJumpGameProps> = ({ onExit, profile })
           onOpenSettings={() => setGameState('SETTINGS')}
           onOpenAbout={() => setGameState('ABOUT')}
           onToggleSound={toggleSound}
-          onExit={onExit}
+          onExit={handleExitGame}
         />
       )}
 

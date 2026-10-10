@@ -268,6 +268,7 @@ export const HelixAntiCheatService = {
     let simulatedCombo = 0;
     let lastEventTime = -1;
     let lastFloor = -1;
+    const clearedFloors = new Set<number>();
 
     if (!params.telemetry || !Array.isArray(params.telemetry) || params.telemetry.length === 0) {
       if (params.floorsCleared > 3 || params.finalScore > 50) {
@@ -294,8 +295,7 @@ export const HelixAntiCheatService = {
 
         // 4.3 Action Processing & Physics Validation
         if (ev.action === 'bounce') {
-          // Bouncing on a platform awards 2 points and resets combo
-          reconstructedScore += 2;
+          // Bouncing on a platform awards 0 points and resets combo
           simulatedCombo = 0;
 
           // Hazard collision verification: Ball CANNOT bounce directly on a hazard sector!
@@ -337,7 +337,11 @@ export const HelixAntiCheatService = {
             break;
           }
 
-          reconstructedScore += 10 * simulatedCombo;
+          // Strict Rule: Award exactly 1 point per newly completed floor transition
+          if (!clearedFloors.has(ev.floor)) {
+            clearedFloors.add(ev.floor);
+            reconstructedScore += 1;
+          }
           lastFloor = ev.floor;
         } else if (ev.action === 'danger_smash') {
           // Smashing through danger zone requires at least 3 combo streak!
@@ -352,6 +356,10 @@ export const HelixAntiCheatService = {
             break;
           }
 
+          if (!clearedFloors.has(ev.floor)) {
+            clearedFloors.add(ev.floor);
+            reconstructedScore += 1;
+          }
           simulatedCombo = 0; // Combo consumed on power smash
         }
 

@@ -61,6 +61,7 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
     helixAngle: 0,
     helixAngularVelocity: 0,
     lastRingPassedIndex: -1,
+    passedFloors: new Set<number>(),
     activePlatformY: 0,
     gameOverTriggered: false,
     levelCompleteTriggered: false,
@@ -145,6 +146,7 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
     state.levelCompleteTriggered = false;
     state.squashTime = 0;
     state.ringsDestroyed.clear();
+    state.passedFloors.clear();
 
     const theme = LEVEL_THEMES[level.themeIndex] || LEVEL_THEMES[0];
 
@@ -641,16 +643,16 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
 
               if (crossedTopDownward || insideSlab) {
                 // Determine sector underneath ball using footprint
+                const centerIndex = Math.min(11, Math.floor((centerAngle / TWO_PI) * 12));
+                const leftIndex = Math.min(11, Math.floor((leftAngle / TWO_PI) * 12));
+                const rightIndex = Math.min(11, Math.floor((rightAngle / TWO_PI) * 12));
+
                 let sectorUnderBall: RingSector | null = null;
                 let touchesDanger = false;
 
                 if (ring.isFinish) {
                   sectorUnderBall = { startAngle: 0, endAngle: TWO_PI, type: 'safe' };
                 } else {
-                  const centerIndex = Math.min(11, Math.floor((centerAngle / TWO_PI) * 12));
-                  const leftIndex = Math.min(11, Math.floor((leftAngle / TWO_PI) * 12));
-                  const rightIndex = Math.min(11, Math.floor((rightAngle / TWO_PI) * 12));
-
                   const centerSector = ring.sectors[centerIndex];
                   const leftSector = ring.sectors[leftIndex];
                   const rightSector = ring.sectors[rightIndex];
@@ -663,8 +665,9 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
 
                 if (!sectorUnderBall || sectorUnderBall.type === 'gap') {
                   // FIX 5: PASSED THROUGH GAP - ALLOW BALL TO CONTINUE FALLING
-                  if (state.lastRingPassedIndex < rIdx) {
-                    state.lastRingPassedIndex = rIdx;
+                  if (!state.passedFloors.has(rIdx)) {
+                    state.passedFloors.add(rIdx);
+                    state.lastRingPassedIndex = Math.max(state.lastRingPassedIndex, rIdx);
                     state.comboCount++;
                     state.telemetry.push({
                       floor: rIdx,
@@ -679,8 +682,8 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                       state.activePlatformY = level.rings[rIdx + 1].y;
                     }
 
-                    const bonus = 10 * state.comboCount;
-                    state.score += bonus;
+                    // Strict Scoring Rule: Award exactly 1 floor-progression point per valid newly completed floor transition
+                    state.score += 1;
                     callbacksRef.current.onScoreChange(state.score);
 
                     const progress = Math.min(100, Math.round(((rIdx + 1) / level.rings.length) * 100));
@@ -688,9 +691,9 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
 
                     if (state.comboCount >= 3) {
                       state.isComboSmashing = true;
-                      callbacksRef.current.addFloatingScore(`x${state.comboCount} COMBO!`, '#f59e0b');
+                      callbacksRef.current.addFloatingScore(`+1 (x${state.comboCount} COMBO!)`, '#f59e0b');
                     } else {
-                      callbacksRef.current.addFloatingScore(`+${bonus}`, '#38bdf8');
+                      callbacksRef.current.addFloatingScore('+1', '#38bdf8');
                     }
 
                     helixAudio.playGapPass(state.comboCount);
@@ -701,6 +704,14 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                   if (state.isComboSmashing) {
                     // Power smash through danger platform with 3+ combo!
                     shatterRing(rIdx);
+                    if (!state.passedFloors.has(rIdx)) {
+                      state.passedFloors.add(rIdx);
+                      state.lastRingPassedIndex = Math.max(state.lastRingPassedIndex, rIdx);
+                      state.floorsCleared = Math.max(state.floorsCleared, rIdx + 1);
+                      state.score += 1;
+                      callbacksRef.current.onScoreChange(state.score);
+                      callbacksRef.current.addFloatingScore('+1 SMASH!', '#f59e0b');
+                    }
                     state.telemetry.push({
                       floor: rIdx,
                       action: 'danger_smash',
@@ -813,6 +824,14 @@ export const HelixJump3DCanvas: React.FC<HelixJump3DCanvasProps> = ({
                   } else if (state.isComboSmashing) {
                     // POWER SMASH THROUGH SAFE PLATFORM!
                     shatterRing(rIdx);
+                    if (!state.passedFloors.has(rIdx)) {
+                      state.passedFloors.add(rIdx);
+                      state.lastRingPassedIndex = Math.max(state.lastRingPassedIndex, rIdx);
+                      state.floorsCleared = Math.max(state.floorsCleared, rIdx + 1);
+                      state.score += 1;
+                      callbacksRef.current.onScoreChange(state.score);
+                      callbacksRef.current.addFloatingScore('+1 SMASH!', '#f59e0b');
+                    }
                     state.isComboSmashing = false;
                     state.comboCount = 0;
                     if (rIdx + 1 < level.rings.length) {
