@@ -42,10 +42,10 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none">
+    <div className="min-h-screen bg-white text-[#45365F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Header with Back Button */}
       {showHeader && (
-        <div className="flex items-center justify-between gap-3 bg-[#1688C9] text-white p-3.5 rounded-2xl shadow-xs mb-4">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs mb-4">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
@@ -60,7 +60,7 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
               </button>
             )}
             <div className="flex items-center gap-2">
-              <Headphones className="w-5 h-5 text-emerald-300 shrink-0" />
+              <Headphones className="w-5 h-5 text-[#C6F36B] shrink-0" />
               <h1 className="text-base font-black tracking-tight">Help & Support</h1>
             </div>
           </div>
@@ -69,27 +69,27 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
 
       {/* 2. Top Notice & Controls */}
       <div className="space-y-2.5 mb-4">
-        <div className="p-3 rounded-2xl bg-blue-50 border border-blue-100 flex items-start gap-2.5 text-xs text-blue-900 leading-relaxed">
-          <LifeBuoy className="w-4 h-4 text-[#1688C9] shrink-0 mt-0.5" />
+        <div className="p-3 rounded-2xl bg-[#FFF8EE] border border-[#E7DFF3] flex items-start gap-2.5 text-xs text-[#45365F] leading-relaxed">
+          <LifeBuoy className="w-4 h-4 text-[#7048E8] shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold">Subscriber Assistance Guide: </span>
+            <span className="font-bold text-[#38205F]">Subscriber Assistance Guide: </span>
             Select a topic below to see what information to prepare and recommended resolution steps for service issues.
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
+        <div className="flex items-center justify-between text-[11px] text-[#827695] px-1">
           <span>Click any topic to expand details</span>
           <div className="flex items-center gap-3">
             <button
               onClick={expandAll}
-              className="text-[#1688C9] hover:underline font-bold cursor-pointer"
+              className="text-[#7048E8] hover:underline font-bold cursor-pointer"
             >
               Expand All
             </button>
             <span>•</span>
             <button
               onClick={collapseAll}
-              className="text-slate-500 hover:underline font-bold cursor-pointer"
+              className="text-[#827695] hover:underline font-bold cursor-pointer"
             >
               Collapse All
             </button>
@@ -108,8 +108,8 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
               id={`support-topic-${topic.id}`}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 isOpen
-                  ? 'bg-white border-[#1688C9]/40 shadow-xs'
-                  : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
+                  ? 'bg-white border-[#7048E8]/40 shadow-xs'
+                  : 'bg-white border-[#E7DFF3] hover:border-[#7048E8]/30 shadow-2xs'
               }`}
             >
               {/* Row Header */}
@@ -120,12 +120,12 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
                 aria-expanded={isOpen}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className="text-[10px] font-black font-mono text-[#1688C9] shrink-0 px-1.5 py-0.5 rounded bg-blue-50">
+                  <span className="text-[10px] font-black font-mono text-[#7048E8] shrink-0 px-1.5 py-0.5 rounded bg-[#F1ECFF]">
                     {index + 1}
                   </span>
                   <span
                     className={`text-xs sm:text-sm font-black leading-snug transition-colors ${
-                      isOpen ? 'text-[#1688C9]' : 'text-[#17202A] group-hover:text-[#1688C9]'
+                      isOpen ? 'text-[#7048E8]' : 'text-[#38205F] group-hover:text-[#7048E8]'
                     }`}
                   >
                     {topic.title}
@@ -136,8 +136,8 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
                 <div
                   className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
                     isOpen
-                      ? 'bg-[#1688C9] text-white'
-                      : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                      ? 'bg-[#7048E8] text-white'
+                      : 'bg-[#F1ECFF] text-[#7048E8] group-hover:bg-[#E7DFF3]'
                   }`}
                 >
                   {isOpen ? (
@@ -150,15 +150,15 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
 
               {/* Expanded Body */}
               {isOpen && (
-                <div className="px-4 pb-4 pt-2 border-t border-slate-100 bg-slate-50/60 animate-in fade-in slide-in-from-top-1 duration-150 space-y-2.5 pl-6 sm:pl-8">
+                <div className="px-4 pb-4 pt-2 border-t border-[#E7DFF3] bg-[#FFF8EE]/40 animate-in fade-in slide-in-from-top-1 duration-150 space-y-2.5 pl-6 sm:pl-8">
                   {topic.content.map((p, pIdx) => (
-                    <p key={pIdx} className="text-xs text-slate-700 leading-relaxed">
+                    <p key={pIdx} className="text-xs text-[#45365F] leading-relaxed">
                       {p}
                     </p>
                   ))}
 
                   {topic.steps && topic.steps.length > 0 && (
-                    <ol className="list-decimal list-inside space-y-1 text-xs text-slate-700 font-medium pl-1">
+                    <ol className="list-decimal list-inside space-y-1 text-xs text-[#45365F] font-medium pl-1">
                       {topic.steps.map((st, sIdx) => (
                         <li key={sIdx}>{st}</li>
                       ))}
@@ -166,8 +166,8 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
                   )}
 
                   {topic.note && (
-                    <div className="mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 font-bold flex items-start gap-2">
-                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                    <div className="mt-2 p-2.5 rounded-xl bg-[#FFF8EE] border border-[#FF6B6B]/30 text-[11px] text-[#45365F] font-semibold flex items-start gap-2">
+                      <AlertCircle className="w-3.5 h-3.5 text-[#FF6B6B] shrink-0 mt-0.5" />
                       <span>{topic.note}</span>
                     </div>
                   )}

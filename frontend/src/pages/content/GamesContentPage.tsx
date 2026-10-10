@@ -68,7 +68,7 @@ export const GamesContentPage: React.FC<GamesContentPageProps> = ({
     <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none">
       {/* 1. Header with Back Button */}
       {showHeader && (
-        <div className="flex items-center justify-between gap-3 bg-[#1688C9] text-white p-3.5 rounded-2xl shadow-xs mb-4">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs mb-4">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
@@ -81,8 +81,8 @@ export const GamesContentPage: React.FC<GamesContentPageProps> = ({
               </button>
             )}
             <div className="flex items-center gap-2">
-              <Gamepad2 className="w-5 h-5 text-[#8BCB3D] shrink-0" />
-              <h1 className="text-base font-black tracking-tight">GameOn Tele Games</h1>
+              <Gamepad2 className="w-5 h-5 text-[#C6F36B] shrink-0" />
+              <h1 className="text-base font-black tracking-tight">GameSwiper Games</h1>
             </div>
           </div>
         </div>

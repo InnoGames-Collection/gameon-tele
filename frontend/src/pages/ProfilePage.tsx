@@ -447,9 +447,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </button>
       )}
 
-      {/* GameOn Tele Info */}
-      <div className="text-center pt-2 text-[10px] text-slate-400 font-bold space-y-0.5">
-        <div>GameOn Tele Gaming Edition</div>
+      {/* GameSwiper Info */}
+      <div className="text-center pt-2 text-[10px] text-[#827695] font-bold space-y-0.5">
+        <div>GameSwiper Gaming Edition</div>
         <div>Official Gaming Portal</div>
       </div>
 

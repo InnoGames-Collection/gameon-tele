@@ -66,10 +66,10 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none">
+    <div className="min-h-screen bg-white text-[#45365F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Header with Back Button */}
       {showHeader && (
-        <div className="flex items-center justify-between gap-3 bg-[#1688C9] text-white p-3.5 rounded-2xl shadow-xs mb-4">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs mb-4">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
@@ -84,7 +84,7 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
               </button>
             )}
             <div className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-[#8BCB3D] shrink-0" />
+              <CreditCard className="w-5 h-5 text-[#C6F36B] shrink-0" />
               <h1 className="text-base font-black tracking-tight">Subscription</h1>
             </div>
           </div>
@@ -93,50 +93,50 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
 
       {/* Brand & Service Header */}
       <div className="text-center py-2 mb-3">
-        <h2 className="text-xl font-black text-[#17202A] tracking-tight">
-          GameOn Tele
+        <h2 className="text-xl font-black text-[#38205F] tracking-tight">
+          GameSwiper
         </h2>
-        <p className="text-xs text-slate-500 font-medium mt-0.5">
+        <p className="text-xs text-[#827695] font-medium mt-0.5">
           Official Gaming Subscription Service
         </p>
       </div>
 
       {/* THE ONLY SUBSCRIPTION PLAN: DAILY (2 Birr/day) */}
-      <div className="p-5 rounded-3xl border-2 border-[#8BCB3D] bg-lime-50/20 shadow-sm space-y-4">
+      <div className="p-5 rounded-3xl border-2 border-[#7048E8] bg-[#F1ECFF]/40 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <span className="px-2.5 py-0.5 rounded-full bg-[#8BCB3D] text-white text-[10px] font-black uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#7048E8] text-white text-[10px] font-black uppercase tracking-wider">
               OFFICIAL PLAN
             </span>
-            <h3 className="text-xl font-black text-[#17202A] mt-2 tracking-tight">
+            <h3 className="text-xl font-black text-[#38205F] mt-2 tracking-tight">
               Daily
             </h3>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-[#827695] font-medium">
               24 hours full game access
             </p>
           </div>
 
           <div className="text-right">
-            <div className="text-2xl sm:text-3xl font-black text-[#1688C9] font-mono leading-tight">
-              2 <span className="text-sm font-sans text-slate-700 font-bold">Birr/day</span>
+            <div className="text-2xl sm:text-3xl font-black text-[#7048E8] font-mono leading-tight">
+              2 <span className="text-sm font-sans text-[#45365F] font-bold">Birr/day</span>
             </div>
-            <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+            <div className="text-[10px] text-[#827695] font-semibold uppercase tracking-wider">
               Auto-renewing
             </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-200/80 pt-3 space-y-2 text-xs text-slate-700">
+        <div className="border-t border-[#E7DFF3] pt-3 space-y-2 text-xs text-[#45365F]">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#8BCB3D] shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#7048E8] shrink-0" />
             <span>Unlimited instant access to all skill-based games</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#8BCB3D] shrink-0" />
-            <span>All 27 games 100% free with unlimited play</span>
+            <CheckCircle2 className="w-4 h-4 text-[#7048E8] shrink-0" />
+            <span>All games 100% free with unlimited play</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#8BCB3D] shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#7048E8] shrink-0" />
             <span>SMS-based activation: Send <strong>OK</strong> to <strong>7198</strong></span>
           </div>
         </div>
@@ -146,7 +146,7 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
           id="subscribe-btn"
           type="button"
           onClick={handleSubscribe}
-          className="w-full py-3.5 rounded-2xl bg-[#8BCB3D] hover:bg-[#7cb934] text-white font-black text-sm tracking-wide shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer mt-2"
+          className="w-full py-3.5 rounded-2xl bg-[#C6F36B] hover:bg-[#bbf058] text-[#38205F] font-black text-sm tracking-wide shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer mt-2"
         >
           <Send className="w-4 h-4" />
           <span>Subscribe (2 Birr/day)</span>
@@ -155,28 +155,28 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
 
       {/* SMS Guidance / Composer Opened Confirmation */}
       {isSmsPromptVisible && (
-        <div className="mt-4 p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-950 space-y-2.5 animate-in fade-in duration-200">
-          <div className="flex items-center gap-2 font-black text-sm text-[#1688C9]">
+        <div className="mt-4 p-4 rounded-2xl bg-[#FFF8EE] border border-[#E7DFF3] text-xs text-[#45365F] space-y-2.5 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2 font-black text-sm text-[#7048E8]">
             <MessageSquare className="w-4 h-4" />
             <span>SMS Composer Prepared</span>
           </div>
-          <p className="text-slate-700 leading-relaxed">
+          <p className="text-[#45365F] leading-relaxed">
             Your messaging app was triggered. Please tap <strong>Send</strong> in your SMS app to confirm your subscription:
           </p>
           <div className="grid grid-cols-2 gap-2 text-center font-mono">
-            <div className="p-2 rounded-xl bg-white border border-blue-100 shadow-2xs">
-              <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">Recipient</span>
-              <strong className="text-sm font-black text-[#1688C9]">7198</strong>
+            <div className="p-2 rounded-xl bg-white border border-[#E7DFF3] shadow-2xs">
+              <span className="text-[10px] text-[#827695] block font-sans uppercase font-bold">Recipient</span>
+              <strong className="text-sm font-black text-[#7048E8]">7198</strong>
             </div>
-            <div className="p-2 rounded-xl bg-white border border-blue-100 shadow-2xs">
-              <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">Message</span>
-              <strong className="text-sm font-black text-[#8BCB3D]">OK</strong>
+            <div className="p-2 rounded-xl bg-white border border-[#E7DFF3] shadow-2xs">
+              <span className="text-[10px] text-[#827695] block font-sans uppercase font-bold">Message</span>
+              <strong className="text-sm font-black text-[#38205F] bg-[#C6F36B] px-2 py-0.5 rounded-md inline-block">OK</strong>
             </div>
           </div>
           <div className="pt-1 flex gap-2">
             <a
               href="sms:7198?body=OK"
-              className="flex-1 py-2 rounded-xl bg-[#1688C9] hover:bg-[#1272aa] text-white text-center font-black text-xs transition-colors flex items-center justify-center gap-1.5"
+              className="flex-1 py-2 rounded-xl bg-[#7048E8] hover:bg-[#5e38d6] text-white text-center font-black text-xs transition-colors flex items-center justify-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Open SMS App (7198)</span>
@@ -184,9 +184,9 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
             <button
               type="button"
               onClick={handleCopy}
-              className="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-2 rounded-xl bg-white border border-[#E7DFF3] hover:bg-[#F1ECFF] text-[#45365F] font-bold text-xs flex items-center gap-1.5 cursor-pointer"
             >
-              {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+              {copiedCode ? <Check className="w-3.5 h-3.5 text-[#7048E8]" /> : <Copy className="w-3.5 h-3.5 text-[#827695]" />}
               <span>{copiedCode ? 'Copied' : 'Copy OK'}</span>
             </button>
           </div>
@@ -194,9 +194,9 @@ export const SubscriptionPage: React.FC<SubscriptionPageProps> = ({
       )}
 
       {/* Safety & Compliance Notice */}
-      <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-bold">
-        <ShieldCheck className="w-3.5 h-3.5 text-[#8BCB3D]" />
-        <span>GameOn Tele • 2 Birr/day • Send OK to 7198</span>
+      <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-[#827695] font-bold">
+        <ShieldCheck className="w-3.5 h-3.5 text-[#7048E8]" />
+        <span>GameSwiper • 2 Birr/day • Send OK to 7198</span>
       </div>
     </div>
   );

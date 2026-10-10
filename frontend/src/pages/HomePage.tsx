@@ -217,8 +217,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="px-4 pt-2 text-center text-[11px] text-slate-400 font-medium">
-          GameOn Tele • Official EthioTelecom Gaming
+        <div className="px-4 pt-2 text-center text-[11px] text-[#827695] font-medium">
+          GameSwiper • Official EthioTelecom Gaming
         </div>
 
       </div>

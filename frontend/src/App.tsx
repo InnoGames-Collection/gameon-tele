@@ -11,7 +11,7 @@ import { EntitlementService } from './services/entitlementService';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
 import { NotificationToast } from './components/NotificationToast';
-import { TelePlusLogo } from './components/TelePlusLogo';
+import { GameSwiperLogo } from './components/GameOnTeleLogo';
 
 // Modals
 import { GameLauncherModal } from './components/GameLauncherModal';
@@ -127,22 +127,21 @@ export default function App() {
     setProfile(updatedProfile);
     setPendingAccessGame(null);
     EntitlementService.recordGamePlayed(gameToPlay.id);
-    showToast('success', `Access granted to ${gameToPlay.title}!`, 'Authorized');
     launchGame(gameToPlay);
   };
 
   // Splash Screen
   if (isAppLaunching) {
     return (
-      <div className="fixed inset-0 z-50 bg-white text-slate-900 flex flex-col items-center justify-center p-6 text-center select-none animate-in fade-in duration-200">
+      <div className="fixed inset-0 z-50 bg-white text-[#38205F] flex flex-col items-center justify-center p-6 text-center select-none animate-in fade-in duration-200">
         <div className="p-3.5 mb-4 flex items-center justify-center">
-          <TelePlusLogo size="lg" />
+          <GameSwiperLogo size="lg" />
         </div>
-        <p className="text-xs text-slate-400 mt-1 font-semibold tracking-wide uppercase">Gaming Portal</p>
+        <p className="text-xs text-[#827695] mt-1 font-bold tracking-wide uppercase">Gaming Portal</p>
         <div className="mt-6 flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-[#1688C9] animate-bounce" style={{ animationDelay: '0ms' }} />
-          <div className="w-2 h-2 rounded-full bg-[#8BCB3D] animate-bounce" style={{ animationDelay: '150ms' }} />
-          <div className="w-2 h-2 rounded-full bg-[#1688C9] animate-bounce" style={{ animationDelay: '300ms' }} />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#7048E8] animate-bounce" style={{ animationDelay: '0ms' }} />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#C6F36B] animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B] animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     );
@@ -153,7 +152,7 @@ export default function App() {
   // ============================================================
   if (!profile.isRegistered) {
     return (
-      <div className="min-h-screen bg-white text-slate-900 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+      <div className="min-h-screen bg-white text-[#45365F] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
         {/* If FAQ or Help & Support is navigated to from Login Page */}
         {contentView === 'faq' && (
           <div className="py-2">
@@ -171,7 +170,6 @@ export default function App() {
           <LoginPage
             onLoginSuccess={(updatedProfile) => {
               setProfile(updatedProfile);
-              showToast('success', 'Sign In Successful', 'Welcome to TelePlus Gaming');
             }}
             onOpenMenu={() => setIsMainMenuOpen(true)}
             showToast={showToast}
@@ -190,7 +188,6 @@ export default function App() {
           onOpenHelpSupport={() => navigateToContentSection('help_support')}
           onSignOut={() => {
             signOut();
-            showToast('info', 'Logged Out', 'Session cleared.');
           }}
           side="right"
           isAuthenticated={false}
@@ -327,7 +324,6 @@ export default function App() {
                 onToggleAudio={toggleAudio}
                 onSignOut={() => {
                   signOut();
-                  showToast('info', 'Signed Out', 'Returned to sign in.');
                 }}
               />
             )}
@@ -347,7 +343,6 @@ export default function App() {
         onOpenHelpSupport={() => navigateToContentSection('help_support')}
         onSignOut={() => {
           signOut();
-          showToast('info', 'Signed Out', 'Returned to sign in.');
         }}
         side="left"
         isAuthenticated={true}
@@ -359,7 +354,7 @@ export default function App() {
         onTabChange={(tab) => setActiveTab(tab)}
         labels={{
           home: 'HOME',
-          games: 'GAMES',
+          games: 'GAME',
           profile: 'PROFILE',
         }}
       />

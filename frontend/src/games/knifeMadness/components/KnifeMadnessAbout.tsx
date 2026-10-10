@@ -81,7 +81,7 @@ export const KnifeMadnessAbout: React.FC<KnifeMadnessAboutProps> = ({ onBack }) 
       </div>
 
       <div className="mt-auto text-center text-[10px] text-slate-400 pb-2">
-        GameON Tele • Knife Madness 3D Edition
+        GameSwiper • Knife Madness 3D Edition
       </div>
     </div>
   );

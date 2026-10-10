@@ -178,19 +178,8 @@ export function usePortalState() {
 
     setProfile(updatedProfile);
     setLastGameSessionResult(result);
-
-    if (transaction) {
-      showToast(
-        'success',
-        '🏆 Tournament Score Confirmed!',
-        `Rank #${transaction.rank} verified! Prize: ${transaction.reward}`
-      );
-    } else if (result.isNewHighScore) {
-      showToast('success', 'New High Score!', `You set a new personal record of ${result.score.toLocaleString()} in ${activeGameToLaunch.title}!`);
-    } else {
-      showToast('info', 'Match Completed', `Earned +${result.coinsEarned} Coins and +${result.xpEarned} XP!`);
-    }
-  }, [activeGameToLaunch, activeTournamentId, profile, showToast]);
+    // Silent score and record updates without intrusive popup toasts covering gameplay
+  }, [activeGameToLaunch, activeTournamentId, profile]);
 
   // Close Game Runner
   const closeGameLauncher = useCallback(() => {
@@ -392,8 +381,7 @@ export function usePortalState() {
   const signOut = useCallback(() => {
     const guest = AuthService.signOut();
     setProfile(guest);
-    showToast('info', 'Signed Out', 'You are now playing in Guest mode.');
-  }, [showToast]);
+  }, []);
 
   return {
     activeTab,

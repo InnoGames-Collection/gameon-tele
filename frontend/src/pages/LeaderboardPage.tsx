@@ -214,8 +214,8 @@ export const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
         </div>
 
         {/* Footer Note */}
-        <div className="text-center pt-2 text-[11px] text-slate-400 font-medium">
-          Official GameOn Tele 7-Day Leaderboard • Cycle #{helixPeriod.cycleNumber}
+        <div className="text-center pt-2 text-[11px] text-[#827695] font-medium">
+          Official GameSwiper 7-Day Leaderboard • Cycle #{helixPeriod.cycleNumber}
         </div>
 
       </div>

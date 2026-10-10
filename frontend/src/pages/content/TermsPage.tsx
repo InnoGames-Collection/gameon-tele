@@ -15,10 +15,10 @@ interface TermSection {
 const GOPLAY_TERMS: TermSection[] = [
   {
     number: '1.0',
-    title: 'GameOn Tele Service Description',
+    title: 'GameSwiper Service Description',
     paragraphs: [
-      'GameOn Tele is an official interactive mobile gaming Value-Added Service (VAS) operated in partnership with EthioTelecom.',
-      'GameOn Tele provides instant, unlimited mobile access to 27 skill-based games with zero downloads required and 100% free gameplay across all titles.',
+      'GameSwiper is an official interactive mobile gaming Value-Added Service (VAS) operated in partnership with EthioTelecom.',
+      'GameSwiper provides instant, unlimited mobile access to skill-based games with zero downloads required and 100% free gameplay across all titles.',
     ],
   },
   {
@@ -26,7 +26,7 @@ const GOPLAY_TERMS: TermSection[] = [
     title: 'Subscription & SMS Service Shortcode 7198',
     paragraphs: [
       'Subscribers activate the service by sending SMS "OK" to shortcode 7198 from an active EthioTelecom mobile line, or via official online authorization.',
-      'The service subscription fee is 2 ETB per day, charged directly via standard mobile airtime deduction. All 27 games remain 100% free to play with unlimited retries and no pay-per-play barriers.',
+      'The service subscription fee is 2 ETB per day, charged directly via standard mobile airtime deduction. All games remain 100% free to play with unlimited retries and no pay-per-play barriers.',
     ],
   },
   {
@@ -41,7 +41,7 @@ const GOPLAY_TERMS: TermSection[] = [
     number: '4.0',
     title: 'Free Catalog & Gameplay Access',
     paragraphs: [
-      'All 27 titles in the GameOn Tele catalog are free to play. There are no coin deductions, no paywalls, and no hidden micro-transactions.',
+      'All titles in the GameSwiper catalog are free to play. There are no coin deductions, no paywalls, and no hidden micro-transactions.',
       'Players can enjoy full arcade, puzzle, sports, board, and racing titles as many times as desired.',
     ],
   },
@@ -57,7 +57,7 @@ const GOPLAY_TERMS: TermSection[] = [
     number: '6.0',
     title: 'Privacy & MSISDN Protection',
     paragraphs: [
-      'GameOn Tele strictly protects subscriber privacy. Phone numbers (MSISDNs) are kept confidential and protected in strict compliance with telecommunications regulations and Ethiopian data protection laws.',
+      'GameSwiper strictly protects subscriber privacy. Phone numbers (MSISDNs) are kept confidential and protected in strict compliance with telecommunications regulations and Ethiopian data protection laws.',
       'Personal data collected is limited strictly to subscriber authentication, session management, and service delivery.',
     ],
   },
@@ -66,14 +66,14 @@ const GOPLAY_TERMS: TermSection[] = [
     title: 'Disputes & Customer Support',
     paragraphs: [
       'For customer assistance, billing questions, or technical support, subscribers can consult the Help & Support section or reach out via EthioTelecom customer care.',
-      'GameOn Tele reserves the right to perform routine maintenance, optimize performance, and deliver updates to ensure uninterrupted quality.',
+      'GameSwiper reserves the right to perform routine maintenance, optimize performance, and deliver updates to ensure uninterrupted quality.',
     ],
   },
   {
     number: '8.0',
     title: 'Acceptance of Terms',
     paragraphs: [
-      'By accessing GameOn Tele or subscribing via shortcode 7198, the subscriber acknowledges and agrees to be bound by these Terms & Conditions.',
+      'By accessing GameSwiper or subscribing via shortcode 7198, the subscriber acknowledges and agrees to be bound by these Terms & Conditions.',
     ],
   },
 ];
@@ -85,10 +85,10 @@ interface TermsPageProps {
 
 export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true }) => {
   return (
-    <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none">
+    <div className="min-h-screen bg-white text-[#45365F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Header with Back Button */}
       {showHeader && (
-        <div className="flex items-center justify-between gap-3 bg-[#1688C9] text-white p-3.5 rounded-2xl shadow-xs mb-4">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs mb-4">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
@@ -103,7 +103,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
               </button>
             )}
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-slate-200 shrink-0" />
+              <FileText className="w-5 h-5 text-[#C6F36B] shrink-0" />
               <h1 className="text-base font-black tracking-tight">Terms & Conditions</h1>
             </div>
           </div>
@@ -111,11 +111,11 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
       )}
 
       {/* 2. Top Summary Card */}
-      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed mb-4">
-        <p className="font-bold text-[#17202A]">
-          Official GameOn Tele Gaming Terms & Conditions
+      <div className="p-3.5 rounded-2xl bg-[#FFF8EE] border border-[#E7DFF3] text-xs text-[#45365F] leading-relaxed mb-4">
+        <p className="font-bold text-[#38205F]">
+          Official GameSwiper Gaming Terms & Conditions
         </p>
-        <p className="text-[11px] text-slate-500 mt-1">
+        <p className="text-[11px] text-[#827695] mt-1">
           Governing EthioTelecom VAS Shortcode 7198 subscription, fair play, and subscriber data protection.
         </p>
       </div>
@@ -126,22 +126,22 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
           <div
             key={section.number}
             id={`term-section-${section.number.replace('.', '-')}`}
-            className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-2"
+            className="bg-white rounded-2xl p-4 border border-[#E7DFF3] shadow-xs space-y-2"
           >
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[#1688C9] font-mono font-black text-xs">
+              <span className="px-2 py-0.5 rounded-md bg-[#F1ECFF] text-[#7048E8] font-mono font-black text-xs">
                 {section.number}
               </span>
-              <h2 className="text-xs sm:text-sm font-black text-[#17202A]">{section.title}</h2>
+              <h2 className="text-xs sm:text-sm font-black text-[#38205F]">{section.title}</h2>
             </div>
 
-            <div className="space-y-1.5 text-xs text-slate-700 leading-relaxed pl-1">
+            <div className="space-y-1.5 text-xs text-[#45365F] leading-relaxed pl-1">
               {section.paragraphs.map((p, idx) => (
                 <p key={idx}>{p}</p>
               ))}
 
               {section.bulletPoints && section.bulletPoints.length > 0 && (
-                <ul className="list-disc list-inside space-y-1 text-slate-700 pl-2">
+                <ul className="list-disc list-inside space-y-1 text-[#45365F] pl-2">
                   {section.bulletPoints.map((bp, bIdx) => (
                     <li key={bIdx}>{bp}</li>
                   ))}
@@ -152,9 +152,9 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
         ))}
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-bold">
-        <ShieldCheck className="w-3.5 h-3.5 text-[#8BCB3D]" />
-        <span>telebirr SuperApp Verified Service Terms</span>
+      <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-[#827695] font-bold">
+        <ShieldCheck className="w-3.5 h-3.5 text-[#7048E8]" />
+        <span>GameSwiper Official Service Terms • EthioTelecom 7198</span>
       </div>
     </div>
   );

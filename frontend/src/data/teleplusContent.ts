@@ -350,33 +350,33 @@ export interface FAQItem {
 export const TELEPLUS_FAQ_ITEMS: FAQItem[] = [
   {
     id: 'faq-1',
-    question: 'What is GameOn Tele?',
+    question: 'What is GameSwiper?',
     answer:
-      'GameOn Tele is the premier mobile gaming entertainment portal for EthioTelecom users, offering instant access to high-quality skill-based games with zero ads or coin limits.',
+      'GameSwiper is the premier mobile gaming entertainment portal for EthioTelecom users, offering instant access to high-quality skill-based games with zero ads or coin limits.',
   },
   {
     id: 'faq-2',
     question: 'What is the subscription price?',
     answer:
-      'GameOn Tele costs 2 Birr per day. To subscribe, send OK to 7198. It provides unlimited access to all games without ads, coins, or interruptions.',
+      'GameSwiper costs 2 Birr per day. To subscribe, send OK to 7198. It provides unlimited access to all games without ads, coins, or interruptions.',
   },
   {
     id: 'faq-3',
-    question: 'How do I subscribe to GameOn Tele?',
+    question: 'How do I subscribe to GameSwiper?',
     answer:
-      'To subscribe, send OK to 7198 from your mobile device. GameOn Tele costs 2 Birr per day and gives you full access to all games.',
+      'To subscribe, send OK to 7198 from your mobile device. GameSwiper costs 2 Birr per day and gives you full access to all games.',
   },
   {
     id: 'faq-4',
     question: 'How do I cancel or stop my subscription?',
     answer:
-      'You can stop or cancel your GameOn Tele subscription at any time by sending STOP to 7198.',
+      'You can stop or cancel your GameSwiper subscription at any time by sending STOP to 7198.',
   },
   {
     id: 'faq-5',
     question: 'Are all games free to play?',
     answer:
-      'Yes! All 27 games on GameOn Tele are 100% free to play. Once subscribed, you have unlimited access to every single game without coin requirements or entry fees.',
+      'Yes! All 27 games on GameSwiper are 100% free to play. Once subscribed, you have unlimited access to every single game without coin requirements or entry fees.',
   },
   {
     id: 'faq-6',
@@ -400,7 +400,7 @@ export const TELEPLUS_FAQ_ITEMS: FAQItem[] = [
     id: 'faq-9',
     question: 'What if I encounter gameplay or connection issues?',
     answer:
-      'GameOn Tele is built for low-latency web play. If your connection drops momentarily, your local personal best scores are preserved. For further assistance, access Help & Support from your Profile tab.',
+      'GameSwiper is built for low-latency web play. If your connection drops momentarily, your local personal best scores are preserved. For further assistance, access Help & Support from your Profile tab.',
   },
 ];
 
@@ -420,7 +420,7 @@ export const TELEPLUS_SUPPORT_TOPICS: SupportTopic[] = [
     id: 'sub-support',
     title: 'Subscription Support',
     content: [
-      'GameOn Tele costs 2 Birr per day.',
+      'GameSwiper costs 2 Birr per day.',
       'Subscription shortcode: 7198 (Send OK to 7198).',
       'For subscription-related problems, provide:',
       '• Mobile number',
@@ -433,7 +433,7 @@ export const TELEPLUS_SUPPORT_TOPICS: SupportTopic[] = [
     id: 'unsub-support',
     title: 'Unsubscription Support',
     content: [
-      'To unsubscribe from GameOn Tele, send STOP to 7198.',
+      'To unsubscribe from GameSwiper, send STOP to 7198.',
       'If the service does not stop after sending STOP to 7198, provide:',
       '• Mobile number',
       '• Approximate time sent',
@@ -444,7 +444,7 @@ export const TELEPLUS_SUPPORT_TOPICS: SupportTopic[] = [
     id: 'charging-support',
     title: 'Charging Support',
     content: [
-      'GameOn Tele subscription fee is 2 Birr/day.',
+      'GameSwiper subscription fee is 2 Birr/day.',
       'For charging-related issues, provide:',
       '• Mobile number',
       '• Approximate charging time',
@@ -524,7 +524,7 @@ export const TELEPLUS_SUPPORT_TOPICS: SupportTopic[] = [
       'Users should protect their mobile account and should not share sensitive authentication information with other people.',
       'Do not attempt to manipulate game scores, access other users’ accounts, or interfere with the service.',
     ],
-    note: 'Important: A GameOn Tele support phone number/contact address should only be added when the official support contact is provided. Do not invent one.',
+    note: 'Important: A GameSwiper support phone number/contact address should only be added when the official support contact is provided. Do not invent one.',
   },
 ];
 
@@ -556,7 +556,7 @@ export const TELEPLUS_SUBSCRIPTION_PACKAGES: SubscriptionPackage[] = [
 export const TELEPLUS_SUBSCRIPTION_INFO = {
   ussdInfo: 'Subscription is available by sending OK to 7198.',
   afterSubscription:
-    'After successful subscription, the user can access GameOn Tele games. GameOn Tele costs 2 Birr per day. Subscription charges and renewal operate daily.',
+    'After successful subscription, the user can access GameSwiper games. GameSwiper costs 2 Birr per day. Subscription charges and renewal operate daily.',
   renewal:
     'The daily package renews at 2 Birr per day. Users should ensure sufficient mobile balance is available for renewal.',
   unsubscription:
@@ -597,15 +597,15 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.1',
     title: 'Introduction',
     paragraphs: [
-      'These Terms & Conditions govern the use of the GameOn Tele gaming service.',
-      'By accessing or using GameOn Tele, the user agrees to comply with these Terms & Conditions and the applicable service rules.',
+      'These Terms & Conditions govern the use of the GameSwiper gaming service.',
+      'By accessing or using GameSwiper, the user agrees to comply with these Terms & Conditions and the applicable service rules.',
     ],
   },
   {
     number: '14.2',
     title: 'Service',
     paragraphs: [
-      'GameOn Tele provides mobile gaming entertainment, skill-based games, competitions, leaderboards, and prize opportunities.',
+      'GameSwiper provides mobile gaming entertainment, skill-based games, competitions, leaderboards, and prize opportunities.',
       'The available games and features may be updated from time to time.',
     ],
   },
@@ -613,7 +613,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.3',
     title: 'Eligibility',
     paragraphs: [
-      'Users must meet the eligibility requirements applicable to the GameOn Tele service.',
+      'Users must meet the eligibility requirements applicable to the GameSwiper service.',
       'Additional eligibility conditions may apply to particular games, competitions, promotions, or prizes.',
     ],
   },
@@ -629,7 +629,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.5',
     title: 'Subscription',
     paragraphs: [
-      'GameOn Tele provides:',
+      'GameSwiper provides:',
     ],
     bulletPoints: [
       'Daily subscription — 2 Birr/day',
@@ -656,7 +656,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.8',
     title: 'Games',
     paragraphs: [
-      'GameOn Tele currently provides skill-based games including Candy Blast, Color Rush, World Legends, Pop Piano, Hill Climb, Pop Balloon, and other featured titles.',
+      'GameSwiper currently provides skill-based games including Candy Blast, Color Rush, World Legends, Pop Piano, Hill Climb, Pop Balloon, and other featured titles.',
       'Each game has its own gameplay mechanics and rules.',
     ],
   },
@@ -664,7 +664,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.9',
     title: 'Skill-Based Gameplay',
     paragraphs: [
-      'GameOn Tele games are designed around player skill.',
+      'GameSwiper games are designed around player skill.',
       'Performance may depend on factors such as reaction, timing, accuracy, precision, and decision-making.',
     ],
   },
@@ -711,7 +711,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.15',
     title: 'FairPlay Integrity',
     paragraphs: [
-      'GameOn Tele maintains strict fair play guidelines across all games.',
+      'GameSwiper maintains strict fair play guidelines across all games.',
       'Automated bots, scripts, and score manipulation are prohibited.',
     ],
   },
@@ -719,7 +719,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.16',
     title: 'Account Verification',
     paragraphs: [
-      'GameOn Tele verifies active EthioTelecom mobile line subscriptions via shortcode 7198 to ensure seamless, secure access.',
+      'GameSwiper verifies active EthioTelecom mobile line subscriptions via shortcode 7198 to ensure seamless, secure access.',
     ],
   },
   {
@@ -753,21 +753,21 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.19',
     title: 'Disqualification',
     paragraphs: [
-      'GameOn Tele may invalidate scores, remove leaderboard entries, withhold prizes, suspend participation, or take other appropriate action where there is evidence of rule violations or unfair gameplay.',
+      'GameSwiper may invalidate scores, remove leaderboard entries, withhold prizes, suspend participation, or take other appropriate action where there is evidence of rule violations or unfair gameplay.',
     ],
   },
   {
     number: '14.20',
     title: 'Service Availability',
     paragraphs: [
-      'GameOn Tele aims to provide continuous service but availability may be affected by maintenance, technical issues, network conditions, system upgrades, third-party dependencies, or other circumstances outside reasonable control.',
+      'GameSwiper aims to provide continuous service but availability may be affected by maintenance, technical issues, network conditions, system upgrades, third-party dependencies, or other circumstances outside reasonable control.',
     ],
   },
   {
     number: '14.21',
     title: 'Updates',
     paragraphs: [
-      'GameOn Tele may modify games, game mechanics, scoring, features, competitions, prize structures, or service functionality.',
+      'GameSwiper may modify games, game mechanics, scoring, features, competitions, prize structures, or service functionality.',
       'Applicable updates may be communicated through appropriate service channels.',
     ],
   },
@@ -776,7 +776,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     title: 'Data and Privacy',
     paragraphs: [
       'User information may be processed as necessary to provide the service, manage subscriptions, operate games, maintain leaderboards, prevent abuse, provide support, and perform prize verification.',
-      'Personal information should be handled in accordance with applicable privacy requirements and GameOn Tele privacy practices.',
+      'Personal information should be handled in accordance with applicable privacy requirements and GameSwiper privacy practices.',
     ],
   },
   {
@@ -791,7 +791,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.24',
     title: 'Intellectual Property',
     paragraphs: [
-      'GameOn Tele service content, software, graphics, game designs, interfaces, branding, and other protected materials remain the property of their respective rights holders.',
+      'GameSwiper service content, software, graphics, game designs, interfaces, branding, and other protected materials remain the property of their respective rights holders.',
       'Users may not reproduce, modify, distribute, reverse engineer, or commercially exploit protected service content without authorization.',
     ],
   },
@@ -799,7 +799,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.25',
     title: 'Liability',
     paragraphs: [
-      'GameOn Tele is not responsible for circumstances outside its reasonable control, including certain network, connectivity, device, technical, or third-party service issues.',
+      'GameSwiper is not responsible for circumstances outside its reasonable control, including certain network, connectivity, device, technical, or third-party service issues.',
       'Nothing in these Terms should exclude rights or obligations that cannot legally be excluded.',
     ],
   },
@@ -815,14 +815,14 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.27',
     title: 'Suspension or Termination',
     paragraphs: [
-      'GameOn Tele may suspend or terminate access where necessary, including for terms violations, fair-play violations, abuse, security concerns, technical reasons, or service discontinuation.',
+      'GameSwiper may suspend or terminate access where necessary, including for terms violations, fair-play violations, abuse, security concerns, technical reasons, or service discontinuation.',
     ],
   },
   {
     number: '14.28',
     title: 'Complaints and Disputes',
     paragraphs: [
-      'Users should first contact the applicable GameOn Tele support channel to resolve service-related complaints.',
+      'Users should first contact the applicable GameSwiper support channel to resolve service-related complaints.',
       'Applicable laws and dispute-resolution requirements will apply.',
     ],
   },
@@ -838,18 +838,18 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
     number: '14.30',
     title: 'Acceptance',
     paragraphs: [
-      'By registering for, subscribing to, or using GameOn Tele, the user confirms that they have read and accepted the applicable Terms & Conditions.',
+      'By registering for, subscribing to, or using GameSwiper, the user confirms that they have read and accepted the applicable Terms & Conditions.',
     ],
   },
 ];
 
 // =========================================================================
-// 7. PRIVACY POLICY CONTENT (Section 14.24 & GameOn Tele Privacy Practices)
+// 7. PRIVACY POLICY CONTENT (Section 14.24 & GameSwiper Privacy Practices)
 // =========================================================================
 export const TELEPLUS_PRIVACY_POLICY = {
-  title: 'GameOn Tele Privacy Policy',
+  title: 'GameSwiper Privacy Policy',
   summary:
-    'GameOn Tele is committed to protecting user privacy and handling personal information responsibly, transparently, and securely in accordance with applicable laws and telecommunications standards.',
+    'GameSwiper is committed to protecting user privacy and handling personal information responsibly, transparently, and securely in accordance with applicable laws and telecommunications standards.',
   sections: [
     {
       title: 'Data Collection & Processing',
@@ -870,7 +870,7 @@ export const TELEPLUS_PRIVACY_POLICY = {
     {
       title: 'Zero Unnecessary Device Permissions',
       paragraphs: [
-        'GameOn Tele operates within your browser or mobile web container with zero invasive device permissions. The service does not request access to device contacts, microphone, camera, or external file storage.',
+        'GameSwiper operates within your browser or mobile web container with zero invasive device permissions. The service does not request access to device contacts, microphone, camera, or external file storage.',
       ],
     },
     {
@@ -882,7 +882,7 @@ export const TELEPLUS_PRIVACY_POLICY = {
     {
       title: 'Regulatory Compliance & Legal Review Status',
       paragraphs: [
-        'This Privacy Policy reflects the current data processing practices of the GameOn Tele gaming service. Official additional regulatory compliance provisions will be published upon conclusion of scheduled regulatory reviews.',
+        'This Privacy Policy reflects the current data processing practices of the GameSwiper gaming service. Official additional regulatory compliance provisions will be published upon conclusion of scheduled regulatory reviews.',
       ],
     },
   ],

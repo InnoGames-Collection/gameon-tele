@@ -17,10 +17,10 @@ const SECTION_ICONS = [Database, Smartphone, ShieldCheck, Lock, CheckCircle2];
 
 export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onBack, showHeader = true }) => {
   return (
-    <div className="min-h-screen bg-white text-[#17202A] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none">
+    <div className="min-h-screen bg-white text-[#45365F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Header with Back Button */}
       {showHeader && (
-        <div className="flex items-center justify-between gap-3 bg-[#1688C9] text-white p-3.5 rounded-2xl shadow-xs mb-4">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs mb-4">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
@@ -35,7 +35,7 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onBack, showHeader = t
               </button>
             )}
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-300 shrink-0" />
+              <ShieldCheck className="w-5 h-5 text-[#C6F36B] shrink-0" />
               <h1 className="text-base font-black tracking-tight">Privacy Policy</h1>
             </div>
           </div>
@@ -43,8 +43,8 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onBack, showHeader = t
       )}
 
       {/* 2. Overview Card */}
-      <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-xs text-emerald-950 leading-relaxed mb-4 space-y-1">
-        <h2 className="font-black text-emerald-900 text-sm">{TELEPLUS_PRIVACY_POLICY.title}</h2>
+      <div className="p-4 rounded-2xl bg-[#FFF8EE] border border-[#E7DFF3] text-xs text-[#45365F] leading-relaxed mb-4 space-y-1">
+        <h2 className="font-black text-[#38205F] text-sm">{TELEPLUS_PRIVACY_POLICY.title}</h2>
         <p>{TELEPLUS_PRIVACY_POLICY.summary}</p>
       </div>
 
@@ -55,20 +55,20 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onBack, showHeader = t
           return (
             <div
               key={idx}
-              className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-2"
+              className="bg-white rounded-2xl p-4 border border-[#E7DFF3] shadow-xs space-y-2"
             >
               <div className="flex items-center gap-2">
-                <SectionIcon className="w-4 h-4 text-[#1688C9] shrink-0" />
-                <h3 className="text-xs sm:text-sm font-black text-[#17202A]">{section.title}</h3>
+                <SectionIcon className="w-4 h-4 text-[#7048E8] shrink-0" />
+                <h3 className="text-xs sm:text-sm font-black text-[#38205F]">{section.title}</h3>
               </div>
 
-              <div className="space-y-1.5 text-xs text-slate-700 leading-relaxed pl-1">
+              <div className="space-y-1.5 text-xs text-[#45365F] leading-relaxed pl-1">
                 {section.paragraphs.map((p, pIdx) => (
                   <p key={pIdx}>{p}</p>
                 ))}
 
                 {section.bulletPoints && (
-                  <ul className="list-disc list-inside space-y-1 text-slate-700 pl-2">
+                  <ul className="list-disc list-inside space-y-1 text-[#45365F] pl-2">
                     {section.bulletPoints.map((bp, bIdx) => (
                       <li key={bIdx}>{bp}</li>
                     ))}
