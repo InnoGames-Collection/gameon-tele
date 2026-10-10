@@ -77,22 +77,22 @@ export const CoinTopupModal: React.FC<CoinTopupModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200 select-none">
+    <div className="fixed inset-0 z-50 bg-[#071827]/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200 select-none">
       <div 
-        className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-6 duration-200"
+        className="w-full max-w-md bg-[#102C40] rounded-t-3xl sm:rounded-3xl border border-[#244558] shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-6 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-[#1688C9] text-white p-4 sm:p-5 flex items-center justify-between">
+        <div className="bg-[#0B2234] border-b border-[#244558] text-[#F5FAFC] p-4 sm:p-5 flex items-center justify-between">
           <div>
             <h3 className="text-lg font-black tracking-tight">TelePlus Coins</h3>
-            <p className="text-xs text-blue-100 font-medium mt-0.5">
+            <p className="text-xs text-[#A9C0CE] font-medium mt-0.5">
               Choose a package
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full bg-[#15374A] hover:bg-[#244558] text-[#F5FAFC] flex items-center justify-center transition-colors cursor-pointer border border-[#244558]"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -101,15 +101,15 @@ export const CoinTopupModal: React.FC<CoinTopupModalProps> = ({
 
         <div className="p-4 sm:p-5 space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <div className="p-3 rounded-xl bg-[#FF796C]/10 border border-[#FF796C]/30 text-[#FF796C] text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#FF796C]" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2 font-bold">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <div className="p-3 rounded-xl bg-[#63F5C8]/10 border border-[#63F5C8]/30 text-[#63F5C8] text-xs flex items-center gap-2 font-bold">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-[#63F5C8]" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -125,15 +125,15 @@ export const CoinTopupModal: React.FC<CoinTopupModalProps> = ({
                   onClick={() => setSelectedIdx(idx)}
                   className={`relative p-3.5 sm:p-4 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
                     isSelected
-                      ? 'border-[#8BCB3D] bg-lime-50/70 shadow-md ring-2 ring-[#8BCB3D] -translate-y-0.5'
-                      : 'border-slate-200 hover:border-slate-300 bg-white shadow-2xs'
+                      ? 'border-[#63F5C8] bg-[#15374A] shadow-md ring-2 ring-[#63F5C8] -translate-y-0.5'
+                      : 'border-[#244558] hover:border-[#35D9F2]/50 bg-[#0B2234] shadow-2xs'
                   }`}
                 >
                   <div className="text-2xl sm:text-3xl mb-1">🪙</div>
-                  <div className="text-xs sm:text-sm font-black text-[#17202A] tracking-tight uppercase">
+                  <div className="text-xs sm:text-sm font-black text-[#F5FAFC] tracking-tight uppercase">
                     {pkg.priceETB} BIRR
                   </div>
-                  <div className="text-[11px] sm:text-xs font-bold text-slate-500 mt-0.5 uppercase">
+                  <div className="text-[11px] sm:text-xs font-bold text-[#F7C85B] mt-0.5 uppercase">
                     {pkg.coins} COINS
                   </div>
                 </button>
@@ -145,7 +145,7 @@ export const CoinTopupModal: React.FC<CoinTopupModalProps> = ({
           <button
             onClick={handlePurchase}
             disabled={isProcessing}
-            className="w-full py-3.5 px-4 rounded-xl bg-[#8BCB3D] hover:bg-[#7cb934] active:scale-[0.99] text-white font-black text-sm tracking-wide transition-all shadow-md flex items-center justify-center cursor-pointer uppercase"
+            className="w-full py-3.5 px-4 rounded-xl bg-[#00BFA6] hover:bg-[#63F5C8] active:scale-[0.99] text-[#071827] font-black text-sm tracking-wide transition-all shadow-md flex items-center justify-center cursor-pointer uppercase"
           >
             {isProcessing ? (
               <span className="inline-block animate-pulse">Processing Purchase...</span>

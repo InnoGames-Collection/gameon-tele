@@ -51,7 +51,7 @@ export const GameStatisticsModal: React.FC<GameStatisticsModalProps> = ({
           </button>
 
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1.5 text-purple-400">
+            <div className="flex items-center justify-center gap-1.5 text-[#35D9F2]">
               <BarChart2 className="w-4 h-4" />
               <span className="text-xs font-black tracking-widest uppercase">STATISTICS</span>
             </div>

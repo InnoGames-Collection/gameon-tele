@@ -136,7 +136,7 @@ export const GameSettingsModal: React.FC<GameSettingsModalProps> = ({ gameConfig
           {/* Music Toggle */}
           <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/10">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-[#00BFA6]/20 text-[#63F5C8] flex items-center justify-center">
                 <Music className="w-5 h-5" />
               </div>
               <div>
@@ -148,7 +148,7 @@ export const GameSettingsModal: React.FC<GameSettingsModalProps> = ({ gameConfig
               type="button"
               onClick={toggleMusic}
               className={`w-12 h-7 rounded-full transition-colors relative cursor-pointer ${
-                musicEnabled ? 'bg-purple-500' : 'bg-slate-700'
+                musicEnabled ? 'bg-[#00BFA6]' : 'bg-slate-700'
               }`}
             >
               <div

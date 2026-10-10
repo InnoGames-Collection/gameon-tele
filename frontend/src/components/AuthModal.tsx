@@ -95,31 +95,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const isSignInDisabled = isVerifying || otpCode.trim().length !== 6;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="w-full max-w-md bg-white text-slate-900 rounded-3xl border border-slate-200 shadow-2xl p-5 sm:p-6 relative my-6 font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="fixed inset-0 z-50 bg-[#071827]/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+      <div className="w-full max-w-md bg-[#102C40] text-[#F5FAFC] rounded-3xl border border-[#244558] shadow-2xl p-5 sm:p-6 relative my-6 font-['Plus_Jakarta_Sans',sans-serif]">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-2 rounded-xl bg-[#15374A] border border-[#244558] text-[#A9C0CE] hover:text-[#F5FAFC] hover:bg-[#244558] transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Top Header */}
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-7 h-7 rounded-xl bg-[#0057A8] text-white flex items-center justify-center font-black text-xs">
+          <div className="w-7 h-7 rounded-xl bg-[#15374A] border border-[#244558] text-[#00BFA6] flex items-center justify-center font-black text-xs">
             ET
           </div>
           <div>
-            <span className="font-black text-sm text-[#0057A8]">TelePlay</span>
-            <span className="text-[9px] ml-1 px-1.5 py-0.2 rounded bg-[#78BE20] text-white font-black uppercase">
+            <span className="font-black text-sm text-[#F5FAFC]">GameSwiper</span>
+            <span className="text-[9px] ml-1.5 px-1.5 py-0.5 rounded bg-[#63F5C8]/20 text-[#63F5C8] font-black uppercase border border-[#63F5C8]/30">
               Ethiopia
             </span>
           </div>
         </div>
 
         {/* Promotional Banner */}
-        <div className="relative rounded-2xl overflow-hidden border border-[#E7DFF3] mb-4 bg-slate-900 aspect-[3/1] w-full shadow-sm">
+        <div className="relative rounded-2xl overflow-hidden border border-[#244558] mb-4 bg-[#0B2234] aspect-[3/1] w-full shadow-sm">
           <img
             src="/banners/login-banner.webp"
             alt="GameSwiper Play and Win Big - Up to 50,000 ETB Grand Prize"
@@ -128,23 +128,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           />
         </div>
 
-        {/* Compact White Sign In Card */}
+        {/* Sign In Card */}
         <form onSubmit={handleSignIn} className="space-y-3.5">
           <div className="space-y-1">
-            <h2 className="text-base font-black text-slate-900">Sign In</h2>
-            <p className="text-[11px] text-slate-500">
+            <h2 className="text-base font-black text-[#F5FAFC]">Sign In</h2>
+            <p className="text-[11px] text-[#A9C0CE]">
               Enter your EthioTelecom phone number to continue.
             </p>
           </div>
 
           {/* Phone Field */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider">
+            <label className="block text-[10px] font-bold text-[#A9C0CE] uppercase tracking-wider">
               Phone Number
             </label>
             <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-500 font-bold text-xs">
-                <Phone className="w-3.5 h-3.5 text-[#0057A8]" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[#A9C0CE] font-bold text-xs">
+                <Phone className="w-3.5 h-3.5 text-[#00BFA6]" />
                 <span>+251</span>
               </div>
               <input
@@ -153,7 +153,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="91 123 4567"
                 required
-                className="w-full pl-16 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-sm font-semibold focus:border-[#0057A8] focus:bg-white focus:outline-none"
+                className="w-full pl-16 pr-3 py-2.5 bg-[#0B2234] border border-[#244558] rounded-xl text-[#F5FAFC] font-mono text-sm font-semibold focus:border-[#00BFA6] focus:bg-[#0B2234] focus:outline-none placeholder:text-[#A9C0CE]/50"
               />
             </div>
           </div>
@@ -161,11 +161,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {/* OTP Field with GET CODE */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-[#A9C0CE] uppercase tracking-wider">
                 OTP / 6-Digit Code
               </label>
               {otpSent && countdown > 0 && (
-                <span className="text-[10px] text-slate-400 font-mono">
+                <span className="text-[10px] text-[#A9C0CE] font-mono">
                   {countdown}s
                 </span>
               )}
@@ -173,14 +173,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A9C0CE]" />
                 <input
                   type="text"
                   maxLength={6}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   placeholder="6-digit code"
-                  className="w-full pl-8 pr-2 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono text-sm font-bold tracking-widest text-center focus:border-[#0057A8] focus:bg-white focus:outline-none"
+                  className="w-full pl-8 pr-2 py-2.5 bg-[#0B2234] border border-[#244558] rounded-xl text-[#F5FAFC] font-mono text-sm font-bold tracking-widest text-center focus:border-[#00BFA6] focus:bg-[#0B2234] focus:outline-none placeholder:text-[#A9C0CE]/50"
                 />
               </div>
 
@@ -188,19 +188,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 type="button"
                 onClick={handleGetCode}
                 disabled={isRequestingOtp || countdown > 0}
-                className="px-3.5 py-2.5 bg-[#0057A8] hover:bg-[#004080] disabled:bg-slate-200 disabled:text-slate-400 text-white font-extrabold text-xs rounded-xl transition-colors shrink-0 cursor-pointer"
+                className="px-3.5 py-2.5 bg-[#15374A] hover:bg-[#00BFA6] hover:text-[#071827] disabled:bg-[#0B2234] disabled:text-[#A9C0CE]/40 text-[#00BFA6] border border-[#00BFA6]/40 font-extrabold text-xs rounded-xl transition-colors shrink-0 cursor-pointer"
               >
                 {isRequestingOtp ? '...' : countdown > 0 ? `${countdown}s` : 'GET CODE'}
               </button>
             </div>
 
             {demoCodeHint && (
-              <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-semibold flex items-center justify-between">
+              <div className="p-2 rounded-lg bg-[#0B2234] border border-[#244558] text-[#63F5C8] text-[11px] font-semibold flex items-center justify-between">
                 <span>Code: <strong>{demoCodeHint}</strong></span>
                 <button
                   type="button"
                   onClick={() => setOtpCode(demoCodeHint)}
-                  className="text-[#78BE20] underline text-[10px] font-black cursor-pointer"
+                  className="text-[#63F5C8] underline text-[10px] font-black cursor-pointer"
                 >
                   Auto-Fill
                 </button>
@@ -212,28 +212,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="submit"
             disabled={isSignInDisabled}
-            className="w-full py-3 rounded-xl bg-[#0057A8] hover:bg-[#004080] disabled:bg-slate-200 disabled:text-slate-400 text-white font-black text-xs active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#00BFA6] to-[#63F5C8] hover:from-[#63F5C8] hover:to-[#00BFA6] disabled:from-[#15374A] disabled:to-[#15374A] disabled:text-[#A9C0CE]/40 text-[#071827] font-black text-xs active:scale-[0.98] transition-all shadow-md shadow-[#00BFA6]/20 flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer border border-[#00BFA6]"
           >
-            <CheckCircle2 className="w-4 h-4" />
+            <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
             <span>{isVerifying ? 'VERIFYING...' : 'SIGN IN'}</span>
           </button>
 
-          {/* Secondary Action: Subscribe Button (WHITE bg, GREEN border, GREEN text) */}
+          {/* Secondary Action: Subscribe Button */}
           <button
             type="button"
             onClick={() => {
               onClose();
               if (onOpenSubscribe) onOpenSubscribe();
             }}
-            className="w-full py-2.5 rounded-xl bg-white border-2 border-[#78BE20] text-[#78BE20] hover:bg-emerald-50/50 font-black text-xs active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-[#F7C85B] hover:bg-[#eab308] text-[#071827] font-black text-xs active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer border border-[#F7C85B]"
           >
             <span>SUBSCRIBE TO GAMING PASS</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </form>
 
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[10px] text-slate-400">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#78BE20]" />
+        <div className="mt-4 pt-3 border-t border-[#244558] flex items-center justify-center gap-1.5 text-[10px] text-[#A9C0CE]">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#00BFA6]" />
           <span>Secured by EthioTelecom Mobile ID Gateway</span>
         </div>
       </div>

@@ -1,17 +1,6 @@
 /**
  * TelePlus Ethiopia - Clean Buy Coins Screen & Compact Confirmation Dialog
- * 
- * Strict Specification:
- * - Title: BUY COINS
- * - Exactly 3 packages:
- *   1. 3 Birr  →  5 Coins
- *   2. 5 Birr  → 10 Coins
- *   3. 10 Birr → 25 Coins
- * - Clean cards, clear typography, professional coin graphics
- * - Compact confirmation dialog:
- *   "Buy X Coins for Y Birr?"
- *   [Cancel]  [Confirm]
- * - ZERO unnecessary marketing text, billing descriptions, MSISDN display, or metadata.
+ * Midnight Navy & Deep Teal Theme
  */
 
 import React, { useState } from 'react';
@@ -67,18 +56,18 @@ export const EnergyModal: React.FC<EnergyModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in select-none">
+    <div className="fixed inset-0 z-50 bg-[#071827]/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in select-none">
       <div 
         id="buy-coins-sheet"
-        className="w-full max-w-sm bg-white text-[#17202A] rounded-t-2xl sm:rounded-2xl border border-slate-200 shadow-2xl p-5 relative"
+        className="w-full max-w-sm bg-[#102C40] text-[#F5FAFC] rounded-t-2xl sm:rounded-2xl border border-[#244558] shadow-2xl p-5 relative"
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b border-[#244558]">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#8BCB3D] text-white flex items-center justify-center shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-[#15374A] border border-[#244558] text-[#F7C85B] flex items-center justify-center shadow-xs">
               <CoinsIcon className="w-4 h-4 fill-current" />
             </div>
-            <h3 className="text-base font-black text-[#17202A] uppercase tracking-wide">
+            <h3 className="text-base font-black text-[#F5FAFC] uppercase tracking-wide">
               BUY COINS
             </h3>
           </div>
@@ -86,7 +75,7 @@ export const EnergyModal: React.FC<EnergyModalProps> = ({
           <button
             id="close-buy-coins-btn"
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#17202A] transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl bg-[#15374A] hover:bg-[#244558] text-[#A9C0CE] hover:text-[#F5FAFC] border border-[#244558] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4 stroke-[2.5]" />
           </button>
@@ -103,25 +92,25 @@ export const EnergyModal: React.FC<EnergyModalProps> = ({
                 onClick={() => setSelectedPkg(pkg)}
                 className={`w-full p-3.5 rounded-xl border transition-all duration-150 flex items-center justify-between cursor-pointer ${
                   isSelected
-                    ? 'bg-blue-50/50 border-[#1688C9] ring-2 ring-[#1688C9]/30 shadow-xs'
-                    : 'bg-white border-slate-200 hover:border-slate-300'
+                    ? 'bg-[#15374A] border-[#00BFA6] ring-2 ring-[#00BFA6]/30 shadow-xs'
+                    : 'bg-[#0B2234] border-[#244558] hover:border-[#35D9F2]/50'
                 }`}
               >
                 {/* Left: Price */}
                 <div className="flex items-center gap-2.5">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black ${
-                    isSelected ? 'bg-[#1688C9] text-white' : 'bg-slate-100 text-[#17202A]'
+                    isSelected ? 'bg-[#00BFA6] text-[#071827]' : 'bg-[#15374A] text-[#F5FAFC]'
                   }`}>
                     {isSelected ? <Check className="w-4 h-4 stroke-[3]" /> : <CoinsIcon className="w-4 h-4" />}
                   </div>
-                  <span className="text-sm font-black text-[#17202A] font-mono">
+                  <span className="text-sm font-black text-[#F5FAFC] font-mono">
                     {pkg.priceBirr} Birr
                   </span>
                 </div>
 
                 {/* Right: Coins */}
-                <div className="flex items-center gap-1.5 font-mono font-black text-sm text-[#1688C9]">
-                  <CoinsIcon className="w-4 h-4 text-[#8BCB3D] fill-current" />
+                <div className="flex items-center gap-1.5 font-mono font-black text-sm text-[#F7C85B]">
+                  <CoinsIcon className="w-4 h-4 text-[#F7C85B] fill-current" />
                   <span>{pkg.coins} Coins</span>
                 </div>
               </button>
@@ -133,7 +122,7 @@ export const EnergyModal: React.FC<EnergyModalProps> = ({
         <button
           id="proceed-buy-coins-btn"
           onClick={() => handleOpenConfirm(selectedPkg)}
-          className="w-full py-3 rounded-xl bg-[#8BCB3D] hover:bg-[#7cb736] active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
+          className="w-full py-3 rounded-xl bg-[#00BFA6] hover:bg-[#63F5C8] active:scale-95 text-[#071827] font-black text-xs uppercase tracking-wider shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
         >
           <CoinsIcon className="w-4 h-4 fill-current" />
           <span>Buy {selectedPkg.coins} Coins ({selectedPkg.priceBirr} Birr)</span>
@@ -143,17 +132,17 @@ export const EnergyModal: React.FC<EnergyModalProps> = ({
             COMPACT CONFIRMATION DIALOG
            ========================================================================= */}
         {showConfirmDialog && (
-          <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-60 bg-[#071827]/85 backdrop-blur-xs flex items-center justify-center p-4">
             <div 
               id="coin-purchase-confirm-dialog"
-              className="w-full max-w-xs bg-white rounded-2xl p-5 border border-slate-200 shadow-2xl text-center space-y-4 animate-in zoom-in-95"
+              className="w-full max-w-xs bg-[#102C40] rounded-2xl p-5 border border-[#244558] shadow-2xl text-center space-y-4 animate-in zoom-in-95"
             >
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#1688C9] flex items-center justify-center mx-auto border border-blue-100">
-                <CoinsIcon className="w-6 h-6 text-[#8BCB3D] fill-current" />
+              <div className="w-12 h-12 rounded-2xl bg-[#15374A] text-[#F7C85B] flex items-center justify-center mx-auto border border-[#244558]">
+                <CoinsIcon className="w-6 h-6 text-[#F7C85B] fill-current" />
               </div>
 
               <div>
-                <h4 className="text-base font-black text-[#17202A] leading-tight">
+                <h4 className="text-base font-black text-[#F5FAFC] leading-tight">
                   Buy {selectedPkg.coins} Coins for {selectedPkg.priceBirr} Birr?
                 </h4>
               </div>
@@ -163,7 +152,7 @@ export const EnergyModal: React.FC<EnergyModalProps> = ({
                   id="confirm-dialog-cancel-btn"
                   onClick={() => setShowConfirmDialog(false)}
                   disabled={isProcessing}
-                  className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#17202A] font-bold text-xs transition-colors cursor-pointer"
+                  className="py-2.5 px-3 rounded-xl bg-[#15374A] hover:bg-[#244558] text-[#A9C0CE] hover:text-[#F5FAFC] border border-[#244558] font-bold text-xs transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -172,7 +161,7 @@ export const EnergyModal: React.FC<EnergyModalProps> = ({
                   id="confirm-dialog-confirm-btn"
                   onClick={handleConfirmPurchase}
                   disabled={isProcessing}
-                  className="py-2.5 px-3 rounded-xl bg-[#8BCB3D] hover:bg-[#7cb736] text-white font-black text-xs transition-all shadow-sm cursor-pointer disabled:opacity-50"
+                  className="py-2.5 px-3 rounded-xl bg-[#00BFA6] hover:bg-[#63F5C8] text-[#071827] font-black text-xs transition-all shadow-sm cursor-pointer disabled:opacity-50"
                 >
                   {isProcessing ? 'Processing...' : 'Confirm'}
                 </button>

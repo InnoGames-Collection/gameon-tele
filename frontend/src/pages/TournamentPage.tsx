@@ -1,25 +1,12 @@
 /**
  * TelePlus - Official Helix 7-Day Weekly Competition & Tournament Page
- * 
- * Strict Architecture:
- * - Operates in continuous 7-day cycles (Day 1 of 7 to Day 7 of 7)
- * - Single designated competition game: Helix (40-level 3D cylinder drop)
- * - Daily Best Score registration + 7-Day cumulative total score
- * - Real-time countdown timer & cycle indicator
- * - Official TelePlus Cash Prize Structure:
- *   • 1st Place: 20,000 ETB Cash Prize
- *   • 2nd Place: 10,000 ETB Cash Prize
- *   • 3rd Place: 5,000 ETB Cash Prize
- *   • 4th - 8th Place: 1,000 ETB Cash Prize each
- * - Strict Privacy: MSISDNs masked in 091*****890 format, zero player names/emails
- * - Direct instant "PLAY HELIX NOW" CTA launcher
+ * Midnight Navy & Deep Teal Theme
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, GameDefinition } from '../types';
 import { 
   HelixCompetitionService, 
-  HELIX_PRIZE_RULES,
   HelixLeaderboardEntry 
 } from '../services/helixCompetitionService';
 import { GameRegistry } from '../games/registry';
@@ -115,58 +102,57 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#17202A] pb-24 select-none">
+    <div className="min-h-screen bg-[#071827] text-[#F5FAFC] pb-24 select-none">
       <div className="max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 sm:px-4 pt-3 space-y-4">
         
         {/* =========================================================================
             1. HELIX 7-DAY COMPETITION HERO BANNER & TIMER
            ========================================================================= */}
-        <div className="relative rounded-3xl bg-gradient-to-br from-[#1688C9] via-[#0e6fa7] to-[#07476e] text-white p-4.5 sm:p-6 shadow-md overflow-hidden">
-          <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-44 h-44 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute left-1/3 bottom-0 w-48 h-24 bg-[#8BCB3D]/25 rounded-full blur-2xl pointer-events-none" />
+        <div className="relative rounded-3xl bg-[#0B2234] border border-[#244558] text-[#F5FAFC] p-4.5 sm:p-6 shadow-md overflow-hidden">
+          <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-44 h-44 bg-[#00BFA6]/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 space-y-3.5">
             {/* Status & Timer Badges */}
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-1.5">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8BCB3D] text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00BFA6] text-[#071827] text-[10px] font-black uppercase tracking-wider shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-[#071827] animate-pulse" />
                   <span>7-DAY WEEKLY TOURNAMENT • LIVE</span>
                 </span>
-                <span className="px-2.5 py-1 rounded-full bg-white/20 text-white text-[10px] font-black uppercase backdrop-blur-xs">
+                <span className="px-2.5 py-1 rounded-full bg-[#15374A] border border-[#244558] text-[#F5FAFC] text-[10px] font-black uppercase backdrop-blur-xs">
                   Day {competitionPeriod.currentDay} of 7
                 </span>
               </div>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md text-amber-300 text-[10px] font-black">
-                <Clock className="w-3.5 h-3.5 text-amber-300" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#102C40] border border-[#244558] text-[#F7C85B] text-[10px] font-black">
+                <Clock className="w-3.5 h-3.5 text-[#F7C85B]" />
                 <span>{competitionPeriod.timeRemainingFormatted}</span>
               </div>
             </div>
 
             {/* Title & Description */}
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-[#F5FAFC] leading-tight tracking-tight">
                 Helix 7-Day Tournament
               </h1>
-              <p className="text-xs sm:text-sm text-sky-100 font-medium mt-1 leading-relaxed max-w-xl">
-                Compete daily in <strong className="text-white font-extrabold">Helix Jump</strong>. Your official tournament ranking is calculated from your daily best scores across this rolling 7-day cycle.
+              <p className="text-xs sm:text-sm text-[#A9C0CE] font-medium mt-1 leading-relaxed max-w-xl">
+                Compete daily in <strong className="text-[#F5FAFC] font-extrabold">Helix Jump</strong>. Your official tournament ranking is calculated from your daily best scores across this rolling 7-day cycle.
               </p>
             </div>
 
             {/* Quick Metrics Bar */}
             <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-              <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-2.5 border border-white/15">
-                <div className="text-[9px] uppercase font-bold text-sky-200">Total Prize Pool</div>
-                <div className="text-xs sm:text-base font-black text-amber-300">{remotePoolEtb.toLocaleString()} ETB</div>
+              <div className="bg-[#102C40] rounded-2xl p-2.5 border border-[#244558]">
+                <div className="text-[9px] uppercase font-bold text-[#A9C0CE]">Total Prize Pool</div>
+                <div className="text-xs sm:text-base font-black text-[#F7C85B]">{remotePoolEtb.toLocaleString()} ETB</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-2.5 border border-white/15">
-                <div className="text-[9px] uppercase font-bold text-sky-200">Tournament Game</div>
-                <div className="text-xs sm:text-base font-black text-white">Helix Jump</div>
+              <div className="bg-[#102C40] rounded-2xl p-2.5 border border-[#244558]">
+                <div className="text-[9px] uppercase font-bold text-[#A9C0CE]">Tournament Game</div>
+                <div className="text-xs sm:text-base font-black text-[#F5FAFC]">Helix Jump</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-2.5 border border-white/15">
-                <div className="text-[9px] uppercase font-bold text-sky-200">Current Period</div>
-                <div className="text-xs sm:text-base font-black text-white">Week {competitionPeriod.cycleNumber}</div>
+              <div className="bg-[#102C40] rounded-2xl p-2.5 border border-[#244558]">
+                <div className="text-[9px] uppercase font-bold text-[#A9C0CE]">Current Period</div>
+                <div className="text-xs sm:text-base font-black text-[#F5FAFC]">Week {competitionPeriod.cycleNumber}</div>
               </div>
             </div>
 
@@ -176,7 +162,7 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
                 <button
                   type="button"
                   onClick={handleLaunchHelix}
-                  className="w-full py-3 px-4 rounded-2xl bg-[#8BCB3D] hover:bg-[#7db737] active:scale-[0.99] text-white font-black text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 px-4 rounded-2xl bg-[#00BFA6] hover:bg-[#63F5C8] active:scale-[0.99] text-[#071827] font-black text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Play className="w-4 h-4 fill-current" />
                   <span>PLAY HELIX TOURNAMENT NOW</span>
@@ -189,48 +175,48 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
         {/* =========================================================================
             2. PLAYER'S COMPETITION STANDING CARD
            ========================================================================= */}
-        <div className="rounded-3xl border border-sky-200 bg-sky-50/70 p-4 sm:p-5 shadow-xs space-y-3.5">
+        <div className="rounded-3xl border border-[#244558] bg-[#102C40] p-4 sm:p-5 shadow-xs space-y-3.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#1688C9] text-white flex items-center justify-center font-black text-base shadow-sm shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-[#15374A] border border-[#244558] text-[#35D9F2] flex items-center justify-center font-black text-base shadow-sm shrink-0">
                 {userCompetitionScores.sevenDayScore > 0 ? `#${userCompetitionScores.rank}` : '—'}
               </div>
               <div>
-                <div className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <div className="text-[10px] font-black uppercase tracking-wider text-[#A9C0CE] flex items-center gap-1.5">
                   <span>Your Standing</span>
                   {userCompetitionScores.rank <= 10 && userCompetitionScores.sevenDayScore > 0 && (
-                    <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white text-[8px] font-black">
+                    <span className="px-1.5 py-0.5 rounded bg-[#F7C85B] text-[#071827] text-[8px] font-black">
                       TOP 10
                     </span>
                   )}
                 </div>
-                <div className="text-sm sm:text-base font-black text-[#17202A] tracking-wider font-mono">
+                <div className="text-sm sm:text-base font-black text-[#F5FAFC] tracking-wider font-mono">
                   {maskedPhone}
                 </div>
               </div>
             </div>
 
             <div className="text-right">
-              <div className="text-[10px] font-bold text-slate-500 uppercase">
+              <div className="text-[10px] font-bold text-[#A9C0CE] uppercase">
                 7-Day Cumulative Score
               </div>
-              <div className="text-xl sm:text-2xl font-black text-[#1688C9] leading-none mt-0.5">
-                {userCompetitionScores.sevenDayScore.toLocaleString()} <span className="text-xs font-semibold text-slate-500">pts</span>
+              <div className="text-xl sm:text-2xl font-black text-[#63F5C8] leading-none mt-0.5">
+                {userCompetitionScores.sevenDayScore.toLocaleString()} <span className="text-xs font-semibold text-[#A9C0CE]">pts</span>
               </div>
-              <div className="text-[11px] font-extrabold text-[#8BCB3D] mt-1">
+              <div className="text-[11px] font-extrabold text-[#35D9F2] mt-1">
                 Today: {userCompetitionScores.dailyScore.toLocaleString()} pts
               </div>
             </div>
           </div>
 
           {/* 7-Day Cycle Progress Indicator */}
-          <div className="pt-3 border-t border-sky-200/80">
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 mb-2">
+          <div className="pt-3 border-t border-[#244558]">
+            <div className="flex items-center justify-between text-[11px] font-bold text-[#A9C0CE] mb-2">
               <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-[#1688C9]" />
+                <Calendar className="w-3.5 h-3.5 text-[#35D9F2]" />
                 <span>Weekly 7-Day Cycle Progress</span>
               </span>
-              <span className="text-[#1688C9] font-black">Day {competitionPeriod.currentDay} of 7</span>
+              <span className="text-[#35D9F2] font-black">Day {competitionPeriod.currentDay} of 7</span>
             </div>
 
             <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center">
@@ -242,10 +228,10 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
                     key={dayNum}
                     className={`py-1.5 px-1 rounded-xl text-center text-[10px] font-black transition-all ${
                       isToday
-                        ? 'bg-[#1688C9] text-white shadow-xs scale-105'
+                        ? 'bg-[#00BFA6] text-[#071827] shadow-xs scale-105'
                         : isPassed
-                        ? 'bg-[#8BCB3D]/20 text-[#598426] border border-[#8BCB3D]/40'
-                        : 'bg-white border border-slate-200 text-slate-400'
+                        ? 'bg-[#15374A] text-[#63F5C8] border border-[#244558]'
+                        : 'bg-[#0B2234] border border-[#244558] text-[#A9C0CE]'
                     }`}
                   >
                     <div>D{dayNum}</div>
@@ -260,61 +246,61 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
         </div>
 
         {/* =========================================================================
-            3. PRIZE DISTRIBUTION TABLE (Dynamic 40,000 ETB pool)
+            3. PRIZE DISTRIBUTION TABLE
            ========================================================================= */}
-        <div className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs space-y-3">
+        <div className="rounded-3xl border border-[#244558] bg-[#102C40] p-4 sm:p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-                <Trophy className="w-4 h-4 fill-amber-500 text-amber-600" />
+              <div className="w-8 h-8 rounded-xl bg-[#15374A] border border-[#244558] text-[#F7C85B] flex items-center justify-center">
+                <Trophy className="w-4 h-4 fill-[#F7C85B] text-[#F7C85B]" />
               </div>
               <div>
-                <h2 className="text-sm sm:text-base font-black uppercase tracking-tight text-[#17202A]">
+                <h2 className="text-sm sm:text-base font-black uppercase tracking-tight text-[#F5FAFC]">
                   Weekly Prize Pool Allocation
                 </h2>
-                <p className="text-[11px] text-slate-500 font-medium">
+                <p className="text-[11px] text-[#A9C0CE] font-medium">
                   Guaranteed official rewards distributed at the end of Day 7
                 </p>
               </div>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-black">
+            <span className="px-2.5 py-1 rounded-full bg-[#15374A] border border-[#244558] text-[#F7C85B] text-xs font-black">
               {remotePoolEtb.toLocaleString()} ETB
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-            <div className="p-3 rounded-2xl bg-amber-50/50 border border-amber-200 text-center">
-              <div className="text-[10px] font-black uppercase text-amber-800 tracking-wider">
+            <div className="p-3 rounded-2xl bg-[#15374A] border border-[#F7C85B]/40 text-center">
+              <div className="text-[10px] font-black uppercase text-[#F7C85B] tracking-wider">
                 1st Place
               </div>
-              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+              <div className="text-xs sm:text-sm font-black text-[#F5FAFC] mt-1">
                 {(remotePrizes['1'] || 20000).toLocaleString()} ETB Cash
               </div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
-              <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+            <div className="p-3 rounded-2xl bg-[#0B2234] border border-[#244558] text-center">
+              <div className="text-[10px] font-black uppercase text-[#35D9F2] tracking-wider">
                 2nd Place
               </div>
-              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+              <div className="text-xs sm:text-sm font-black text-[#F5FAFC] mt-1">
                 {(remotePrizes['2'] || 10000).toLocaleString()} ETB Cash
               </div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
-              <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+            <div className="p-3 rounded-2xl bg-[#0B2234] border border-[#244558] text-center">
+              <div className="text-[10px] font-black uppercase text-[#A9C0CE] tracking-wider">
                 3rd Place
               </div>
-              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+              <div className="text-xs sm:text-sm font-black text-[#F5FAFC] mt-1">
                 {(remotePrizes['3'] || 5000).toLocaleString()} ETB Cash
               </div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
-              <div className="text-[10px] font-black uppercase text-slate-500 tracking-wider">
+            <div className="p-3 rounded-2xl bg-[#0B2234] border border-[#244558] text-center">
+              <div className="text-[10px] font-black uppercase text-[#A9C0CE] tracking-wider">
                 4th – 8th Place
               </div>
-              <div className="text-xs sm:text-sm font-black text-[#17202A] mt-1">
+              <div className="text-xs sm:text-sm font-black text-[#F5FAFC] mt-1">
                 {(remotePrizes['4'] || 1000).toLocaleString()} ETB each
               </div>
             </div>
@@ -324,28 +310,28 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
         {/* =========================================================================
             4. AUTHORITATIVE 7-DAY HELIX LEADERBOARD
            ========================================================================= */}
-        <div className="rounded-3xl border border-slate-200 overflow-hidden bg-white shadow-xs space-y-0">
-          <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div className="rounded-3xl border border-[#244558] overflow-hidden bg-[#102C40] shadow-xs space-y-0">
+          <div className="px-4 py-3 bg-[#0B2234] border-b border-[#244558] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Crown className="w-4 h-4 text-amber-500 fill-amber-500" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-slate-700">
+              <Crown className="w-4 h-4 text-[#F7C85B] fill-[#F7C85B]" />
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#F5FAFC]">
                 Official 7-Day Helix Leaderboard
               </h3>
             </div>
-            <span className="text-[10px] font-bold text-slate-500">
+            <span className="text-[10px] font-bold text-[#A9C0CE]">
               Ranked by 7-Day Cumulative Score
             </span>
           </div>
 
           {/* Table Column Headers */}
-          <div className="grid grid-cols-12 gap-1 px-4 py-2.5 bg-slate-100/70 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
+          <div className="grid grid-cols-12 gap-1 px-4 py-2.5 bg-[#0B2234]/80 border-b border-[#244558] text-[10px] font-black uppercase tracking-wider text-[#A9C0CE]">
             <div className="col-span-2 text-center">Rank</div>
             <div className="col-span-5">Player (Masked)</div>
             <div className="col-span-5 text-right">7-Day Score</div>
           </div>
 
           {/* Leaderboard Rows */}
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-[#244558]">
             {displayLeaderboard.slice(0, 10).map((entry) => {
               const isFirst = entry.rank === 1;
               const isSecond = entry.rank === 2;
@@ -357,30 +343,30 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
                   key={entry.playerId}
                   className={`grid grid-cols-12 gap-1 px-4 py-3 items-center transition-colors ${
                     isUser
-                      ? 'bg-amber-50/80 font-black border-l-4 border-l-amber-500'
+                      ? 'bg-[#15374A] font-black border-l-4 border-l-[#00BFA6]'
                       : isFirst
-                      ? 'bg-amber-50/30'
-                      : 'hover:bg-slate-50/60'
+                      ? 'bg-[#15374A]/40'
+                      : 'hover:bg-[#15374A]/20'
                   }`}
                 >
                   {/* Rank */}
                   <div className="col-span-2 text-center flex items-center justify-center">
-                    {isFirst && <Crown className="w-5 h-5 text-amber-500 fill-amber-500" />}
-                    {isSecond && <Medal className="w-5 h-5 text-slate-400 fill-slate-300" />}
-                    {isThird && <Medal className="w-5 h-5 text-amber-700 fill-amber-600" />}
+                    {isFirst && <Crown className="w-5 h-5 text-[#F7C85B] fill-[#F7C85B]" />}
+                    {isSecond && <Medal className="w-5 h-5 text-[#35D9F2] fill-[#35D9F2]" />}
+                    {isThird && <Medal className="w-5 h-5 text-[#A9C0CE] fill-[#A9C0CE]" />}
                     {!isFirst && !isSecond && !isThird && (
-                      <span className="text-xs font-black text-slate-500">#{entry.rank}</span>
+                      <span className="text-xs font-black text-[#A9C0CE]">#{entry.rank}</span>
                     )}
                   </div>
 
                   {/* Player Masked MSISDN */}
                   <div className="col-span-5 min-w-0 pr-1">
                     <div className="flex items-center gap-1.5">
-                      <span className={`text-xs font-mono font-bold truncate ${isUser ? 'text-amber-800 font-black' : 'text-[#17202A]'}`}>
+                      <span className={`text-xs font-mono font-bold truncate ${isUser ? 'text-[#63F5C8] font-black' : 'text-[#F5FAFC]'}`}>
                         {entry.maskedMsisdn}
                       </span>
                       {isUser && (
-                        <span className="px-1.5 py-0.2 rounded-md bg-amber-500 text-white text-[8px] font-black shrink-0">
+                        <span className="px-1.5 py-0.2 rounded-md bg-[#00BFA6] text-[#071827] text-[8px] font-black shrink-0">
                           YOU
                         </span>
                       )}
@@ -389,8 +375,8 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
 
                   {/* 7-Day Cumulative Score */}
                   <div className="col-span-5 text-right">
-                    <div className="text-sm font-black text-[#17202A]">
-                      {entry.sevenDayScore.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium">pts</span>
+                    <div className="text-sm font-black text-[#63F5C8]">
+                      {entry.sevenDayScore.toLocaleString()} <span className="text-[10px] text-[#A9C0CE] font-medium">pts</span>
                     </div>
                   </div>
                 </div>
@@ -402,9 +388,9 @@ export const TournamentPage: React.FC<TournamentPageProps> = ({
         {/* =========================================================================
             5. COMPETITION RULES & PRIVACY GUARANTEE
            ========================================================================= */}
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:p-5 text-xs text-slate-600 space-y-2">
-          <div className="flex items-center gap-1.5 font-black text-[#17202A] text-xs uppercase tracking-wider">
-            <ShieldCheck className="w-4 h-4 text-[#8BCB3D]" />
+        <div className="rounded-3xl border border-[#244558] bg-[#0B2234] p-4 sm:p-5 text-xs text-[#A9C0CE] space-y-2">
+          <div className="flex items-center gap-1.5 font-black text-[#F5FAFC] text-xs uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 text-[#00BFA6]" />
             <span>Official Competition Rules & Privacy</span>
           </div>
           <ul className="list-disc pl-4 space-y-1 text-[11px] leading-relaxed">

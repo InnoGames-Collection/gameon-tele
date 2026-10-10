@@ -85,16 +85,16 @@ interface TermsPageProps {
 
 export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true }) => {
   return (
-    <div className="min-h-screen bg-white text-[#45365F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-[#071827] text-[#F5FAFC] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Header with Back Button */}
       {showHeader && (
-        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs mb-4">
+        <div className="flex items-center justify-between gap-3 bg-[#0B2234] border border-[#244558] text-[#F5FAFC] p-3.5 rounded-2xl shadow-xs mb-4">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
                 id="terms-back-btn"
                 onClick={onBack}
-                className="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer shrink-0"
+                className="w-8 h-8 rounded-xl bg-[#15374A] hover:bg-[#244558] flex items-center justify-center text-[#F5FAFC] border border-[#244558] transition-colors cursor-pointer shrink-0"
                 title="Go Back"
                 aria-label="Go Back"
               >
@@ -103,7 +103,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
               </button>
             )}
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-[#C6F36B] shrink-0" />
+              <FileText className="w-5 h-5 text-[#00BFA6] shrink-0" />
               <h1 className="text-base font-black tracking-tight">Terms & Conditions</h1>
             </div>
           </div>
@@ -111,11 +111,11 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
       )}
 
       {/* 2. Top Summary Card */}
-      <div className="p-3.5 rounded-2xl bg-[#FFF8EE] border border-[#E7DFF3] text-xs text-[#45365F] leading-relaxed mb-4">
-        <p className="font-bold text-[#38205F]">
+      <div className="p-3.5 rounded-2xl bg-[#102C40] border border-[#244558] text-xs text-[#A9C0CE] leading-relaxed mb-4">
+        <p className="font-bold text-[#F5FAFC]">
           Official GameSwiper Gaming Terms & Conditions
         </p>
-        <p className="text-[11px] text-[#827695] mt-1">
+        <p className="text-[11px] text-[#A9C0CE] mt-1">
           Governing EthioTelecom VAS Shortcode 7198 subscription, fair play, and subscriber data protection.
         </p>
       </div>
@@ -126,22 +126,22 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
           <div
             key={section.number}
             id={`term-section-${section.number.replace('.', '-')}`}
-            className="bg-white rounded-2xl p-4 border border-[#E7DFF3] shadow-xs space-y-2"
+            className="bg-[#102C40] rounded-2xl p-4 border border-[#244558] shadow-xs space-y-2"
           >
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-md bg-[#F1ECFF] text-[#7048E8] font-mono font-black text-xs">
+              <span className="px-2 py-0.5 rounded-md bg-[#15374A] border border-[#244558] text-[#63F5C8] font-mono font-black text-xs">
                 {section.number}
               </span>
-              <h2 className="text-xs sm:text-sm font-black text-[#38205F]">{section.title}</h2>
+              <h2 className="text-xs sm:text-sm font-black text-[#F5FAFC]">{section.title}</h2>
             </div>
 
-            <div className="space-y-1.5 text-xs text-[#45365F] leading-relaxed pl-1">
+            <div className="space-y-1.5 text-xs text-[#A9C0CE] leading-relaxed pl-1">
               {section.paragraphs.map((p, idx) => (
                 <p key={idx}>{p}</p>
               ))}
 
               {section.bulletPoints && section.bulletPoints.length > 0 && (
-                <ul className="list-disc list-inside space-y-1 text-[#45365F] pl-2">
+                <ul className="list-disc list-inside space-y-1 text-[#A9C0CE] pl-2">
                   {section.bulletPoints.map((bp, bIdx) => (
                     <li key={bIdx}>{bp}</li>
                   ))}
@@ -152,11 +152,10 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack, showHeader = true 
         ))}
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-[#827695] font-bold">
-        <ShieldCheck className="w-3.5 h-3.5 text-[#7048E8]" />
+      <div className="mt-6 flex items-center justify-center gap-1.5 text-[10px] text-[#A9C0CE] font-bold">
+        <ShieldCheck className="w-3.5 h-3.5 text-[#00BFA6]" />
         <span>GameSwiper Official Service Terms • EthioTelecom 7198</span>
       </div>
     </div>
   );
 };
-

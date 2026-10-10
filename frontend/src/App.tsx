@@ -133,15 +133,15 @@ export default function App() {
   // Splash Screen
   if (isAppLaunching) {
     return (
-      <div className="fixed inset-0 z-50 bg-white text-[#38205F] flex flex-col items-center justify-center p-6 text-center select-none animate-in fade-in duration-200">
+      <div className="fixed inset-0 z-50 bg-[#071827] text-[#F5FAFC] flex flex-col items-center justify-center p-6 text-center select-none animate-in fade-in duration-200">
         <div className="p-3.5 mb-4 flex items-center justify-center">
           <GameSwiperLogo size="lg" />
         </div>
-        <p className="text-xs text-[#827695] mt-1 font-bold tracking-wide uppercase">Gaming Portal</p>
+        <p className="text-xs text-[#A9C0CE] mt-1 font-bold tracking-wide uppercase">Gaming Portal</p>
         <div className="mt-6 flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#7048E8] animate-bounce" style={{ animationDelay: '0ms' }} />
-          <div className="w-2.5 h-2.5 rounded-full bg-[#C6F36B] animate-bounce" style={{ animationDelay: '150ms' }} />
-          <div className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B] animate-bounce" style={{ animationDelay: '300ms' }} />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#00BFA6] animate-bounce" style={{ animationDelay: '0ms' }} />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#63F5C8] animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#35D9F2] animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     );
@@ -152,7 +152,7 @@ export default function App() {
   // ============================================================
   if (!profile.isRegistered) {
     return (
-      <div className="min-h-screen bg-white text-[#45365F] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+      <div className="min-h-screen bg-[#071827] text-[#F5FAFC] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
         {/* If FAQ or Help & Support is navigated to from Login Page */}
         {contentView === 'faq' && (
           <div className="py-2">
@@ -202,7 +202,7 @@ export default function App() {
   // POST-LOGIN AUTHENTICATED APPLICATION
   // ============================================================
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col font-['Plus_Jakarta_Sans',sans-serif] selection:bg-[#8BCB3D] selection:text-white">
+    <div className="min-h-screen bg-[#071827] text-[#F5FAFC] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] selection:bg-[#00BFA6] selection:text-[#071827]">
       
       {/* 1. Global Post-Login Header: Menu on TOP LEFT, TelePlus branding */}
       <Header

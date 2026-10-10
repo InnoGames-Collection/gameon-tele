@@ -24,7 +24,7 @@ export const PodiumTopThree: React.FC<PodiumTopThreeProps> = ({
   const third = entries[2];
 
   return (
-    <div id="competitive-podium" className="relative pt-6 pb-2 px-2">
+    <div id="competitive-podium" className="relative pt-6 pb-2 px-2 select-none">
       <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end max-w-2xl mx-auto">
         {/* ========================================================================= */}
         {/* RANK 2: SILVER PEDESTAL (LEFT) */}
@@ -36,45 +36,45 @@ export const PodiumTopThree: React.FC<PodiumTopThreeProps> = ({
           {/* Avatar & Rank Token */}
           <div className="relative mb-2">
             <div
-              className={`w-13 h-13 sm:w-15 sm:h-15 rounded-xl p-1 bg-slate-200 border border-slate-300 flex items-center justify-center ${
-                second.userId === currentUserId ? 'ring-3 ring-[#78BE20]' : ''
+              className={`w-13 h-13 sm:w-15 sm:h-15 rounded-xl p-1 bg-[#102C40] border border-[#244558] flex items-center justify-center ${
+                second.userId === currentUserId ? 'ring-2 ring-[#00BFA6]' : ''
               }`}
             >
-              <div className="w-full h-full rounded-lg bg-white flex items-center justify-center text-slate-700 font-black text-base">
-                <Medal className="w-6 h-6 text-slate-400" />
+              <div className="w-full h-full rounded-lg bg-[#15374A] flex items-center justify-center text-[#A9C0CE] font-black text-base">
+                <Medal className="w-6 h-6 text-[#A9C0CE]" />
               </div>
             </div>
             {/* Rank 2 Badge */}
-            <span className="absolute -bottom-1.5 -right-1 w-5 h-5 rounded-full bg-slate-300 text-slate-900 font-black text-[11px] flex items-center justify-center border-2 border-white shadow-sm">
+            <span className="absolute -bottom-1.5 -right-1 w-5 h-5 rounded-full bg-[#35D9F2] text-[#071827] font-black text-[11px] flex items-center justify-center border-2 border-[#102C40] shadow-sm">
               2
             </span>
           </div>
 
           {/* Player Info */}
           <div className="w-full px-1 mb-2">
-            <div className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+            <div className="text-xs sm:text-sm font-bold text-[#F5FAFC] truncate">
               {second.displayName}
             </div>
-            <div className="text-[10px] text-slate-500 font-mono">
+            <div className="text-[10px] text-[#A9C0CE] font-mono">
               {second.phoneNumberMasked}
             </div>
-            <div className="text-xs sm:text-sm font-black text-[#0057A8] font-mono mt-0.5">
-              {second.score.toLocaleString()} <span className="text-[10px] text-slate-500 font-sans">pts</span>
+            <div className="text-xs sm:text-sm font-black text-[#63F5C8] font-mono mt-0.5">
+              {second.score.toLocaleString()} <span className="text-[10px] text-[#A9C0CE] font-sans">pts</span>
             </div>
             {second.reward && (
-              <div className="mt-1 inline-block px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[9px] font-bold text-slate-700 truncate max-w-full">
+              <div className="mt-1 inline-block px-1.5 py-0.5 rounded bg-[#15374A] border border-[#244558] text-[9px] font-bold text-[#F7C85B] truncate max-w-full">
                 🎁 {second.reward}
               </div>
             )}
           </div>
 
           {/* Pedestal Step */}
-          <div className="w-full h-20 sm:h-24 rounded-t-xl bg-slate-100 border-t-2 border-x border-slate-300 flex flex-col items-center justify-center p-2">
-            <div className="text-slate-500 font-black text-lg sm:text-xl font-mono">
+          <div className="w-full h-20 sm:h-24 rounded-t-xl bg-[#102C40] border-t-2 border-x border-[#244558] flex flex-col items-center justify-center p-2">
+            <div className="text-[#35D9F2] font-black text-lg sm:text-xl font-mono">
               2ND
             </div>
-            <div className="text-[10px] text-slate-500 flex items-center gap-0.5 mt-0.5 font-medium">
-              <MapPin className="w-3 h-3 text-slate-400" />
+            <div className="text-[10px] text-[#A9C0CE] flex items-center gap-0.5 mt-0.5 font-medium">
+              <MapPin className="w-3 h-3 text-[#A9C0CE]" />
               <span>{second.region}</span>
             </div>
           </div>
@@ -90,50 +90,50 @@ export const PodiumTopThree: React.FC<PodiumTopThreeProps> = ({
           {/* Crown & Avatar */}
           <div className="relative mb-2">
             <div className="absolute -top-5 inset-x-0 flex justify-center">
-              <Crown className="w-6 h-6 text-amber-500 fill-amber-500" />
+              <Crown className="w-6 h-6 text-[#F7C85B] fill-[#F7C85B]" />
             </div>
 
             <div
-              className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl p-1 bg-amber-100 border-2 border-amber-400 flex items-center justify-center ${
-                first.userId === currentUserId ? 'ring-3 ring-[#78BE20]' : ''
+              className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl p-1 bg-[#15374A] border-2 border-[#F7C85B]/60 flex items-center justify-center ${
+                first.userId === currentUserId ? 'ring-2 ring-[#00BFA6]' : ''
               }`}
             >
-              <div className="w-full h-full rounded-lg bg-[#0057A8] flex items-center justify-center text-amber-300">
-                <Trophy className="w-7 h-7 text-amber-300" />
+              <div className="w-full h-full rounded-lg bg-[#102C40] flex items-center justify-center text-[#F7C85B]">
+                <Trophy className="w-7 h-7 text-[#F7C85B]" />
               </div>
             </div>
 
             {/* Rank 1 Badge */}
-            <span className="absolute -bottom-1.5 -right-1 w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-white shadow-sm">
+            <span className="absolute -bottom-1.5 -right-1 w-6 h-6 rounded-full bg-[#F7C85B] text-[#071827] font-black text-xs flex items-center justify-center border-2 border-[#102C40] shadow-sm">
               1
             </span>
           </div>
 
           {/* Player Info */}
           <div className="w-full px-1 mb-2">
-            <div className="text-sm font-black text-slate-900 truncate flex items-center justify-center gap-1">
+            <div className="text-sm font-black text-[#F5FAFC] truncate flex items-center justify-center gap-1">
               <span>{first.displayName}</span>
-              <Sparkles className="w-3 h-3 text-amber-500 fill-amber-500" />
+              <Sparkles className="w-3 h-3 text-[#F7C85B] fill-[#F7C85B]" />
             </div>
-            <div className="text-[10px] text-slate-500 font-mono">
+            <div className="text-[10px] text-[#A9C0CE] font-mono">
               {first.phoneNumberMasked}
             </div>
-            <div className="text-sm sm:text-base font-black text-[#0057A8] font-mono mt-0.5">
-              {first.score.toLocaleString()} <span className="text-[10px] text-slate-500 font-sans">pts</span>
+            <div className="text-sm sm:text-base font-black text-[#63F5C8] font-mono mt-0.5">
+              {first.score.toLocaleString()} <span className="text-[10px] text-[#A9C0CE] font-sans">pts</span>
             </div>
             {first.reward && (
-              <div className="mt-1 inline-block px-2 py-0.5 rounded bg-amber-50 border border-amber-300 text-[10px] font-extrabold text-amber-800 truncate max-w-full">
+              <div className="mt-1 inline-block px-2 py-0.5 rounded bg-[#15374A] border border-[#F7C85B]/40 text-[10px] font-extrabold text-[#F7C85B] truncate max-w-full">
                 🏆 {first.reward}
               </div>
             )}
           </div>
 
           {/* Pedestal Step (Tallest) */}
-          <div className="w-full h-28 sm:h-32 rounded-t-xl bg-[#0057A8] text-white border-t-2 border-x border-[#004080] flex flex-col items-center justify-center p-2 shadow-md">
-            <div className="text-amber-300 font-black text-xl sm:text-2xl font-mono">
+          <div className="w-full h-28 sm:h-32 rounded-t-xl bg-[#15374A] text-[#F5FAFC] border-t-2 border-x border-[#244558] flex flex-col items-center justify-center p-2 shadow-md">
+            <div className="text-[#F7C85B] font-black text-xl sm:text-2xl font-mono">
               1ST
             </div>
-            <div className="text-[10px] text-emerald-300 font-bold uppercase tracking-wider flex items-center gap-0.5 mt-0.5">
+            <div className="text-[10px] text-[#63F5C8] font-bold uppercase tracking-wider flex items-center gap-0.5 mt-0.5">
               <MapPin className="w-3 h-3" />
               <span>{first.region}</span>
             </div>
@@ -150,45 +150,45 @@ export const PodiumTopThree: React.FC<PodiumTopThreeProps> = ({
           {/* Avatar & Rank Token */}
           <div className="relative mb-2">
             <div
-              className={`w-13 h-13 sm:w-15 sm:h-15 rounded-xl p-1 bg-amber-100 border border-amber-300 flex items-center justify-center ${
-                third.userId === currentUserId ? 'ring-3 ring-[#78BE20]' : ''
+              className={`w-13 h-13 sm:w-15 sm:h-15 rounded-xl p-1 bg-[#102C40] border border-[#244558] flex items-center justify-center ${
+                third.userId === currentUserId ? 'ring-2 ring-[#00BFA6]' : ''
               }`}
             >
-              <div className="w-full h-full rounded-lg bg-white flex items-center justify-center text-amber-800 font-black text-base">
-                <Medal className="w-6 h-6 text-amber-700" />
+              <div className="w-full h-full rounded-lg bg-[#15374A] flex items-center justify-center text-[#F7C85B] font-black text-base">
+                <Medal className="w-6 h-6 text-[#F7C85B]" />
               </div>
             </div>
             {/* Rank 3 Badge */}
-            <span className="absolute -bottom-1.5 -right-1 w-5 h-5 rounded-full bg-amber-700 text-white font-black text-[11px] flex items-center justify-center border-2 border-white shadow-sm">
+            <span className="absolute -bottom-1.5 -right-1 w-5 h-5 rounded-full bg-[#15374A] text-[#F7C85B] font-black text-[11px] flex items-center justify-center border-2 border-[#102C40] shadow-sm">
               3
             </span>
           </div>
 
           {/* Player Info */}
           <div className="w-full px-1 mb-2">
-            <div className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+            <div className="text-xs sm:text-sm font-bold text-[#F5FAFC] truncate">
               {third.displayName}
             </div>
-            <div className="text-[10px] text-slate-500 font-mono">
+            <div className="text-[10px] text-[#A9C0CE] font-mono">
               {third.phoneNumberMasked}
             </div>
-            <div className="text-xs sm:text-sm font-black text-[#0057A8] font-mono mt-0.5">
-              {third.score.toLocaleString()} <span className="text-[10px] text-slate-500 font-sans">pts</span>
+            <div className="text-xs sm:text-sm font-black text-[#63F5C8] font-mono mt-0.5">
+              {third.score.toLocaleString()} <span className="text-[10px] text-[#A9C0CE] font-sans">pts</span>
             </div>
             {third.reward && (
-              <div className="mt-1 inline-block px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-[9px] font-bold text-amber-800 truncate max-w-full">
+              <div className="mt-1 inline-block px-1.5 py-0.5 rounded bg-[#15374A] border border-[#244558] text-[9px] font-bold text-[#F7C85B] truncate max-w-full">
                 🎁 {third.reward}
               </div>
             )}
           </div>
 
           {/* Pedestal Step */}
-          <div className="w-full h-16 sm:h-20 rounded-t-xl bg-slate-100 border-t-2 border-x border-slate-300 flex flex-col items-center justify-center p-2">
-            <div className="text-amber-800 font-black text-base sm:text-lg font-mono">
+          <div className="w-full h-16 sm:h-20 rounded-t-xl bg-[#102C40] border-t-2 border-x border-[#244558] flex flex-col items-center justify-center p-2">
+            <div className="text-[#A9C0CE] font-black text-base sm:text-lg font-mono">
               3RD
             </div>
-            <div className="text-[10px] text-slate-500 flex items-center gap-0.5 mt-0.5 font-medium">
-              <MapPin className="w-3 h-3 text-amber-700" />
+            <div className="text-[10px] text-[#A9C0CE] flex items-center gap-0.5 mt-0.5 font-medium">
+              <MapPin className="w-3 h-3 text-[#A9C0CE]" />
               <span>{third.region}</span>
             </div>
           </div>
@@ -197,4 +197,3 @@ export const PodiumTopThree: React.FC<PodiumTopThreeProps> = ({
     </div>
   );
 };
-

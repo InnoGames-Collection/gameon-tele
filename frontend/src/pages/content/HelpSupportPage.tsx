@@ -9,7 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import { Headphones, ArrowLeft, Plus, Minus, Phone, ShieldAlert, LifeBuoy, AlertCircle } from 'lucide-react';
+import { Headphones, ArrowLeft, Plus, Minus, LifeBuoy, AlertCircle } from 'lucide-react';
 import { TELEPLUS_SUPPORT_TOPICS } from '../../data/teleplusContent';
 
 interface HelpSupportPageProps {
@@ -42,16 +42,16 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#45365F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-[#071827] text-[#F5FAFC] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Header with Back Button */}
       {showHeader && (
-        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs mb-4">
+        <div className="flex items-center justify-between gap-3 bg-[#0B2234] border border-[#244558] text-[#F5FAFC] p-3.5 rounded-2xl shadow-xs mb-4">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
                 id="help-support-back-btn"
                 onClick={onBack}
-                className="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer shrink-0"
+                className="w-8 h-8 rounded-xl bg-[#15374A] hover:bg-[#244558] flex items-center justify-center text-[#F5FAFC] border border-[#244558] transition-colors cursor-pointer shrink-0"
                 title="Go Back"
                 aria-label="Go Back"
               >
@@ -60,7 +60,7 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
               </button>
             )}
             <div className="flex items-center gap-2">
-              <Headphones className="w-5 h-5 text-[#C6F36B] shrink-0" />
+              <Headphones className="w-5 h-5 text-[#00BFA6] shrink-0" />
               <h1 className="text-base font-black tracking-tight">Help & Support</h1>
             </div>
           </div>
@@ -69,27 +69,27 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
 
       {/* 2. Top Notice & Controls */}
       <div className="space-y-2.5 mb-4">
-        <div className="p-3 rounded-2xl bg-[#FFF8EE] border border-[#E7DFF3] flex items-start gap-2.5 text-xs text-[#45365F] leading-relaxed">
-          <LifeBuoy className="w-4 h-4 text-[#7048E8] shrink-0 mt-0.5" />
+        <div className="p-3 rounded-2xl bg-[#102C40] border border-[#244558] flex items-start gap-2.5 text-xs text-[#A9C0CE] leading-relaxed">
+          <LifeBuoy className="w-4 h-4 text-[#35D9F2] shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold text-[#38205F]">Subscriber Assistance Guide: </span>
+            <span className="font-bold text-[#F5FAFC]">Subscriber Assistance Guide: </span>
             Select a topic below to see what information to prepare and recommended resolution steps for service issues.
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-[#827695] px-1">
+        <div className="flex items-center justify-between text-[11px] text-[#A9C0CE] px-1">
           <span>Click any topic to expand details</span>
           <div className="flex items-center gap-3">
             <button
               onClick={expandAll}
-              className="text-[#7048E8] hover:underline font-bold cursor-pointer"
+              className="text-[#00BFA6] hover:underline font-bold cursor-pointer"
             >
               Expand All
             </button>
             <span>•</span>
             <button
               onClick={collapseAll}
-              className="text-[#827695] hover:underline font-bold cursor-pointer"
+              className="text-[#A9C0CE] hover:underline font-bold cursor-pointer"
             >
               Collapse All
             </button>
@@ -108,8 +108,8 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
               id={`support-topic-${topic.id}`}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 isOpen
-                  ? 'bg-white border-[#7048E8]/40 shadow-xs'
-                  : 'bg-white border-[#E7DFF3] hover:border-[#7048E8]/30 shadow-2xs'
+                  ? 'bg-[#102C40] border-[#00BFA6]/60 shadow-xs'
+                  : 'bg-[#102C40] border-[#244558] hover:border-[#35D9F2]/30 shadow-2xs'
               }`}
             >
               {/* Row Header */}
@@ -120,12 +120,12 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
                 aria-expanded={isOpen}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className="text-[10px] font-black font-mono text-[#7048E8] shrink-0 px-1.5 py-0.5 rounded bg-[#F1ECFF]">
+                  <span className="text-[10px] font-black font-mono text-[#63F5C8] shrink-0 px-1.5 py-0.5 rounded bg-[#15374A] border border-[#244558]">
                     {index + 1}
                   </span>
                   <span
                     className={`text-xs sm:text-sm font-black leading-snug transition-colors ${
-                      isOpen ? 'text-[#7048E8]' : 'text-[#38205F] group-hover:text-[#7048E8]'
+                      isOpen ? 'text-[#35D9F2]' : 'text-[#F5FAFC] group-hover:text-[#35D9F2]'
                     }`}
                   >
                     {topic.title}
@@ -136,8 +136,8 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
                 <div
                   className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
                     isOpen
-                      ? 'bg-[#7048E8] text-white'
-                      : 'bg-[#F1ECFF] text-[#7048E8] group-hover:bg-[#E7DFF3]'
+                      ? 'bg-[#00BFA6] text-[#071827]'
+                      : 'bg-[#15374A] text-[#00BFA6] border border-[#244558] group-hover:bg-[#244558]'
                   }`}
                 >
                   {isOpen ? (
@@ -150,15 +150,15 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
 
               {/* Expanded Body */}
               {isOpen && (
-                <div className="px-4 pb-4 pt-2 border-t border-[#E7DFF3] bg-[#FFF8EE]/40 animate-in fade-in slide-in-from-top-1 duration-150 space-y-2.5 pl-6 sm:pl-8">
+                <div className="px-4 pb-4 pt-2 border-t border-[#244558] bg-[#0B2234] animate-in fade-in slide-in-from-top-1 duration-150 space-y-2.5 pl-6 sm:pl-8">
                   {topic.content.map((p, pIdx) => (
-                    <p key={pIdx} className="text-xs text-[#45365F] leading-relaxed">
+                    <p key={pIdx} className="text-xs text-[#A9C0CE] leading-relaxed">
                       {p}
                     </p>
                   ))}
 
                   {topic.steps && topic.steps.length > 0 && (
-                    <ol className="list-decimal list-inside space-y-1 text-xs text-[#45365F] font-medium pl-1">
+                    <ol className="list-decimal list-inside space-y-1 text-xs text-[#A9C0CE] font-medium pl-1">
                       {topic.steps.map((st, sIdx) => (
                         <li key={sIdx}>{st}</li>
                       ))}
@@ -166,8 +166,8 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
                   )}
 
                   {topic.note && (
-                    <div className="mt-2 p-2.5 rounded-xl bg-[#FFF8EE] border border-[#FF6B6B]/30 text-[11px] text-[#45365F] font-semibold flex items-start gap-2">
-                      <AlertCircle className="w-3.5 h-3.5 text-[#FF6B6B] shrink-0 mt-0.5" />
+                    <div className="mt-2 p-2.5 rounded-xl bg-[#FF796C]/10 border border-[#FF796C]/30 text-[11px] text-[#FF796C] font-semibold flex items-start gap-2">
+                      <AlertCircle className="w-3.5 h-3.5 text-[#FF796C] shrink-0 mt-0.5" />
                       <span>{topic.note}</span>
                     </div>
                   )}

@@ -1,12 +1,7 @@
 /**
  * GameON Tele - Customer Profile & Account Page
- * 
- * Compliant with GameON Tele guidelines:
- * - NO customer login screen: User is pre-authenticated by telebirr SuperApp
- * - telebirr Identity: MSISDN, telebirr balance, GameON coin balance
- * - In-app Coin Topup & All-Access Subscription Management
- * - Game History & Personal High Scores
- * - Clean, responsive UI with zero shortcode dependencies
+ * Redesigned with Midnight-Navy Surfaces and Deep-Teal Panels
+ * Inspired directly by modern high-end mobile gaming hubs (Reference Screen 3).
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -19,17 +14,13 @@ import {
 } from '../types';
 import { 
   User, 
-  Phone, 
   Tag, 
   Gamepad2, 
   Trophy, 
-  Gift, 
-  Crown, 
   CreditCard, 
   Headphones, 
   HelpCircle, 
   Settings as SettingsIcon, 
-  Info, 
   FileText, 
   ShieldCheck, 
   ArrowLeft, 
@@ -37,7 +28,13 @@ import {
   Sparkles, 
   Volume2, 
   VolumeX,
-  LogOut
+  LogOut,
+  Coins,
+  Star,
+  CheckCircle2,
+  Plus,
+  History,
+  Gift
 } from 'lucide-react';
 import { GamesContentPage } from './content/GamesContentPage';
 import { PricingPage } from './content/PricingPage';
@@ -158,12 +155,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
   }, [profile.phoneNumber]);
 
-  // Played or unlocked games
-  const recentlyPlayedIds = EntitlementService.getRecentlyPlayedIds();
-  const myGamesList = GameCatalog.getRecentlyPlayed(recentlyPlayedIds).map(catalogGameToDefinition);
-
-  // Active subscriptions count
-  const activeSubsCount = EntitlementService.getActiveSubscriptionsList().length;
+  const coinsBalance = profile.coinsBalance ?? 1250;
 
   // Subview rendering
   if (subView === 'subscriptions') {
@@ -213,22 +205,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     const allAvailableGames = activeCatalogGames;
 
     return (
-      <div className="min-h-screen bg-[#FFF8EE]/50 text-[#38205F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4">
-        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs">
+      <div className="min-h-screen bg-[#071827] text-[#F5FAFC] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4 font-['Plus_Jakarta_Sans',sans-serif]">
+        <div className="flex items-center justify-between gap-3 bg-[#102C40] border border-[#244558] text-white p-3.5 rounded-2xl shadow-md">
           <div className="flex items-center gap-3">
             <button
               id="my-games-back-btn"
               onClick={handleBackToMain}
-              className="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-xl bg-[#15374A] hover:bg-[#244558] flex items-center justify-center text-[#A9C0CE] hover:text-[#35D9F2] transition-colors cursor-pointer border border-[#244558]"
               title="Go Back"
               aria-label="Go Back"
             >
               <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
               <span className="sr-only">Go Back</span>
             </button>
-            <h1 className="text-base font-black tracking-tight">My Games</h1>
+            <h1 className="text-base font-black tracking-tight text-[#F5FAFC]">My Games</h1>
           </div>
-          <span className="text-xs font-bold text-[#F1ECFF]">
+          <span className="text-xs font-bold text-[#A9C0CE]">
             {allAvailableGames.length} Games
           </span>
         </div>
@@ -239,20 +231,20 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             return (
               <div
                 key={g.id}
-                className="flex items-center justify-between p-3 rounded-2xl bg-white border border-[#E7DFF3] hover:border-[#7048E8] transition-all shadow-xs"
+                className="flex items-center justify-between p-3 rounded-2xl bg-[#102C40] border border-[#244558] hover:border-[#00BFA6]/60 transition-all shadow-sm"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
                     src={g.thumbnailUrl || g.bannerUrl}
                     alt={g.title}
-                    className="w-12 h-12 rounded-xl object-cover bg-[#F1ECFF] shrink-0"
+                    className="w-12 h-12 rounded-xl object-cover bg-[#0B2234] shrink-0 border border-[#244558]"
                   />
                   <div className="min-w-0">
-                    <h4 className="text-sm font-black text-[#38205F] truncate">{g.title}</h4>
+                    <h4 className="text-sm font-black text-[#F5FAFC] truncate">{g.title}</h4>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-[#827695] capitalize">{g.category}</span>
-                      <span className="text-[10px] text-[#E7DFF3]">•</span>
-                      <span className="text-[11px] font-extrabold text-[#7048E8]">
+                      <span className="text-[11px] text-[#A9C0CE] capitalize">{g.category}</span>
+                      <span className="text-[10px] text-[#244558]">•</span>
+                      <span className="text-[11px] font-extrabold text-[#F7C85B]">
                         Best: {personalHighScore > 0 ? `${personalHighScore.toLocaleString()} pts` : 'No score yet'}
                       </span>
                     </div>
@@ -261,7 +253,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <button
                   type="button"
                   onClick={() => onPlayGame(g)}
-                  className="px-3.5 py-1.5 rounded-xl bg-[#7048E8] hover:bg-[#5f3dc4] active:scale-95 text-white text-xs font-black shrink-0 transition-transform cursor-pointer shadow-xs"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#00BFA6] hover:bg-[#63F5C8] active:scale-95 text-[#071827] text-xs font-black shrink-0 transition-transform cursor-pointer shadow-xs"
                 >
                   Play
                 </button>
@@ -275,40 +267,40 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   if (subView === 'my_scores') {
     return (
-      <div className="min-h-screen bg-[#FFF8EE]/50 text-[#38205F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4">
-        <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-3.5 rounded-2xl shadow-xs">
+      <div className="min-h-screen bg-[#071827] text-[#F5FAFC] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 select-none space-y-4 font-['Plus_Jakarta_Sans',sans-serif]">
+        <div className="flex items-center justify-between gap-3 bg-[#102C40] border border-[#244558] text-white p-3.5 rounded-2xl shadow-md">
           <div className="flex items-center gap-3">
             <button
               id="my-scores-back-btn"
               onClick={handleBackToMain}
-              className="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-xl bg-[#15374A] hover:bg-[#244558] flex items-center justify-center text-[#A9C0CE] hover:text-[#35D9F2] transition-colors cursor-pointer border border-[#244558]"
               title="Go Back"
               aria-label="Go Back"
             >
               <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
               <span className="sr-only">Go Back</span>
             </button>
-            <h1 className="text-base font-black tracking-tight">Personal Best Scores</h1>
+            <h1 className="text-base font-black tracking-tight text-[#F5FAFC]">Personal Best Scores</h1>
           </div>
-          <span className="text-xs font-bold text-[#F1ECFF]">
+          <span className="text-xs font-bold text-[#A9C0CE]">
             {activeCatalogGames.length} Games
           </span>
         </div>
 
-        <div className="rounded-2xl border border-[#E7DFF3] overflow-hidden bg-white shadow-2xs divide-y divide-[#E7DFF3]/60">
+        <div className="rounded-2xl border border-[#244558] overflow-hidden bg-[#102C40] shadow-md divide-y divide-[#244558]">
           {activeCatalogGames.map((g) => {
             const score = profile.highScores?.[g.id] ?? 0;
             return (
               <div key={g.id} className="p-3.5 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-black text-[#38205F]">
+                  <div className="text-xs font-black text-[#F5FAFC]">
                     {g.title}
                   </div>
-                  <div className="text-[10px] text-[#827695] capitalize">
+                  <div className="text-[10px] text-[#A9C0CE] capitalize">
                     {g.category}
                   </div>
                 </div>
-                <div className="text-sm font-black text-[#7048E8] font-mono">
+                <div className="text-sm font-black text-[#F7C85B] font-mono">
                   {score > 0 ? `${score.toLocaleString()} pts` : 'No score yet'}
                 </div>
               </div>
@@ -320,131 +312,136 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   }
 
   // =========================================================================
-  // MAIN PROFILE VIEW (Clean GameSwiper Gaming Portal Design)
+  // MAIN PROFILE VIEW (Reference Screen 3)
   // =========================================================================
   return (
-    <div className="min-h-screen bg-[#FFF8EE]/50 text-[#38205F] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 space-y-4 select-none">
+    <div className="min-h-screen bg-[#071827] text-[#F5FAFC] pb-24 max-w-md md:max-w-xl lg:max-w-3xl mx-auto px-3.5 pt-3 space-y-4 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       
-      {/* 1. TOP: Authenticated Account Card */}
+      {/* 1. TOP HEADER WITH SETTINGS COG */}
+      <div className="flex items-center justify-between px-1">
+        <h1 className="text-lg font-black text-[#F5FAFC] tracking-tight">
+          Player Profile
+        </h1>
+        <button
+          onClick={() => openSubView('help_support')}
+          className="w-9 h-9 rounded-xl bg-[#102C40] border border-[#244558] flex items-center justify-center text-[#A9C0CE] hover:text-[#35D9F2] transition-colors cursor-pointer shadow-xs"
+          title="Account Settings & Support"
+        >
+          <SettingsIcon className="w-4.5 h-4.5 stroke-[2.2]" />
+        </button>
+      </div>
+
+      {/* 2. AUTHENTICATED USER HERO CARD (Reference Screen 3) */}
       <div 
         id="profile-account-card"
-        className="rounded-3xl bg-gradient-to-r from-[#7048E8] to-[#38205F] text-white p-4.5 shadow-sm"
+        className="rounded-3xl bg-[#102C40] border border-[#244558] p-5 shadow-xl relative overflow-hidden space-y-4"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 text-white flex items-center justify-center shadow-xs shrink-0 border border-white/20">
-              <User className="w-6 h-6 text-white stroke-[2.2]" />
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center gap-3.5">
+            {/* Glowing Avatar Frame */}
+            <div className="relative">
+              <div className="w-14 h-14 rounded-2xl bg-[#0B2234] border-2 border-[#00BFA6] text-[#35D9F2] flex items-center justify-center shadow-md shadow-[#00BFA6]/20 shrink-0">
+                <User className="w-7 h-7 stroke-[2.2]" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#15374A] border border-[#244558] text-[#F7C85B] flex items-center justify-center text-[10px] font-black">
+                ★
+              </div>
             </div>
+
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="px-2 py-0.5 rounded-md bg-[#C6F36B] text-[#38205F] text-[9px] font-black uppercase tracking-wider">
-                  VERIFIED ACCOUNT
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-black text-[#F5FAFC] leading-tight">
+                  GameMaster
+                </h2>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#63F5C8]/15 border border-[#63F5C8]/30 text-[#63F5C8] text-[9px] font-black uppercase tracking-wider">
+                  <CheckCircle2 className="w-2.5 h-2.5" />
+                  <span>Verified</span>
                 </span>
               </div>
-              <div className="text-base font-black font-mono tracking-wider text-white mt-0.5">
-                {maskedMsisdn}
-              </div>
+              <p className="text-xs font-mono font-bold text-[#A9C0CE] mt-0.5">
+                ID: {maskedMsisdn}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* User Stats Row: Level | Total Wins | Best Score */}
+        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#244558] relative z-10 text-center">
+          <div className="p-2 rounded-xl bg-[#0B2234] border border-[#244558]">
+            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#A9C0CE] uppercase">
+              <Star className="w-3 h-3 text-[#F7C85B] fill-[#F7C85B]" />
+              <span>Level</span>
+            </div>
+            <div className="text-sm font-black text-[#F5FAFC] mt-0.5 font-mono">
+              12
             </div>
           </div>
 
-          <div className="px-3 py-1.5 rounded-full bg-white/15 text-white text-[11px] font-bold border border-white/20">
-            Daily Player
+          <div className="p-2 rounded-xl bg-[#0B2234] border border-[#244558]">
+            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#A9C0CE] uppercase">
+              <Trophy className="w-3 h-3 text-[#F7C85B]" />
+              <span>Best Score</span>
+            </div>
+            <div className="text-sm font-black text-[#F7C85B] mt-0.5 font-mono">
+              {bestScore > 0 ? bestScore.toLocaleString() : '0'}
+            </div>
+          </div>
+
+          <div className="p-2 rounded-xl bg-[#0B2234] border border-[#244558]">
+            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-[#A9C0CE] uppercase">
+              <Gamepad2 className="w-3 h-3 text-[#63F5C8]" />
+              <span>Games</span>
+            </div>
+            <div className="text-sm font-black text-[#63F5C8] mt-0.5 font-mono">
+              {activeCatalogGames.length}
+            </div>
           </div>
         </div>
+
+        {/* Ambient background blur */}
+        <div className="absolute right-0 top-0 w-32 h-32 bg-[#00BFA6]/10 rounded-full blur-2xl pointer-events-none" />
       </div>
 
-      {/* 2. STATS: BEST SCORE SUMMARY CARD */}
+      {/* 3. WALLET / BALANCE CARD (Reference Screen 3) */}
       <div 
-        id="profile-stat-best-score"
-        onClick={() => openSubView('my_scores')}
-        className="bg-white rounded-2xl p-4 border border-[#E7DFF3] shadow-2xs hover:border-[#7048E8]/50 transition-all cursor-pointer flex items-center justify-between"
+        id="profile-wallet-card"
+        className="rounded-2xl bg-[#102C40] border border-[#244558] p-4 flex items-center justify-between shadow-md"
       >
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-[#F1ECFF] border border-[#E7DFF3] flex items-center justify-center shrink-0">
-            <Trophy className="w-5 h-5 text-[#7048E8]" />
+          <div className="w-11 h-11 rounded-2xl bg-[#0B2234] border border-[#244558] flex items-center justify-center shrink-0">
+            <Coins className="w-6 h-6 text-[#F7C85B]" />
           </div>
           <div>
-            <span className="text-[10px] sm:text-[11px] font-bold text-[#827695] tracking-wider uppercase block">
-              Top Personal Best
+            <span className="text-[10px] sm:text-[11px] font-bold text-[#A9C0CE] uppercase tracking-wider block">
+              My Wallet
             </span>
-            <div className="text-xl sm:text-2xl font-black text-[#38205F] font-mono flex items-baseline gap-1 mt-0.5">
-              <span>{bestScore > 0 ? bestScore.toLocaleString() : 'No score yet'}</span>
-              {bestScore > 0 && <span className="text-xs font-bold text-[#827695] font-sans">pts</span>}
+            <div className="text-xl font-black text-[#F5FAFC] font-mono leading-tight mt-0.5">
+              {coinsBalance.toLocaleString()} <span className="text-xs font-sans text-[#F7C85B] font-bold">Coins</span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-bold text-[#7048E8]">
-          <span>View Scores</span>
-          <ChevronRight className="w-4 h-4" />
-        </div>
+
+        <button
+          type="button"
+          onClick={onOpenBuyCoins}
+          className="px-3.5 py-2 rounded-xl bg-[#15374A] hover:bg-[#00BFA6] hover:text-[#071827] text-[#00BFA6] border border-[#00BFA6]/40 text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs active:scale-95"
+        >
+          <Plus className="w-3.5 h-3.5 stroke-[3]" />
+          <span>Add Coins</span>
+        </button>
       </div>
 
-      {/* 3. PERSONAL BEST SCORES UNDER EACH GAME */}
-      <div className="bg-white rounded-3xl p-4.5 border border-[#E7DFF3] shadow-xs space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-[#7048E8]" />
-            <h3 className="text-sm font-black text-[#38205F] tracking-tight">
-              Personal Best Scores
-            </h3>
-          </div>
-          <span className="text-[11px] font-bold text-[#827695]">
-            {activeCatalogGames.length} Games
-          </span>
-        </div>
-
-        <div className="divide-y divide-[#E7DFF3]/60">
-          {activeCatalogGames.map((g) => {
-            const personalHighScore = profile.highScores?.[g.id] ?? 0;
-            return (
-              <div key={g.id} className="py-2.5 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={g.thumbnailUrl || g.bannerUrl}
-                    alt={g.title}
-                    className="w-10 h-10 rounded-xl object-cover bg-[#F1ECFF] shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <h4 className="text-xs sm:text-sm font-black text-[#38205F] truncate">
-                      {g.title}
-                    </h4>
-                    <p className="text-[11px] font-semibold text-[#827695]">
-                      Personal Best:{' '}
-                      {personalHighScore > 0 ? (
-                        <span className="font-extrabold text-[#7048E8] font-mono">
-                          {personalHighScore.toLocaleString()}
-                        </span>
-                      ) : (
-                        <span className="text-[#827695]/70">No score yet</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => onPlayGame(g)}
-                  className="px-3.5 py-1.5 rounded-xl bg-[#7048E8] hover:bg-[#5f3dc4] active:scale-95 text-white text-xs font-black shrink-0 transition-transform cursor-pointer shadow-xs"
-                >
-                  Play
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 4. PROFILE MENU ITEMS */}
-      <div className="bg-white rounded-2xl border border-[#E7DFF3] shadow-2xs overflow-hidden divide-y divide-[#E7DFF3]/60">
+      {/* 4. PROFILE NAVIGATION MENU ITEMS (Reference Screen 3) */}
+      <div className="bg-[#102C40] rounded-2xl border border-[#244558] shadow-md overflow-hidden divide-y divide-[#244558]">
         {[
-          { id: 'subscriptions', label: 'Subscription', icon: CreditCard },
-          { id: 'pricing', label: 'Pricing', icon: Tag },
-          { id: 'my_games', label: 'My Games', icon: Gamepad2 },
-          { id: 'my_scores', label: 'My High Scores', icon: Trophy },
-          { id: 'faq', label: 'FAQ', icon: HelpCircle },
-          { id: 'help_support', label: 'Help & Support', icon: Headphones },
-          { id: 'terms', label: 'Terms & Conditions', icon: FileText },
-          { id: 'privacy', label: 'Privacy Policy', icon: ShieldCheck },
+          { id: 'my_games', label: 'Game History', desc: 'View your played games', icon: History, color: '#35D9F2' },
+          { id: 'subscriptions', label: 'Subscription & VIP', desc: 'Check active gaming pass', icon: CreditCard, color: '#63F5C8' },
+          { id: 'my_scores', label: 'My High Scores', desc: 'Personal best records', icon: Trophy, color: '#F7C85B' },
+          { id: 'pricing', label: 'Pricing & Plans', desc: 'Token packages and rates', icon: Tag, color: '#00BFA6' },
+          { id: 'faq', label: 'FAQ', desc: 'Frequently asked questions', icon: HelpCircle, color: '#35D9F2' },
+          { id: 'help_support', label: 'Help & Support', desc: 'Customer care and assistance', icon: Headphones, color: '#63F5C8' },
+          { id: 'terms', label: 'Terms & Conditions', desc: 'Terms of service', icon: FileText, color: '#A9C0CE' },
+          { id: 'privacy', label: 'Privacy Policy', desc: 'Data and security standards', icon: ShieldCheck, color: '#A9C0CE' },
         ].map((item) => {
           const Icon = item.icon;
           return (
@@ -452,39 +449,76 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               key={item.id}
               id={`profile-menu-item-${item.id}`}
               onClick={() => openSubView(item.id as ProfileSubView)}
-              className="w-full px-4 py-3.5 flex items-center justify-between hover:bg-[#F1ECFF]/40 transition-colors text-left group cursor-pointer"
+              className="w-full px-4 py-3.5 flex items-center justify-between hover:bg-[#15374A] transition-colors text-left group cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-[#F1ECFF] text-[#7048E8] flex items-center justify-center group-hover:bg-[#7048E8] group-hover:text-white transition-colors">
-                  <Icon className="w-4 h-4 stroke-[2.2]" />
+                <div 
+                  className="w-9 h-9 rounded-xl bg-[#0B2234] border border-[#244558] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform"
+                  style={{ color: item.color }}
+                >
+                  <Icon className="w-4.5 h-4.5 stroke-[2.2]" />
                 </div>
-                <span className="text-xs sm:text-sm font-black text-[#38205F] group-hover:text-[#7048E8] transition-colors">
-                  {item.label}
-                </span>
+                <div>
+                  <h3 className="text-xs sm:text-sm font-black text-[#F5FAFC] group-hover:text-[#35D9F2] transition-colors">
+                    {item.label}
+                  </h3>
+                  <p className="text-[10px] text-[#A9C0CE] font-medium">
+                    {item.desc}
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <ChevronRight className="w-4 h-4 text-[#827695] group-hover:text-[#7048E8] transition-transform" />
+                <ChevronRight className="w-4 h-4 text-[#A9C0CE] group-hover:text-[#35D9F2] group-hover:translate-x-0.5 transition-all" />
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* Sound & Preference Settings */}
-      <div className="p-3.5 rounded-2xl bg-white border border-[#E7DFF3] flex items-center justify-between">
+      {/* 5. BOTTOM PROMO BANNER (Reference Screen 3) */}
+      <div 
+        id="profile-reward-promo"
+        className="rounded-2xl bg-gradient-to-r from-[#102C40] via-[#15374A] to-[#102C40] border border-[#244558] p-4 flex items-center justify-between shadow-md"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#0B2234] border border-[#244558] flex items-center justify-center text-[#F7C85B] shrink-0">
+            <Trophy className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-xs sm:text-sm font-black text-[#F5FAFC] leading-tight">
+              Play More Games
+            </h4>
+            <p className="text-[10px] text-[#A9C0CE] font-medium">
+              Earn daily rewards & badges!
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => openSubView('games')}
+          className="px-3.5 py-1.5 rounded-xl bg-[#F7C85B] hover:bg-[#eab308] text-[#071827] text-xs font-black transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 flex items-center gap-1"
+        >
+          <span>Explore</span>
+          <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+        </button>
+      </div>
+
+      {/* 6. SOUND & PREFERENCE SETTINGS */}
+      <div className="p-3.5 rounded-2xl bg-[#102C40] border border-[#244558] flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2.5">
           {isSoundOn ? (
-            <Volume2 className="w-4 h-4 text-[#7048E8]" />
+            <Volume2 className="w-4 h-4 text-[#00BFA6]" />
           ) : (
-            <VolumeX className="w-4 h-4 text-[#827695]" />
+            <VolumeX className="w-4 h-4 text-[#A9C0CE]" />
           )}
-          <span className="text-xs font-bold text-[#38205F]">Game Sound Effects</span>
+          <span className="text-xs font-bold text-[#F5FAFC]">Game Sound Effects</span>
         </div>
         <button
           onClick={toggleSound}
           className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-            isSoundOn ? 'bg-[#7048E8]' : 'bg-slate-200'
+            isSoundOn ? 'bg-[#00BFA6]' : 'bg-[#15374A] border border-[#244558]'
           }`}
         >
           <div
@@ -495,21 +529,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </button>
       </div>
 
-      {/* Log Out Action */}
+      {/* 7. LOG OUT ACTION */}
       {onSignOut && (
         <button
           id="profile-logout-btn"
           type="button"
           onClick={onSignOut}
-          className="w-full py-3.5 rounded-2xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100/80 text-rose-700 font-black text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+          className="w-full py-3 rounded-2xl border border-[#FF796C]/30 bg-[#FF796C]/10 hover:bg-[#FF796C]/20 text-[#FF796C] font-black text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98"
         >
           <LogOut className="w-4 h-4 stroke-[2.2]" />
           <span>Log Out</span>
         </button>
       )}
 
-      {/* GameSwiper Info */}
-      <div className="text-center pt-2 text-[10px] text-[#827695] font-bold space-y-0.5">
+      {/* GameSwiper Info Footer */}
+      <div className="text-center pt-2 text-[10px] text-[#A9C0CE] font-bold space-y-0.5">
         <div>GameSwiper Gaming Edition</div>
         <div>Official Gaming Portal</div>
       </div>

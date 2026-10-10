@@ -465,31 +465,31 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col justify-between overflow-y-auto animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="fixed inset-0 z-50 bg-[#071827]/95 backdrop-blur-md flex flex-col justify-between overflow-y-auto animate-in fade-in duration-200 font-['Plus_Jakarta_Sans',sans-serif]">
       
       {/* Top Game Bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-[#1688C9] text-white border-b border-blue-600">
+      <div className="flex items-center justify-between px-4 py-3 bg-[#0B2234] text-[#F5FAFC] border-b border-[#244558]">
         <button
           onClick={onClose}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#15374A] hover:bg-[#244558] text-[#F5FAFC] border border-[#244558] text-xs font-bold transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Exit</span>
         </button>
 
         <div className="flex flex-col items-center">
-          <span className="text-sm font-black text-white leading-tight">{game.title}</span>
-          <span className="text-[10px] text-[#8BCB3D] font-bold tracking-wide">{game.titleAmharic}</span>
+          <span className="text-sm font-black text-[#F5FAFC] leading-tight">{game.title}</span>
+          <span className="text-[10px] text-[#63F5C8] font-bold tracking-wide">{game.titleAmharic}</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1 rounded-xl bg-white/15 text-white text-xs font-bold flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#8BCB3D]" />
+          <div className="px-3 py-1 rounded-xl bg-[#15374A] border border-[#244558] text-[#63F5C8] text-xs font-bold flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#63F5C8]" />
             <span>Free Play</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl bg-[#15374A] hover:bg-[#244558] text-[#F5FAFC] border border-[#244558] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -509,40 +509,40 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
           </div>
         ) : (
           /* CLEAN RESULT SCREEN (No Ads, No VIP, No Energy) */
-          <div className="w-full max-w-md bg-[#05234A] text-white rounded-3xl p-6 border-2 border-[#0B3B70] shadow-2xl text-center animate-in zoom-in-95">
+          <div className="w-full max-w-md bg-[#102C40] text-[#F5FAFC] rounded-3xl p-6 border border-[#244558] shadow-2xl text-center animate-in zoom-in-95">
             {/* Header Badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#78BE20]/20 border border-[#78BE20]/50 text-[#78BE20] text-xs font-black uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00BFA6]/20 border border-[#00BFA6]/50 text-[#63F5C8] text-xs font-black uppercase tracking-wider mb-3">
               <Award className="w-4 h-4" />
               <span>Match Completed</span>
             </div>
 
             {lastResult.isNewHighScore && (
-              <div className="mb-3 px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 font-black text-xs flex items-center justify-center gap-1.5 animate-pulse">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+              <div className="mb-3 px-3 py-1.5 rounded-xl bg-[#F7C85B]/20 border border-[#F7C85B]/50 text-[#F7C85B] font-black text-xs flex items-center justify-center gap-1.5 animate-pulse">
+                <Sparkles className="w-4 h-4 text-[#F7C85B]" />
                 <span>NEW PERSONAL BEST!</span>
               </div>
             )}
 
             {/* Final Score Counter */}
-            <div className="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight mb-1">
+            <div className="text-4xl sm:text-5xl font-black text-[#F5FAFC] font-mono tracking-tight mb-1">
               {lastResult.score.toLocaleString()}
             </div>
-            <div className="text-xs text-slate-300 uppercase tracking-widest font-semibold mb-6">
+            <div className="text-xs text-[#A9C0CE] uppercase tracking-widest font-semibold mb-6">
               FINAL SCORE
             </div>
 
             {/* Results Matrix */}
             <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="bg-slate-900/80 rounded-xl p-3 border border-slate-800 text-left">
-                <div className="text-[10px] text-slate-400 font-semibold uppercase">MATCH SCORE</div>
-                <div className="text-base font-bold text-[#78BE20] font-mono">
+              <div className="bg-[#0B2234] rounded-xl p-3 border border-[#244558] text-left">
+                <div className="text-[10px] text-[#A9C0CE] font-semibold uppercase">MATCH SCORE</div>
+                <div className="text-base font-bold text-[#63F5C8] font-mono">
                   +{lastResult.score} PTS
                 </div>
               </div>
 
-              <div className="bg-slate-900/80 rounded-xl p-3 border border-slate-800 text-left">
-                <div className="text-[10px] text-slate-400 font-semibold uppercase">MATCH REWARDS</div>
-                <div className="text-base font-bold text-amber-400 font-mono flex items-center gap-1">
+              <div className="bg-[#0B2234] rounded-xl p-3 border border-[#244558] text-left">
+                <div className="text-[10px] text-[#A9C0CE] font-semibold uppercase">MATCH REWARDS</div>
+                <div className="text-base font-bold text-[#F7C85B] font-mono flex items-center gap-1">
                   <Coins className="w-4 h-4 fill-current" />
                   <span>+{lastResult.coinsEarned}</span>
                 </div>
@@ -553,7 +553,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
             <div className="flex flex-col gap-2.5">
               <button
                 onClick={onPlayAgain}
-                className="w-full py-3.5 rounded-xl bg-[#78BE20] hover:bg-[#68a81b] text-white font-black text-xs uppercase tracking-wider active:scale-95 transition-transform shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-[#00BFA6] hover:bg-[#63F5C8] text-[#071827] font-black text-xs uppercase tracking-wider active:scale-95 transition-transform shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4 stroke-[2.5]" />
                 <span>PLAY AGAIN</span>
@@ -561,7 +561,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
 
               <button
                 onClick={onClose}
-                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-[#15374A] hover:bg-[#244558] text-[#F5FAFC] border border-[#244558] font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
               >
                 EXIT
               </button>
@@ -571,7 +571,7 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
       </div>
 
       {/* Footer Branding */}
-      <div className="px-4 py-2 bg-[#7048E8] text-center text-xs text-white/90 border-t border-[#38205F]">
+      <div className="px-4 py-2 bg-[#0B2234] text-center text-xs text-[#A9C0CE] border-t border-[#244558]">
         GameSwiper • Official Mobile Gaming Portal
       </div>
     </div>

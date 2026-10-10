@@ -79,48 +79,53 @@
 }
 
 @theme {
-  --color-brand-primary: #7048E8;
-  --color-brand-plum: #38205F;
-  --color-brand-lavender: #F1ECFF;
-  --color-brand-cream: #FFF8EE;
-  --color-brand-coral: #FF6B6B;
-  --color-brand-lime: #C6F36B;
-  --color-brand-border: #E7DFF3;
-  --color-text-body: #45365F;
-  --color-text-muted: #827695;
+  --color-bg-primary: #071827;
+  --color-bg-secondary: #0B2234;
+  --color-card-surface: #102C40;
+  --color-card-elevated: #15374A;
+  --color-teal-primary: #00BFA6;
+  --color-cyan-bright: #35D9F2;
+  --color-mint-accent: #63F5C8;
+  --color-gold-premium: #F7C85B;
+  --color-coral-accent: #FF796C;
+  --color-text-primary: #F5FAFC;
+  --color-text-secondary: #A9C0CE;
+  --color-border-subtle: #244558;
 }
 
 :root {
-  /* GameSwiper Brand Color Tokens */
-  --color-primary-purple: #7048E8;
-  --color-deep-plum: #38205F;
-  --color-soft-lavender: #F1ECFF;
-  --color-warm-cream: #FFF8EE;
-  --color-coral: #FF6B6B;
-  --color-lime: #C6F36B;
-  --color-white: #FFFFFF;
-  --color-body-text: #45365F;
-  --color-muted-text: #827695;
-  --color-border: #E7DFF3;
+  /* GameSwiper Premium Midnight-Navy & Teal Design System */
+  --color-bg-primary: #071827;
+  --color-bg-secondary: #0B2234;
+  --color-card-surface: #102C40;
+  --color-card-elevated: #15374A;
+  --color-teal-primary: #00BFA6;
+  --color-cyan-bright: #35D9F2;
+  --color-mint-accent: #63F5C8;
+  --color-gold-premium: #F7C85B;
+  --color-coral-accent: #FF796C;
+  --color-text-primary: #F5FAFC;
+  --color-text-secondary: #A9C0CE;
+  --color-border-subtle: #244558;
 
   /* Card Surfaces & Backgrounds */
-  --surface-main: #FFFFFF;
-  --surface-card: #FFFFFF;
-  --surface-secondary: #F1ECFF;
-  --surface-cream: #FFF8EE;
+  --surface-main: #071827;
+  --surface-card: #102C40;
+  --surface-secondary: #0B2234;
+  --surface-elevated: #15374A;
 
   /* Focus, Radii, Shadows */
-  --focus-ring: rgba(112, 72, 232, 0.4);
+  --focus-ring: rgba(0, 191, 166, 0.4);
   --radius-card: 1.25rem;
   --radius-pill: 9999px;
-  --shadow-card: 0 4px 20px -2px rgba(56, 32, 95, 0.06);
-  --shadow-button: 0 4px 14px 0 rgba(112, 72, 232, 0.28);
+  --shadow-card: 0 4px 20px -2px rgba(7, 24, 39, 0.5);
+  --shadow-button: 0 4px 14px 0 rgba(0, 191, 166, 0.35);
   --duration-transition: 200ms;
 }
 
 body {
-  background-color: #FFFFFF;
-  color: #45365F;
+  background-color: #071827;
+  color: #F5FAFC;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }

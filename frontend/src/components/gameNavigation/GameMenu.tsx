@@ -213,7 +213,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
             onClick={onStatistics}
             className="py-2.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 text-slate-300 hover:text-white font-semibold text-[11px] flex items-center justify-center gap-1 border border-white/10 transition-all cursor-pointer"
           >
-            <BarChart2 className="w-3.5 h-3.5 text-purple-400" />
+            <BarChart2 className="w-3.5 h-3.5 text-[#35D9F2]" />
             <span>Stats</span>
           </button>
 

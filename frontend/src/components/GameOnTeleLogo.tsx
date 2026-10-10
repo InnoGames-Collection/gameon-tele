@@ -21,8 +21,8 @@ export const GameSwiperLogo: React.FC<GameSwiperLogoProps> = ({
     size === 'xl' ? 54 :
     32;
 
-  const textColor = variant === 'dark' ? '#FFFFFF' : '#38205F';
-  const accentColor = variant === 'dark' ? '#C6F36B' : '#7048E8';
+  const textColor = '#F5FAFC';
+  const accentColor = '#00BFA6';
 
   return (
     <div className={`inline-flex items-center select-none shrink-0 ${className}`}>
@@ -31,47 +31,65 @@ export const GameSwiperLogo: React.FC<GameSwiperLogoProps> = ({
         viewBox="0 0 345 68"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="shrink-0 aspect-[345/68] drop-shadow-xs"
+        className="shrink-0 aspect-[345/68] drop-shadow-sm"
         aria-label="GameSwiper Official Logo"
       >
-        {/* ICON EMBLEM: Rounded square with Gaming Swipe Symbol in Primary Purple */}
-        <rect x="4" y="4" width="60" height="60" rx="16" fill="#7048E8" />
-        {/* Glow corner accent */}
-        <path d="M 4 20 C 4 11.16 11.16 4 20 4 L 40 4 C 18 10 10 24 4 44 Z" fill="white" opacity="0.22" />
-        {/* Plus / D-pad in Lime #C6F36B */}
-        <rect x="28" y="16" width="12" height="36" rx="4" fill="#C6F36B" />
-        <rect x="16" y="28" width="36" height="12" rx="4" fill="#C6F36B" />
-        {/* Center Swipe Spark in Coral #FF6B6B */}
-        <circle cx="34" cy="34" r="4" fill="#FF6B6B" />
+        {/* ICON EMBLEM: Deep Teal Rounded Square with Gold Crown & Gaming Symbol */}
+        <rect x="4" y="4" width="60" height="60" rx="16" fill="#15374A" stroke="#244558" strokeWidth="2" />
+        
+        {/* Gold Crown Accent */}
+        <path 
+          d="M18 42L22 24L30 32L34 20L38 32L46 24L50 42H18Z" 
+          fill="#F7C85B" 
+        />
+        {/* Crown base band */}
+        <rect x="18" y="42" width="32" height="4" rx="2" fill="#F7C85B" />
+        {/* Crown jewels */}
+        <circle cx="22" cy="22" r="2" fill="#63F5C8" />
+        <circle cx="34" cy="18" r="2.5" fill="#35D9F2" />
+        <circle cx="46" cy="22" r="2" fill="#63F5C8" />
 
         {/* TEXT BRANDING: "Game" + "Swiper" */}
         <text
           x="76"
-          y="46"
+          y="40"
           fill={textColor}
           fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
           fontWeight="900"
-          fontSize="36"
+          fontSize="32"
           letterSpacing="-0.03em"
         >
           Game
         </text>
 
-        {/* "Swiper" in brand Primary Purple */}
+        {/* "Swiper" in Primary Teal #00BFA6 */}
         <text
-          x="185"
-          y="46"
+          x="172"
+          y="40"
           fill={accentColor}
           fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
           fontWeight="900"
-          fontSize="36"
+          fontSize="32"
           letterSpacing="-0.03em"
         >
           Swiper
         </text>
 
-        {/* Accent dot in vibrant lime */}
-        <circle cx="328" cy="44" r="4.5" fill="#C6F36B" />
+        {/* Accent dot in Mint #63F5C8 */}
+        <circle cx="300" cy="38" r="4.5" fill="#63F5C8" />
+
+        {/* Sub-tagline: PLAY • WIN • ENJOY in Secondary Text #A9C0CE */}
+        <text
+          x="77"
+          y="56"
+          fill="#A9C0CE"
+          fontFamily="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+          fontWeight="700"
+          fontSize="10"
+          letterSpacing="0.15em"
+        >
+          PLAY • WIN • ENJOY
+        </text>
       </svg>
     </div>
   );
