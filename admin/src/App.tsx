@@ -50,8 +50,8 @@ export default function App() {
   });
 
   // Login form state
-  const [loginUsername, setLoginUsername] = useState('superadmin');
-  const [loginPassword, setLoginPassword] = useState('Admin@GameOn2026!');
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 

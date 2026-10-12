@@ -63,24 +63,11 @@ export const SubscriptionService = {
 
   subscribe(planId: SubscriptionPlan, profile?: UserProfile): { success: boolean; message: string; updatedProfile?: UserProfile } {
     const current = profile || StorageService.getProfile();
-    const durationMs = 24 * 60 * 60 * 1000;
-
-    const updatedProfile: UserProfile = {
-      ...current,
-      subscription: {
-        plan: 'daily',
-        isActive: true,
-        expiresAt: Date.now() + durationMs,
-        autoRenew: true,
-      },
-    };
-
-    StorageService.saveProfile(updatedProfile);
 
     return {
       success: true,
-      message: 'Subscribed to Daily Plan (2 Birr/day)! Send OK to 7198.',
-      updatedProfile,
+      message: 'To activate your Daily Subscription (2 Birr/day), send OK to 7198.',
+      updatedProfile: current,
     };
   },
 };

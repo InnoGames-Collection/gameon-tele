@@ -137,13 +137,15 @@ export function resetWorldLegendsProgress(): WorldLegendsProgress {
  * e.g. 251911598830 -> 25191*****30
  */
 export function formatMsisdnMasked(rawPhone?: string): string {
-  let clean = (rawPhone || '').replace(/\D/g, '');
+  if (!rawPhone) return '091*****890';
+  if (rawPhone.includes('*')) return rawPhone;
+  let clean = rawPhone.replace(/\D/g, '');
   if (clean.startsWith('09') && clean.length === 10) {
     clean = '251' + clean.slice(1);
   } else if (!clean.startsWith('251') && clean.length >= 9) {
     clean = '251' + clean.slice(-9);
   } else if (!clean) {
-    clean = '251911598830';
+    clean = '251911428890';
   }
 
   if (clean.length >= 7) {
@@ -151,7 +153,7 @@ export function formatMsisdnMasked(rawPhone?: string): string {
     const last2 = clean.slice(-2);
     return `${first5}*****${last2}`;
   }
-  return '25191*****30';
+  return '091*****890';
 }
 
 export interface WorldLegendsLeaderboardEntry {
@@ -162,45 +164,34 @@ export interface WorldLegendsLeaderboardEntry {
   isPlayer: boolean;
 }
 
-const SEED_WORLD_PLAYERS = [
-  { msisdnMasked: '25191*****38', score: 14850, level: 40 },
-  { msisdnMasked: '25192*****14', score: 13920, level: 39 },
-  { msisdnMasked: '25193*****88', score: 12640, level: 36 },
-  { msisdnMasked: '25191*****55', score: 11480, level: 33 },
-  { msisdnMasked: '25192*****91', score: 10250, level: 30 },
-  { msisdnMasked: '25191*****04', score: 9100, level: 27 },
-  { msisdnMasked: '25193*****72', score: 7950, level: 24 },
-  { msisdnMasked: '25192*****33', score: 6820, level: 21 },
-  { msisdnMasked: '25191*****69', score: 5640, level: 18 },
-  { msisdnMasked: '25193*****21', score: 4510, level: 15 },
-  { msisdnMasked: '25191*****85', score: 3480, level: 12 },
-  { msisdnMasked: '25192*****47', score: 2540, level: 9 },
-  { msisdnMasked: '25193*****19', score: 1680, level: 6 },
-  { msisdnMasked: '25191*****60', score: 920, level: 3 },
-  { msisdnMasked: '25192*****95', score: 380, level: 2 },
-];
-
 export function getWorldLegendsLeaderboard(
   playerMsisdn: string,
   playerScore: number,
-  playerLevel: number
+  playerLevel: number,
+  serverEntries: { playerMasked: string; score: number }[] = []
 ): { list: WorldLegendsLeaderboardEntry[]; userRank: number; userEntry: WorldLegendsLeaderboardEntry } {
+  const playerMasked = formatMsisdnMasked(playerMsisdn);
   const playerEntry: WorldLegendsLeaderboardEntry = {
     rank: 0,
-    msisdnMasked: formatMsisdnMasked(playerMsisdn),
+    msisdnMasked: playerMasked,
     score: playerScore,
     level: playerLevel,
     isPlayer: true,
   };
 
-  const allEntries: WorldLegendsLeaderboardEntry[] = [
-    ...SEED_WORLD_PLAYERS.map((p) => ({
-      ...p,
+  const allEntries: WorldLegendsLeaderboardEntry[] = serverEntries
+    .filter((e) => e.playerMasked !== playerMasked)
+    .map((p, idx) => ({
       rank: 0,
+      msisdnMasked: p.playerMasked,
+      score: p.score,
+      level: Math.max(1, 40 - idx * 2),
       isPlayer: false,
-    })),
-    playerEntry,
-  ];
+    }));
+
+  if (playerScore > 0 || allEntries.length === 0) {
+    allEntries.push(playerEntry);
+  }
 
   // Sort descending by score, tiebreak by level
   allEntries.sort((a, b) => b.score - a.score || b.level - a.level);

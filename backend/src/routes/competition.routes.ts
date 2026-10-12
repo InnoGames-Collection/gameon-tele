@@ -3,11 +3,12 @@ import { z } from 'zod';
 import { pool } from '../config/database.js';
 import { cache } from '../config/cache.js';
 import { HelixEngine, normalizeMsisdn, maskMsisdn } from '../services/helixEngine.js';
+import { verifyAuth } from '../middleware/auth.js';
 
 const SubmitScoreSchema = z.object({
-  msisdn: z.string().min(9).max(20),
   gameId: z.string().min(1).max(50),
   score: z.number().int().min(0),
+  msisdn: z.string().min(9).max(20).optional(),
 });
 
 export async function competitionRoutes(fastify: FastifyInstance) {
@@ -107,15 +108,22 @@ export async function competitionRoutes(fastify: FastifyInstance) {
   /**
    * 3. Submit Non-Tournament Game Score
    * Records high scores for catalog games in PostgreSQL player_game_scores table.
+   * Strictly authenticated via player bearer token (INSA compliance).
    */
-  fastify.post('/scores', async (req, reply) => {
+  fastify.post('/scores', { preHandler: [verifyAuth] }, async (req, reply) => {
     const parse = SubmitScoreSchema.safeParse(req.body);
     if (!parse.success) {
       return reply.status(400).send({ error: 'Invalid score payload', details: parse.error.format() });
     }
 
-    const { msisdn, gameId, score } = parse.data;
-    const norm = normalizeMsisdn(msisdn);
+    const userMsisdn = req.user?.msisdn;
+    if (!userMsisdn) {
+      return reply.status(401).send({ error: 'UNAUTHORIZED: Valid player session token required' });
+    }
+
+    const { gameId, score } = parse.data;
+    const norm = normalizeMsisdn(userMsisdn);
+    const normGameId = gameId.toLowerCase().replace(/_/g, '-');
     const validScore = Math.max(0, Math.floor(score));
 
     // Ensure player exists in players table
@@ -135,7 +143,7 @@ export async function competitionRoutes(fastify: FastifyInstance) {
          matches_played = player_game_scores.matches_played + 1,
          last_played_at = NOW()
        RETURNING *`,
-      [norm, gameId, validScore]
+      [norm, normGameId, validScore]
     );
 
     return reply.send({
@@ -150,17 +158,20 @@ export async function competitionRoutes(fastify: FastifyInstance) {
    */
   fastify.get('/scores/:gameId', async (req, reply) => {
     const { gameId } = req.params as { gameId: string };
+    const normGameId = gameId.toLowerCase().replace(/_/g, '-');
     const res = await pool.query(
-      `SELECT pgs.high_score, pgs.matches_played, pgs.last_played_at, p.masked_msisdn
+      `SELECT pgs.high_score, pgs.matches_played, pgs.last_played_at, 
+              COALESCE(p.masked_msisdn, pgs.player_msisdn) AS masked_msisdn,
+              pgs.player_msisdn
        FROM player_game_scores pgs
-       JOIN players p ON pgs.player_msisdn = p.msisdn
-       WHERE pgs.game_id = $1
+       LEFT JOIN players p ON pgs.player_msisdn = p.msisdn
+       WHERE pgs.game_id = $1 OR pgs.game_id = $2
        ORDER BY pgs.high_score DESC
        LIMIT 10`,
-      [gameId]
+      [normGameId, gameId]
     );
     return reply.send({
-      gameId,
+      gameId: normGameId,
       scores: res.rows,
     });
   });

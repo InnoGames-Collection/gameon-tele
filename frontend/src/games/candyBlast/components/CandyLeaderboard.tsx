@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Trophy, Medal, Crown, Star } from 'lucide-react';
 import { PlayerProgress } from '../types';
 import { 
@@ -6,6 +6,7 @@ import {
   getTotalCampaignScore, 
   getTotalStarsEarned 
 } from '../levelStorage';
+import { GameLeaderboardService, GameLeaderboardEntry } from '../../../services/gameLeaderboardService';
 
 interface CandyLeaderboardProps {
   progress: PlayerProgress;
@@ -15,16 +16,30 @@ interface CandyLeaderboardProps {
 
 export const CandyLeaderboard: React.FC<CandyLeaderboardProps> = ({
   progress,
-  playerMsisdn = '251911598830',
+  playerMsisdn = '0911428890',
   onBack,
 }) => {
+  const [serverScores, setServerScores] = useState<GameLeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    GameLeaderboardService.fetchServerLeaderboard('candy-blast').then((res) => {
+      if (mounted && res && res.length > 0) {
+        setServerScores(res);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const totalScore = getTotalCampaignScore(progress);
   const totalStars = getTotalStarsEarned(progress);
   const currentLevel = progress.unlockedLevel || 1;
 
   const { list, userRank, userEntry } = useMemo(() => {
-    return getCandyLeaderboard(playerMsisdn, totalScore, currentLevel, totalStars);
-  }, [playerMsisdn, totalScore, currentLevel, totalStars]);
+    return getCandyLeaderboard(playerMsisdn, totalScore, currentLevel, totalStars, serverScores);
+  }, [playerMsisdn, totalScore, currentLevel, totalStars, serverScores]);
 
   return (
     <div

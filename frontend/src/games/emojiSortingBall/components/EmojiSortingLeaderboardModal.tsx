@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trophy, X, Medal, User, Zap } from 'lucide-react';
 import { EmojiSortingPlayerProgress, EmojiSortingLeaderboardEntry } from '../types';
+import { GameLeaderboardService, GameLeaderboardEntry } from '../../../services/gameLeaderboardService';
 
 interface EmojiSortingLeaderboardModalProps {
   isOpen: boolean;
@@ -15,25 +16,36 @@ export const EmojiSortingLeaderboardModal: React.FC<EmojiSortingLeaderboardModal
   progress,
   playerName = 'You',
 }) => {
+  const [serverScores, setServerScores] = useState<GameLeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let mounted = true;
+    GameLeaderboardService.fetchServerLeaderboard('emoji-sorting-ball').then((res) => {
+      if (mounted && res && res.length > 0) {
+        setServerScores(res);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const currentCumulative = progress.totalCumulativeScore || 0;
   const currentLevel = progress.unlockedLevel || 1;
 
-  // Base leaderboard competitors calibrated to our 40-level scoring system
-  const defaultCompetitors: Omit<EmojiSortingLeaderboardEntry, 'rank'>[] = [
-    { name: 'Kalkidan T.', avatar: '🥳', totalScore: 33200, level: 40, winRate: '99%' },
-    { name: 'Abebe B.', avatar: '🦁', totalScore: 30450, level: 40, winRate: '97%' },
-    { name: 'Dawit M.', avatar: '😎', totalScore: 26800, level: 36, winRate: '94%' },
-    { name: 'Hanna S.', avatar: '🌟', totalScore: 22400, level: 33, winRate: '91%' },
-    { name: 'Yared G.', avatar: '🚀', totalScore: 19100, level: 29, winRate: '88%' },
-    { name: 'Selam W.', avatar: '💎', totalScore: 15800, level: 25, winRate: '86%' },
-    { name: 'Biniyam K.', avatar: '🔥', totalScore: 12600, level: 20, winRate: '83%' },
-    { name: 'Meron F.', avatar: '😍', totalScore: 9750, level: 16, winRate: '81%' },
-    { name: 'Tewodros A.', avatar: '🤖', totalScore: 6950, level: 12, winRate: '79%' },
-  ];
-
   const allEntries: EmojiSortingLeaderboardEntry[] = [];
+  const competitors: Omit<EmojiSortingLeaderboardEntry, 'rank'>[] = serverScores.map((s, idx) => ({
+    name: s.playerMasked,
+    avatar: idx === 0 ? '👑' : idx === 1 ? '⚡' : idx === 2 ? '🔥' : '🎮',
+    totalScore: s.score,
+    level: Math.max(1, 40 - idx * 3),
+    winRate: `${Math.max(75, 99 - idx * 2)}%`,
+    isPlayer: false,
+  }));
+
   const playerObj: Omit<EmojiSortingLeaderboardEntry, 'rank'> = {
     name: playerName,
     avatar: '🎮',
@@ -43,7 +55,10 @@ export const EmojiSortingLeaderboardModal: React.FC<EmojiSortingLeaderboardModal
     isPlayer: true,
   };
 
-  const combined = [...defaultCompetitors, playerObj];
+  const combined = [...competitors];
+  if (currentCumulative > 0 || combined.length === 0) {
+    combined.push(playerObj);
+  }
   combined.sort((a, b) => b.totalScore - a.totalScore);
 
   combined.forEach((entry, idx) => {

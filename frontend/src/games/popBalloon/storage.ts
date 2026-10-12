@@ -13,13 +13,15 @@ const LEGACY_STORAGE_KEY = 'teleplay_pop_balloon_best';
  * e.g., 251911598830 -> 25191*****30
  */
 export function formatMsisdnMasked(rawPhone?: string): string {
-  let clean = (rawPhone || '').replace(/\D/g, '');
+  if (!rawPhone) return '091*****890';
+  if (rawPhone.includes('*')) return rawPhone;
+  let clean = rawPhone.replace(/\D/g, '');
   if (clean.startsWith('09') && clean.length === 10) {
     clean = '251' + clean.slice(1);
   } else if (!clean.startsWith('251') && clean.length >= 9) {
     clean = '251' + clean.slice(-9);
   } else if (!clean) {
-    clean = '251911598830';
+    clean = '251911428890';
   }
 
   if (clean.length >= 7) {
@@ -27,7 +29,7 @@ export function formatMsisdnMasked(rawPhone?: string): string {
     const last2 = clean.slice(-2);
     return `${first5}*****${last2}`;
   }
-  return '25191*****30';
+  return '091*****890';
 }
 
 export const INITIAL_PROGRESS: PopBalloonProgress = {
@@ -102,35 +104,16 @@ export function calculateGlobalRank(totalTournamentScore: number): number {
   return Math.max(12, Math.floor(1450 + (2000 - totalTournamentScore) * 1.5));
 }
 
-/**
- * Seeded mock tournament leaderboard participants for realistic competition
- */
-export const SEED_LEADERBOARD_PLAYERS = [
-  { msisdnMasked: '25191*****82', score: 19450, level: 40, badge: 'Grandmaster' },
-  { msisdnMasked: '25191*****34', score: 18920, level: 40, badge: 'Grandmaster' },
-  { msisdnMasked: '25192*****19', score: 18410, level: 39, badge: 'Champion' },
-  { msisdnMasked: '25191*****70', score: 17850, level: 38, badge: 'Master' },
-  { msisdnMasked: '25193*****55', score: 16940, level: 36, badge: 'Diamond' },
-  { msisdnMasked: '25191*****09', score: 15820, level: 35, badge: 'Diamond' },
-  { msisdnMasked: '25192*****41', score: 14750, level: 33, badge: 'Platinum' },
-  { msisdnMasked: '25191*****96', score: 13910, level: 31, badge: 'Platinum' },
-  { msisdnMasked: '25193*****22', score: 12840, level: 29, badge: 'Gold' },
-  { msisdnMasked: '25191*****63', score: 11520, level: 27, badge: 'Gold' },
-  { msisdnMasked: '25192*****77', score: 10180, level: 25, badge: 'Silver' },
-  { msisdnMasked: '25191*****15', score: 8940, level: 22, badge: 'Silver' },
-  { msisdnMasked: '25193*****88', score: 7450, level: 19, badge: 'Bronze' },
-  { msisdnMasked: '25191*****02', score: 5890, level: 15, badge: 'Bronze' },
-  { msisdnMasked: '25192*****60', score: 4320, level: 11, badge: 'Challenger' },
-];
-
 export function getTournamentLeaderboard(
   playerMsisdn: string,
   playerScore: number,
-  playerLevel: number
+  playerLevel: number,
+  serverEntries: { playerMasked: string; score: number }[] = []
 ): LeaderboardEntry[] {
+  const playerMasked = formatMsisdnMasked(playerMsisdn);
   const playerEntry: LeaderboardEntry = {
     rank: 0,
-    msisdnMasked: formatMsisdnMasked(playerMsisdn),
+    msisdnMasked: playerMasked,
     score: playerScore,
     level: playerLevel,
     badge:
@@ -146,17 +129,20 @@ export function getTournamentLeaderboard(
     isPlayer: true,
   };
 
-  const allEntries: LeaderboardEntry[] = [
-    ...SEED_LEADERBOARD_PLAYERS.map((p) => ({
+  const allEntries: LeaderboardEntry[] = serverEntries
+    .filter((e) => e.playerMasked !== playerMasked)
+    .map((p, idx) => ({
       rank: 0,
-      msisdnMasked: p.msisdnMasked,
+      msisdnMasked: p.playerMasked,
       score: p.score,
-      level: p.level,
-      badge: p.badge,
+      level: Math.max(1, 40 - idx * 3),
+      badge: idx < 2 ? 'Grandmaster' : idx < 4 ? 'Champion' : 'Diamond',
       isPlayer: false,
-    })),
-    playerEntry,
-  ];
+    }));
+
+  if (playerScore > 0 || allEntries.length === 0) {
+    allEntries.push(playerEntry);
+  }
 
   // Sort descending by score
   allEntries.sort((a, b) => b.score - a.score);

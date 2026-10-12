@@ -40,7 +40,15 @@ echo "📦 [STAGE 1.1: DB] Applying PostgreSQL Schema Migrations..."
 for mig in db/migrations/*.sql; do
   if [ -f "$mig" ]; then
     echo "Applying $(basename "$mig")..."
-    docker exec -i gameon-tele-postgres psql -U gameon_app -d gameon -f "/docker-entrypoint-initdb.d/$(basename "$mig")" || true
+    docker exec -i gameon-tele-postgres psql -U gameon_app -d gameon < "$mig" || true
+  fi
+done
+
+echo "🌱 [STAGE 1.2: DB] Applying PostgreSQL Initial Seeds..."
+for seed in db/seeds/*.sql; do
+  if [ -f "$seed" ]; then
+    echo "Applying $(basename "$seed")..."
+    docker exec -i gameon-tele-postgres psql -U gameon_app -d gameon < "$seed" || true
   fi
 done
 

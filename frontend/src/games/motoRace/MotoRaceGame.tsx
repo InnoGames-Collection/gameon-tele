@@ -109,7 +109,7 @@ export const MotoRaceGame: React.FC<MotoRaceGameProps> = ({
   const currentLevelConfig = getMotoRaceLevel(currentLevelNum);
 
   // Player MSISDN normalization & masking
-  const rawMsisdn = useMemo(() => normalizeToMsisdn(profile.phoneNumber || '251911598830'), [profile.phoneNumber]);
+  const rawMsisdn = useMemo(() => normalizeToMsisdn(profile.phoneNumber || '0911428890'), [profile.phoneNumber]);
   const playerMsisdnMasked = useMemo(() => maskMsisdn(rawMsisdn), [rawMsisdn]);
 
   // Highest Reached Stage

@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Trophy, Crown } from 'lucide-react';
 import { 
   WorldLegendsProgress, 
   getWorldLegendsLeaderboard 
 } from '../worldLegendsStorage';
+import { GameLeaderboardService, GameLeaderboardEntry } from '../../../services/gameLeaderboardService';
 
 const WOOD_MATERIAL = {
   hud: {
@@ -28,15 +29,29 @@ interface WordLegendLeaderboardProps {
 
 export const WordLegendLeaderboard: React.FC<WordLegendLeaderboardProps> = ({
   progress,
-  playerMsisdn = '251911598830',
+  playerMsisdn = '0911428890',
   onBack,
 }) => {
+  const [serverScores, setServerScores] = useState<GameLeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    GameLeaderboardService.fetchServerLeaderboard('world-legends').then((res) => {
+      if (mounted && res && res.length > 0) {
+        setServerScores(res);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const totalScore = progress.totalScore || 0;
   const currentLevel = progress.unlockedLevel || 1;
 
   const { list, userRank, userEntry } = useMemo(() => {
-    return getWorldLegendsLeaderboard(playerMsisdn, totalScore, currentLevel);
-  }, [playerMsisdn, totalScore, currentLevel]);
+    return getWorldLegendsLeaderboard(playerMsisdn, totalScore, currentLevel, serverScores);
+  }, [playerMsisdn, totalScore, currentLevel, serverScores]);
 
   return (
     <div

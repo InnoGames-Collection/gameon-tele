@@ -116,7 +116,7 @@ export const AuthService = {
         phoneNumber: normalizedPhone,
         isRegistered: true,
         telebirrLinked: true,
-        highScores: serverHighScores,
+        highScores: { ...(backendProfile?.highScores || {}), ...serverHighScores },
         coins: backendProfile?.coins ?? current.coins,
         subscription: {
           ...current.subscription,

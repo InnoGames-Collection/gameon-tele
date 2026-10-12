@@ -679,7 +679,7 @@ export const WorldLegendsGame: React.FC<WorldLegendsGameProps> = ({
     return (
       <WordLegendLeaderboard
         progress={worldProgress}
-        playerMsisdn={profile?.phoneNumber || '251911598830'}
+        playerMsisdn={profile?.phoneNumber || '0911428890'}
         onBack={() => setCurrentScreen('menu')}
       />
     );

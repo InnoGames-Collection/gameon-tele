@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trophy, X, Medal, User, Zap } from 'lucide-react';
 import { SortingPlayerProgress, SortingLeaderboardEntry } from '../types';
+import { GameLeaderboardService, GameLeaderboardEntry } from '../../../services/gameLeaderboardService';
 
 interface SortingLeaderboardModalProps {
   isOpen: boolean;
@@ -15,27 +16,35 @@ export const SortingLeaderboardModal: React.FC<SortingLeaderboardModalProps> = (
   progress,
   playerName = 'You',
 }) => {
+  const [serverScores, setServerScores] = useState<GameLeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let mounted = true;
+    GameLeaderboardService.fetchServerLeaderboard('sorting-balls').then((res) => {
+      if (mounted && res && res.length > 0) {
+        setServerScores(res);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const currentCumulative = progress.totalCumulativeScore || 0;
   const currentLevel = progress.unlockedLevel || 1;
 
-  // Base leaderboard competitors calibrated to our 40-level scoring system
-  const defaultCompetitors: Omit<SortingLeaderboardEntry, 'rank'>[] = [
-    { name: 'Abebe B.', avatar: '🦁', totalScore: 32450, level: 40, winRate: '98%' },
-    { name: 'Kalkidan T.', avatar: '⚡', totalScore: 28900, level: 38, winRate: '95%' },
-    { name: 'Dawit M.', avatar: '👑', totalScore: 25400, level: 35, winRate: '92%' },
-    { name: 'Hanna S.', avatar: '🌟', totalScore: 21850, level: 32, winRate: '89%' },
-    { name: 'Yared G.', avatar: '🦅', totalScore: 18600, level: 28, winRate: '87%' },
-    { name: 'Selam W.', avatar: '💎', totalScore: 15300, level: 24, winRate: '85%' },
-    { name: 'Biniyam K.', avatar: '🔥', totalScore: 12200, level: 19, winRate: '82%' },
-    { name: 'Meron F.', avatar: '🎯', totalScore: 9450, level: 15, winRate: '80%' },
-    { name: 'Tewodros A.', avatar: '⚔️', totalScore: 6800, level: 11, winRate: '78%' },
-  ];
-
-  // Insert current player dynamically based on score
   const allEntries: SortingLeaderboardEntry[] = [];
-  let playerInserted = false;
+  const competitors: Omit<SortingLeaderboardEntry, 'rank'>[] = serverScores.map((s, idx) => ({
+    name: s.playerMasked,
+    avatar: idx === 0 ? '👑' : idx === 1 ? '⚡' : idx === 2 ? '🔥' : '🎮',
+    totalScore: s.score,
+    level: Math.max(1, 40 - idx * 3),
+    winRate: `${Math.max(75, 98 - idx * 2)}%`,
+    isPlayer: false,
+  }));
 
   const playerObj: Omit<SortingLeaderboardEntry, 'rank'> = {
     name: playerName,
@@ -46,8 +55,10 @@ export const SortingLeaderboardModal: React.FC<SortingLeaderboardModalProps> = (
     isPlayer: true,
   };
 
-  const combined = [...defaultCompetitors];
-  combined.push(playerObj);
+  const combined = [...competitors];
+  if (currentCumulative > 0 || combined.length === 0) {
+    combined.push(playerObj);
+  }
   combined.sort((a, b) => b.totalScore - a.totalScore);
 
   combined.forEach((entry, idx) => {

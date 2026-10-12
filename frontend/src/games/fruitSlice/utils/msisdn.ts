@@ -12,7 +12,7 @@
 
 export function normalizeToMsisdn(rawPhone?: string): string {
   if (!rawPhone || !rawPhone.trim()) {
-    return '251911598830';
+    return '251911428890';
   }
   const digits = rawPhone.replace(/\D/g, '');
   if (digits.startsWith('251') && digits.length >= 12) {
@@ -27,15 +27,17 @@ export function normalizeToMsisdn(rawPhone?: string): string {
   if (digits.length >= 7) {
     return digits;
   }
-  return '251911598830';
+  return '251911428890';
 }
 
 export function maskMsisdn(msisdnOrRawPhone?: string): string {
+  if (!msisdnOrRawPhone) return '091*****890';
+  if (msisdnOrRawPhone.includes('*')) return msisdnOrRawPhone;
   const msisdn = normalizeToMsisdn(msisdnOrRawPhone);
   if (msisdn.length >= 7) {
     const first5 = msisdn.slice(0, 5);
     const last2 = msisdn.slice(-2);
     return `${first5}*****${last2}`;
   }
-  return '25191*****30';
+  return '091*****890';
 }

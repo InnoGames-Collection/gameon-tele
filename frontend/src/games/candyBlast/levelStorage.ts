@@ -100,13 +100,15 @@ export function resetPlayerProgress(): PlayerProgress {
  * e.g. 251911598830 -> 25191*****30
  */
 export function formatMsisdnMasked(rawPhone?: string): string {
-  let clean = (rawPhone || '').replace(/\D/g, '');
+  if (!rawPhone) return '091*****890';
+  if (rawPhone.includes('*')) return rawPhone;
+  let clean = rawPhone.replace(/\D/g, '');
   if (clean.startsWith('09') && clean.length === 10) {
     clean = '251' + clean.slice(1);
   } else if (!clean.startsWith('251') && clean.length >= 9) {
     clean = '251' + clean.slice(-9);
   } else if (!clean) {
-    clean = '251911598830';
+    clean = '251911428890';
   }
 
   if (clean.length >= 7) {
@@ -114,7 +116,7 @@ export function formatMsisdnMasked(rawPhone?: string): string {
     const last2 = clean.slice(-2);
     return `${first5}*****${last2}`;
   }
-  return '25191*****30';
+  return '091*****890';
 }
 
 export interface CandyLeaderboardEntry {
@@ -126,47 +128,37 @@ export interface CandyLeaderboardEntry {
   isPlayer: boolean;
 }
 
-const SEED_CANDY_PLAYERS = [
-  { msisdnMasked: '25191*****18', score: 38450, level: 40, stars: 118 },
-  { msisdnMasked: '25191*****92', score: 35210, level: 38, stars: 110 },
-  { msisdnMasked: '25192*****41', score: 32670, level: 36, stars: 104 },
-  { msisdnMasked: '25193*****08', score: 29840, level: 33, stars: 95 },
-  { msisdnMasked: '25191*****77', score: 26500, level: 30, stars: 87 },
-  { msisdnMasked: '25192*****63', score: 23140, level: 27, stars: 78 },
-  { msisdnMasked: '25191*****25', score: 19820, level: 24, stars: 69 },
-  { msisdnMasked: '25193*****51', score: 16950, level: 21, stars: 58 },
-  { msisdnMasked: '25192*****89', score: 14200, level: 18, stars: 49 },
-  { msisdnMasked: '25191*****34', score: 11850, level: 15, stars: 41 },
-  { msisdnMasked: '25193*****62', score: 9420, level: 12, stars: 32 },
-  { msisdnMasked: '25191*****70', score: 7150, level: 9, stars: 24 },
-  { msisdnMasked: '25192*****15', score: 4890, level: 6, stars: 16 },
-  { msisdnMasked: '25193*****94', score: 2950, level: 4, stars: 9 },
-  { msisdnMasked: '25191*****05', score: 1420, level: 2, stars: 4 },
-];
-
 export function getCandyLeaderboard(
   playerMsisdn: string,
   playerScore: number,
   playerLevel: number,
-  playerStars: number
+  playerStars: number,
+  serverEntries: { playerMasked: string; score: number }[] = []
 ): { list: CandyLeaderboardEntry[]; userRank: number; userEntry: CandyLeaderboardEntry } {
+  const playerMasked = formatMsisdnMasked(playerMsisdn);
   const playerEntry: CandyLeaderboardEntry = {
     rank: 0,
-    msisdnMasked: formatMsisdnMasked(playerMsisdn),
+    msisdnMasked: playerMasked,
     score: playerScore,
     level: playerLevel,
     stars: playerStars,
     isPlayer: true,
   };
 
-  const allEntries: CandyLeaderboardEntry[] = [
-    ...SEED_CANDY_PLAYERS.map((p) => ({
-      ...p,
+  const allEntries: CandyLeaderboardEntry[] = serverEntries
+    .filter((e) => e.playerMasked !== playerMasked)
+    .map((p, idx) => ({
       rank: 0,
+      msisdnMasked: p.playerMasked,
+      score: p.score,
+      level: Math.max(1, 40 - idx * 2),
+      stars: Math.max(1, 120 - idx * 6),
       isPlayer: false,
-    })),
-    playerEntry,
-  ];
+    }));
+
+  if (playerScore > 0 || allEntries.length === 0) {
+    allEntries.push(playerEntry);
+  }
 
   // Sort descending by score, tiebreak by level
   allEntries.sort((a, b) => b.score - a.score || b.level - a.level);

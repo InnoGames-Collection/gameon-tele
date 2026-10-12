@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Trophy, ShieldCheck, Flame, Medal, Award, User, RefreshCw } from 'lucide-react';
 import { PopBalloonProgress } from '../types';
 import { getTournamentLeaderboard, formatMsisdnMasked, calculateGlobalRank } from '../storage';
 import { UserProfile } from '../../../types';
+import { GameLeaderboardService, GameLeaderboardEntry } from '../../../services/gameLeaderboardService';
 
 interface PopBalloonLeaderboardProps {
   progress: PopBalloonProgress;
@@ -16,8 +17,21 @@ export const PopBalloonLeaderboard: React.FC<PopBalloonLeaderboardProps> = ({
   onBack,
 }) => {
   const [activeTab, setActiveTab] = useState<'tournament' | 'global' | 'weekly' | 'my_rank'>('tournament');
+  const [serverScores, setServerScores] = useState<GameLeaderboardEntry[]>([]);
 
-  const playerMsisdn = profile?.phoneNumber || '251911598830';
+  useEffect(() => {
+    let mounted = true;
+    GameLeaderboardService.fetchServerLeaderboard('pop-balloon').then((res) => {
+      if (mounted && res && res.length > 0) {
+        setServerScores(res);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const playerMsisdn = profile?.phoneNumber || '0911428890';
   const maskedPhone = formatMsisdnMasked(playerMsisdn);
   const userRank = calculateGlobalRank(progress.totalTournamentScore);
 
@@ -25,9 +39,10 @@ export const PopBalloonLeaderboard: React.FC<PopBalloonLeaderboardProps> = ({
     return getTournamentLeaderboard(
       playerMsisdn,
       progress.totalTournamentScore,
-      progress.unlockedLevel
+      progress.unlockedLevel,
+      serverScores
     );
-  }, [playerMsisdn, progress.totalTournamentScore, progress.unlockedLevel]);
+  }, [playerMsisdn, progress.totalTournamentScore, progress.unlockedLevel, serverScores]);
 
   return (
     <div

@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Trophy, Crown, Medal } from 'lucide-react';
 import { fruitAudio } from '../fruitSliceAudio';
 import { maskMsisdn } from '../utils/msisdn';
+import { GameLeaderboardService, GameLeaderboardEntry } from '../../../services/gameLeaderboardService';
 
 export interface LeaderboardEntry {
   rank: number;
@@ -17,26 +18,26 @@ interface FruitNinjaLeaderboardProps {
   onBack: () => void;
 }
 
-// Canonical Tournament Competitors Seed Data
-const SEED_COMPETITORS: { rawMsisdn: string; score: number }[] = [
-  { rawMsisdn: '251911598830', score: 12850 }, // 1    25191*****30    12,850
-  { rawMsisdn: '251912849142', score: 12620 }, // 2    25191*****42    12,620
-  { rawMsisdn: '251913928117', score: 12410 }, // 3    25191*****17    12,410
-  { rawMsisdn: '251914582983', score: 12105 }, // 4    25191*****83    12,105
-  { rawMsisdn: '251915938451', score: 11980 }, // 5    25191*****51    11,980
-  { rawMsisdn: '251916382964', score: 11720 }, // 6    25191*****64    11,720
-  { rawMsisdn: '251917281929', score: 11490 }, // 7    25191*****29    11,490
-  { rawMsisdn: '251918392195', score: 11210 }, // 8    25191*****95    11,210
-  { rawMsisdn: '251919482112', score: 10950 }, // 9    25191*****12    10,950
-  { rawMsisdn: '251910293876', score: 10680 }, // 10   25191*****76    10,680
-];
-
 export const FruitNinjaLeaderboard: React.FC<FruitNinjaLeaderboardProps> = ({
   userScore,
   userRawMsisdn,
   userRankString,
   onBack,
 }) => {
+  const [serverScores, setServerScores] = useState<GameLeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    GameLeaderboardService.fetchServerLeaderboard('fruit-slice').then((res) => {
+      if (mounted && res && res.length > 0) {
+        setServerScores(res);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const handleBackClick = () => {
     fruitAudio.playButtonClick();
     onBack();
@@ -44,36 +45,38 @@ export const FruitNinjaLeaderboard: React.FC<FruitNinjaLeaderboardProps> = ({
 
   // Compile entries incorporating the player's legitimate current tournament score
   const { topEntries, isUserInTop10, calculatedUserRank } = useMemo(() => {
-    const list: { rawMsisdn: string; score: number; isCurrentUser?: boolean }[] = [
-      ...SEED_COMPETITORS,
-    ];
+    const list: { rawMsisdn: string; score: number; isCurrentUser?: boolean }[] = serverScores.map((s) => ({
+      rawMsisdn: s.playerMasked,
+      score: s.score,
+      isCurrentUser: Boolean(
+        userRawMsisdn && (s.playerMasked === maskMsisdn(userRawMsisdn) || s.playerMasked === userRawMsisdn)
+      ),
+    }));
 
-    let rank = 2481;
+    let rank = 1;
     let inTop10 = false;
 
     if (userScore > 0) {
-      // Find insertion point
-      let inserted = false;
-      for (let i = 0; i < list.length; i++) {
-        if (userScore >= list[i].score) {
-          list.splice(i, 0, {
-            rawMsisdn: userRawMsisdn,
-            score: userScore,
-            isCurrentUser: true,
-          });
-          rank = i + 1;
-          inserted = true;
-          inTop10 = rank <= 10;
-          break;
+      const existingUserIdx = list.findIndex((item) => item.isCurrentUser);
+      if (existingUserIdx >= 0) {
+        if (userScore > list[existingUserIdx].score) {
+          list[existingUserIdx].score = userScore;
         }
+      } else {
+        list.push({
+          rawMsisdn: userRawMsisdn,
+          score: userScore,
+          isCurrentUser: true,
+        });
       }
+    }
 
-      if (!inserted) {
-        // Below top 10
-        // Scaled rank based on distance to 10,680
-        const deficit = 10680 - userScore;
-        rank = Math.min(2481, Math.max(11, Math.round(11 + (deficit / 10680) * 2470)));
-      }
+    list.sort((a, b) => b.score - a.score);
+
+    const userIdx = list.findIndex((item) => item.isCurrentUser);
+    if (userIdx >= 0) {
+      rank = userIdx + 1;
+      inTop10 = rank <= 10;
     }
 
     const rankedList: LeaderboardEntry[] = list.slice(0, 10).map((item, idx) => ({
@@ -88,7 +91,7 @@ export const FruitNinjaLeaderboard: React.FC<FruitNinjaLeaderboardProps> = ({
       isUserInTop10: inTop10,
       calculatedUserRank: `#${rank.toLocaleString()}`,
     };
-  }, [userScore, userRawMsisdn]);
+  }, [serverScores, userScore, userRawMsisdn]);
 
   const effectiveUserRank = userScore > 0 ? calculatedUserRank : userRankString;
   const userMaskedMsisdn = maskMsisdn(userRawMsisdn);

@@ -95,18 +95,23 @@ export const GameLeaderboardService = {
   },
 
   async fetchServerLeaderboard(gameId: string): Promise<GameLeaderboardEntry[]> {
+    const normalizedId = gameId.replace(/_/g, '-');
     try {
-      const res = await fetch(`/api/scores/${gameId}`);
+      const res = await fetch(`/api/scores/${normalizedId}`);
       if (res.ok) {
         const data = await res.json();
         if (data.scores && Array.isArray(data.scores)) {
-          const entries: GameLeaderboardEntry[] = data.scores.map((s: any, idx: number) => ({
-            rank: idx + 1,
-            playerMasked: s.masked_msisdn || maskPhone(s.player_msisdn),
-            playerName: `Player ${idx + 1}`,
-            score: s.high_score,
-            isCurrentUser: false,
-          }));
+          const entries: GameLeaderboardEntry[] = data.scores.map((s: any, idx: number) => {
+            const masked = s.masked_msisdn || maskPhone(s.player_msisdn);
+            return {
+              rank: idx + 1,
+              playerMasked: masked,
+              playerName: masked,
+              score: s.high_score,
+              isCurrentUser: false,
+            };
+          });
+          serverLeaderboardCache[normalizedId] = entries;
           serverLeaderboardCache[gameId] = entries;
           return entries;
         }
@@ -114,35 +119,35 @@ export const GameLeaderboardService = {
     } catch {
       // Ignore background fetch error
     }
-    return serverLeaderboardCache[gameId] || [];
+    return serverLeaderboardCache[normalizedId] || serverLeaderboardCache[gameId] || [];
   },
 
   getLeaderboardForGame(gameId: string, profile?: UserProfile): GameLeaderboardResult | null {
-    const game = GameCatalog.getById(gameId);
-    if (!game || !game.leaderboardEnabled) {
-      return null;
-    }
+    const normalizedId = gameId.replace(/_/g, '-');
+    const game = GameCatalog.getById(normalizedId) || GameCatalog.getById(gameId);
 
     // Trigger async fetch to keep cache warm
-    if (!serverLeaderboardCache[gameId]) {
-      this.fetchServerLeaderboard(gameId);
+    if (!serverLeaderboardCache[normalizedId] && !serverLeaderboardCache[gameId]) {
+      this.fetchServerLeaderboard(normalizedId);
     }
 
-    const stats = this.getUserStats(gameId, profile);
+    const stats = this.getUserStats(normalizedId, profile);
     const userScore = stats.bestScore;
 
-    const entries: GameLeaderboardEntry[] = (serverLeaderboardCache[gameId] || []).map((e) => ({
+    const cachedList = serverLeaderboardCache[normalizedId] || serverLeaderboardCache[gameId] || [];
+    const entries: GameLeaderboardEntry[] = cachedList.map((e) => ({
       ...e,
-      isCurrentUser: profile?.phoneNumber && e.playerMasked === maskPhone(profile.phoneNumber),
+      isCurrentUser: Boolean(profile?.phoneNumber && e.playerMasked === maskPhone(profile.phoneNumber)),
     }));
 
     // If user has a score and not yet in list, place user appropriately
     const existingIndex = entries.findIndex((e) => e.isCurrentUser);
     if (existingIndex < 0 && userScore > 0) {
+      const userMasked = maskPhone(profile?.phoneNumber);
       entries.push({
         rank: entries.length + 1,
-        playerMasked: maskPhone(profile?.phoneNumber),
-        playerName: profile?.displayName || 'You',
+        playerMasked: userMasked,
+        playerName: userMasked,
         score: userScore,
         isCurrentUser: true,
       });
@@ -155,12 +160,39 @@ export const GameLeaderboardService = {
     const userEntry = entries.find((e) => e.isCurrentUser);
     const userRank = userEntry ? userEntry.rank : (userScore > 0 ? 1 : 1);
 
+    const effectiveGame: CatalogGame = game || {
+      gameId: normalizedId,
+      gameName: normalizedId,
+      titleAmharic: normalizedId,
+      category: 'Arcade',
+      genre: 'Arcade',
+      tagline: '',
+      description: '',
+      thumbnail: '',
+      banner: '',
+      accessType: 'FREE',
+      isFeatured: false,
+      isActive: true,
+      isNew: false,
+      isFree: true,
+      requiresCoins: false,
+      coinCost: 0,
+      leaderboardEnabled: true,
+      sortOrder: 99,
+      rating: 4.9,
+      playsCount: 1000,
+      instructions: [],
+      controlsDescription: '',
+      primaryColor: '#00BFA6',
+      secondaryColor: '#102C40',
+    };
+
     return {
-      game,
+      game: effectiveGame,
       entries: entries.slice(0, 10),
       userRank,
       userScore,
-      totalParticipants: Math.max(entries.length, userScore > 0 ? 1 : 0),
+      totalParticipants: entries.length,
     };
   },
 };

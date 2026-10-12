@@ -10,7 +10,7 @@
 import { PlayerLevelProgress, LevelCompletionRecord, HillClimbSettingsState } from './types';
 import { HILL_CLIMB_LEVELS } from './levels';
 import { UserProfile } from '../../types';
-import { maskPhone } from '../../services/gameLeaderboardService';
+import { maskPhone, GameLeaderboardService } from '../../services/gameLeaderboardService';
 
 const STORAGE_PREFIX = 'teleplay_hillclimb_player_';
 const SETTINGS_KEY = 'teleplay_hillclimb_settings';
@@ -177,23 +177,11 @@ export const HillClimbStorage = {
     const userRecord = progress.completedLevels[levelNumber];
     const userScore = userRecord?.bestScore || 0;
 
-    // Realistic baseline high scores for this specific level based on parScore
-    const baseScore = levelConfig.parScore;
-    const seedNames = [
-      { name: 'Solomon T.', phone: '0911234567', mult: 1.28 },
-      { name: 'Selamawit G.', phone: '0922889900', mult: 1.22 },
-      { name: 'Dawit M.', phone: '0915667788', mult: 1.16 },
-      { name: 'Bethlehem K.', phone: '0933112233', mult: 1.10 },
-      { name: 'Yared A.', phone: '0918990011', mult: 1.05 },
-      { name: 'Hiwot T.', phone: '0920445566', mult: 0.98 },
-      { name: 'Kibrom Z.', phone: '0912778899', mult: 0.94 },
-      { name: 'Tsion W.', phone: '0944332211', mult: 0.89 },
-      { name: 'Ephrem B.', phone: '0910556677', mult: 0.84 },
-      { name: 'Rahel D.', phone: '0927889922', mult: 0.79 },
-    ];
+    // Authoritative high scores from GameLeaderboardService / PostgreSQL
+    const serverResult = GameLeaderboardService.getLeaderboardForGame('hill-rider', profile);
+    const serverEntries = serverResult?.entries || [];
 
-    const entries = seedNames.map((s, idx) => {
-      const score = Math.round(baseScore * s.mult + (levelNumber * 14) - (idx * 18));
+    const entries = serverEntries.map((s, idx) => {
       let rewardText: string | undefined;
       if (idx === 0) rewardText = '500 Coins';
       else if (idx === 1) rewardText = '300 Coins';
@@ -202,38 +190,33 @@ export const HillClimbStorage = {
 
       return {
         rank: idx + 1,
-        playerName: s.name,
-        playerMasked: maskPhone(s.phone),
-        score,
-        stars: s.mult >= 1.15 ? 3 : s.mult >= 0.9 ? 2 : 1,
-        isCurrentUser: false,
+        playerName: s.playerMasked,
+        playerMasked: s.playerMasked,
+        score: s.score,
+        stars: 3,
+        isCurrentUser: s.isCurrentUser,
         rewardText,
       };
     });
 
-    let userRank = 28;
-    for (let i = 0; i < entries.length; i++) {
-      if (userScore >= entries[i].score) {
-        userRank = i + 1;
-        break;
-      }
-    }
-
-    if (userScore > 0 && userRank <= 10) {
-      entries.splice(userRank - 1, 0, {
-        rank: userRank,
+    if (userScore > 0 && !entries.some((e) => e.isCurrentUser)) {
+      entries.push({
+        rank: entries.length + 1,
         playerName: profile?.displayName || 'You',
-        playerMasked: maskPhone(profile?.phoneNumber || '0911000000'),
+        playerMasked: maskPhone(profile?.phoneNumber || '0911428890'),
         score: userScore,
         stars: userRecord?.stars || 1,
         isCurrentUser: true,
-        rewardText: userRank <= 3 ? `${500 - (userRank - 1) * 150} Coins` : '100 Coins',
+        rewardText: undefined,
       });
-      entries.pop();
+      entries.sort((a, b) => b.score - a.score);
       entries.forEach((e, idx) => {
         e.rank = idx + 1;
       });
     }
+
+    const userEntry = entries.find((e) => e.isCurrentUser);
+    const userRank = userEntry ? userEntry.rank : 1;
 
     return {
       levelNumber,

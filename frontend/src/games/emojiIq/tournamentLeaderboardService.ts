@@ -5,36 +5,10 @@
 
 import { TournamentLeaderboardEntry, EmojiIqPlayerStats } from './types';
 
+import { GameLeaderboardService } from '../../services/gameLeaderboardService';
+
 const STORAGE_KEY_STATS = 'emoji_iq_player_stats_v1';
 const STORAGE_KEY_LEADERBOARD = 'emoji_iq_tournament_leaderboard_v1';
-
-const INITIAL_BASE_LEADERBOARD: Omit<TournamentLeaderboardEntry, 'rank'>[] = [
-  { id: 'iq_p1', name: 'Dr. Mind B.', avatarEmoji: '🧠', score: 38400, level: 35, bestCombo: 15, accuracy: 98 },
-  { id: 'iq_p2', name: 'Abebe Logic', avatarEmoji: '👑', score: 35120, level: 32, bestCombo: 13, accuracy: 95 },
-  { id: 'iq_p3', name: 'Selam Math', avatarEmoji: '⚡', score: 33450, level: 30, bestCombo: 12, accuracy: 94 },
-  { id: 'iq_p4', name: 'Kaleb Genius', avatarEmoji: '🚀', score: 31200, level: 28, bestCombo: 11, accuracy: 92 },
-  { id: 'iq_p5', name: 'Almaz Stars', avatarEmoji: '🌟', score: 29850, level: 26, bestCombo: 10, accuracy: 93 },
-  { id: 'iq_p6', name: 'Dawit Prime', avatarEmoji: '🎯', score: 27900, level: 24, bestCombo: 10, accuracy: 90 },
-  { id: 'iq_p7', name: 'Meron Clever', avatarEmoji: '🦄', score: 25800, level: 22, bestCombo: 9, accuracy: 91 },
-  { id: 'iq_p8', name: 'Tewodros IQ', avatarEmoji: '🦁', score: 23950, level: 21, bestCombo: 8, accuracy: 89 },
-  { id: 'iq_p9', name: 'Hellen Nova', avatarEmoji: '💎', score: 22100, level: 19, bestCombo: 8, accuracy: 92 },
-  { id: 'iq_p10', name: 'Biruk Vector', avatarEmoji: '🔥', score: 20450, level: 18, bestCombo: 7, accuracy: 88 },
-  { id: 'iq_p11', name: 'Tigist Calc', avatarEmoji: '📐', score: 18900, level: 17, bestCombo: 7, accuracy: 90 },
-  { id: 'iq_p12', name: 'Natnael Shift', avatarEmoji: '🎮', score: 17400, level: 15, bestCombo: 6, accuracy: 86 },
-  { id: 'iq_p13', name: 'Eden Formula', avatarEmoji: '✨', score: 15850, level: 14, bestCombo: 6, accuracy: 89 },
-  { id: 'iq_p14', name: 'Solomon Peak', avatarEmoji: '🏆', score: 14200, level: 13, bestCombo: 5, accuracy: 85 },
-  { id: 'iq_p15', name: 'Bethlehem Matrix', avatarEmoji: '🌺', score: 12800, level: 11, bestCombo: 5, accuracy: 87 },
-  { id: 'iq_p16', name: 'Haile Delta', avatarEmoji: '🏃', score: 11300, level: 10, bestCombo: 5, accuracy: 84 },
-  { id: 'iq_p17', name: 'Marta Theta', avatarEmoji: '🐱', score: 9950, level: 9, bestCombo: 4, accuracy: 86 },
-  { id: 'iq_p18', name: 'Ephrem Quick', avatarEmoji: '🎸', score: 8650, level: 8, bestCombo: 4, accuracy: 82 },
-  { id: 'iq_p19', name: 'Hanna Alpha', avatarEmoji: '💖', score: 7400, level: 7, bestCombo: 4, accuracy: 84 },
-  { id: 'iq_p20', name: 'Robel Sum', avatarEmoji: '🍕', score: 6200, level: 6, bestCombo: 3, accuracy: 81 },
-  { id: 'iq_p21', name: 'Senait Pure', avatarEmoji: '🧁', score: 5100, level: 5, bestCombo: 3, accuracy: 83 },
-  { id: 'iq_p22', name: 'Henok Sharp', avatarEmoji: '🧩', score: 4050, level: 4, bestCombo: 3, accuracy: 80 },
-  { id: 'iq_p23', name: 'Tsion Count', avatarEmoji: '🍓', score: 3050, level: 3, bestCombo: 2, accuracy: 82 },
-  { id: 'iq_p24', name: 'Girma Step', avatarEmoji: '🍩', score: 2100, level: 2, bestCombo: 2, accuracy: 79 },
-  { id: 'iq_p25', name: 'Kidist First', avatarEmoji: '🌱', score: 1150, level: 1, bestCombo: 1, accuracy: 85 },
-];
 
 export const DEFAULT_PLAYER_STATS: EmojiIqPlayerStats = {
   totalTournamentScore: 0,
@@ -89,7 +63,16 @@ export class EmojiIqLeaderboardService {
         ? Math.round((stats.totalCorrect / stats.totalQuestionsAnswered) * 100)
         : 100;
 
-    const competitors: Omit<TournamentLeaderboardEntry, 'rank'>[] = [...INITIAL_BASE_LEADERBOARD];
+    const serverResult = GameLeaderboardService.getLeaderboardForGame('emoji-iq');
+    const competitors: Omit<TournamentLeaderboardEntry, 'rank'>[] = (serverResult?.entries || []).map((e, idx) => ({
+      id: `iq_p${idx + 1}`,
+      name: e.playerMasked,
+      avatarEmoji: idx === 0 ? '🧠' : idx === 1 ? '👑' : idx === 2 ? '⚡' : '🎮',
+      score: e.score,
+      level: Math.max(1, 35 - idx * 2),
+      bestCombo: Math.max(5, 15 - idx),
+      accuracy: Math.max(80, 98 - idx * 2),
+    }));
 
     const playerEntry: Omit<TournamentLeaderboardEntry, 'rank'> = {
       id: 'current_user_iq',
@@ -102,7 +85,11 @@ export class EmojiIqLeaderboardService {
       isCurrentUser: true,
     };
 
-    const allEntries = [...competitors, playerEntry].sort((a, b) => b.score - a.score);
+    const combinedList = [...competitors];
+    if (userScore > 0 || combinedList.length === 0) {
+      combinedList.push(playerEntry);
+    }
+    const allEntries = combinedList.sort((a, b) => b.score - a.score);
 
     const ranked: TournamentLeaderboardEntry[] = allEntries.map((e, index) => ({
       ...e,

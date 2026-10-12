@@ -17,6 +17,13 @@ const VerifyOtpSchema = z.object({
   otpCode: z.string().min(4).max(8),
 });
 
+const DEMO_PHONE_NUMBERS = new Set([
+  '251911428890', // 0911428890 (Primary Demo MSISDN)
+  '251911998890', // 0911998890
+  '251922334412', // 0922334412
+  '251933445589', // 0933445589
+]);
+
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/request-otp', async (req, reply) => {
     const parse = RequestOtpSchema.safeParse(req.body);
@@ -29,26 +36,33 @@ export async function authRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Invalid Ethiopian phone number' });
     }
 
-    // Rate limiting: max 3 requests per 10 minutes per MSISDN
+    const isDemoMsisdn = DEMO_PHONE_NUMBERS.has(norm);
+
+    // Rate limiting: max 5 requests per 10 minutes per MSISDN
     const rateLimitKey = `ratelimit:otp:${norm}`;
     const attempts = await cache.incr(rateLimitKey);
     if (attempts === 1) await cache.expire(rateLimitKey, 600);
-    if (attempts > 3) {
+    if (attempts > 5 && !isDemoMsisdn) {
       return reply.status(429).send({ error: 'Too many OTP requests. Please wait 10 minutes before requesting again.' });
     }
 
-    const otp = crypto.randomInt(100000, 1000000).toString();
+    const otp = isDemoMsisdn ? '123456' : crypto.randomInt(100000, 1000000).toString();
     await cache.set(`otp:gameon:${norm}`, otp, 'EX', 300); // 5 min TTL
 
-    await SpService.sendMt({
-      msisdn: norm,
-      message: `Your GameSwiper verification code is ${otp} (Demo code: 123456). Valid for 5 minutes.`,
-      type: 'otp',
-    });
+    if (!isDemoMsisdn) {
+      await SpService.sendMt({
+        msisdn: norm,
+        message: `Your GameOn Tele verification code is ${otp}. Valid for 5 minutes.`,
+        type: 'otp',
+      });
+    }
 
     return reply.send({
       success: true,
-      message: `Verification code sent to ${maskMsisdn(norm)} (Demo code: 123456)`,
+      message: isDemoMsisdn
+        ? `Verification code sent to ${maskMsisdn(norm)} (Demo code: 123456)`
+        : `Verification code sent to ${maskMsisdn(norm)}`,
+      isDemo: isDemoMsisdn,
     });
   });
 
@@ -62,7 +76,8 @@ export async function authRoutes(fastify: FastifyInstance) {
     const norm = normalizeMsisdn(phoneNumber);
     const cached = await cache.get(`otp:gameon:${norm}`);
 
-    const isDemoOtp = otpCode.trim() === '123456';
+    const isDemoMsisdn = DEMO_PHONE_NUMBERS.has(norm);
+    const isDemoOtp = isDemoMsisdn && otpCode.trim() === '123456';
     if (!isDemoOtp && (!cached || otpCode.trim() !== cached.trim())) {
       return reply.status(400).send({ error: 'Invalid or expired verification code' });
     }
@@ -87,6 +102,15 @@ export async function authRoutes(fastify: FastifyInstance) {
       [norm]
     );
 
+    const scoresRes = await pool.query(
+      `SELECT game_id, high_score FROM player_game_scores WHERE player_msisdn = $1`,
+      [norm]
+    );
+    const scoreMap: Record<string, number> = {};
+    for (const s of scoresRes.rows) {
+      scoreMap[s.game_id] = s.high_score;
+    }
+
     const token = jwt.sign(
       { msisdn: norm, id: player.id }, 
       env.JWT_SECRET, 
@@ -97,11 +121,13 @@ export async function authRoutes(fastify: FastifyInstance) {
       success: true,
       token,
       profile: {
+        id: player.id,
         msisdn: norm,
         maskedMsisdn: masked,
         isLoggedIn: true,
         isSubscribed: subRes.rows.length > 0,
         coins: player.coins,
+        highScores: scoreMap,
       },
     });
   });

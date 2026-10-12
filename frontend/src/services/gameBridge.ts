@@ -12,13 +12,12 @@ import { HelixCompetitionService } from './helixCompetitionService';
 export const GAME_ENTRY_COIN_COST = 10;
 
 // Controlled Development / Testing Flag:
-// In testing mode, allows instant play without blocking on coin balance
-export const DEV_TESTING_MODE = true;
+// Production Flag:
+export const DEV_TESTING_MODE = false;
 
 export const GameBridgeService = {
   /**
    * Check if user can launch the game.
-   * If DEV_TESTING_MODE is true, access is immediately permitted.
    */
   canLaunchGame(
     _game: GameDefinition, 
@@ -78,12 +77,15 @@ export const GameBridgeService = {
     }
 
     // Persist catalog game score in PostgreSQL player_game_scores table
-    if (profile.phoneNumber) {
+    const token = typeof window !== 'undefined' ? sessionStorage.getItem('gameon_player_token') : null;
+    if (token) {
       fetch('/api/scores', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
-          msisdn: profile.phoneNumber,
           gameId,
           score: validScore,
         }),

@@ -51,19 +51,7 @@ const STORAGE_KEYS = {
   COMPLETED_COMPS: 'gameswiper_cs_completed_comps_v1',
 };
 
-// Seed verified competitors with strictly masked MSISDNs (no names, consistent 2519***** format)
-const SEED_COMPETITORS: { id: string; msisdn: string; baseScore: number; timestampOffset: number }[] = [
-  { id: 'cs_comp_1', msisdn: '2519*****22', baseScore: 1250, timestampOffset: 86400000 * 1.2 },
-  { id: 'cs_comp_2', msisdn: '2518*****45', baseScore: 1180, timestampOffset: 86400000 * 1.8 },
-  { id: 'cs_comp_3', msisdn: '2519*****31', baseScore: 1050, timestampOffset: 86400000 * 2.1 },
-  { id: 'cs_comp_4', msisdn: '2517*****88', baseScore: 940, timestampOffset: 86400000 * 2.7 },
-  { id: 'cs_comp_5', msisdn: '2519*****64', baseScore: 880, timestampOffset: 86400000 * 3.3 },
-  { id: 'cs_comp_6', msisdn: '2518*****19', baseScore: 760, timestampOffset: 86400000 * 3.9 },
-  { id: 'cs_comp_7', msisdn: '2519*****77', baseScore: 690, timestampOffset: 86400000 * 4.4 },
-  { id: 'cs_comp_8', msisdn: '2517*****50', baseScore: 610, timestampOffset: 86400000 * 4.9 },
-  { id: 'cs_comp_9', msisdn: '2519*****03', baseScore: 540, timestampOffset: 86400000 * 5.5 },
-  { id: 'cs_comp_10', msisdn: '2518*****82', baseScore: 470, timestampOffset: 86400000 * 6.0 },
-];
+import { GameLeaderboardService } from './gameLeaderboardService';
 
 export const maskMsisdn = (phone?: string): string => {
   const digits = (phone || '0911234890').replace(/\D/g, '');
@@ -259,15 +247,20 @@ export const ColorSwitchCompetitionService = {
     const { sevenDayTotalScore } = this.getUserScores(profile);
     const maskedUserPhone = maskMsisdn(profile.phoneNumber);
 
-    // Combine seed entries with user's real entry
-    const entries: CompetitionLeaderboardEntry[] = SEED_COMPETITORS.map((seed) => ({
-      rank: 0,
-      playerId: seed.id,
-      maskedMsisdn: seed.msisdn,
-      sevenDayScore: seed.baseScore,
-      timestamp: Date.now() - seed.timestampOffset,
-      isCurrentUser: false,
-    }));
+    // Authoritative entries from GameLeaderboardService
+    const serverResult = GameLeaderboardService.getLeaderboardForGame('color-rush', profile);
+    const serverEntries = serverResult?.entries || [];
+
+    const entries: CompetitionLeaderboardEntry[] = serverEntries
+      .filter((s) => !s.isCurrentUser)
+      .map((s, idx) => ({
+        rank: idx + 1,
+        playerId: `cs_comp_${idx + 1}`,
+        maskedMsisdn: s.playerMasked,
+        sevenDayScore: s.score,
+        timestamp: Date.now() - (idx + 1) * 3600000,
+        isCurrentUser: false,
+      }));
 
     // Add current user
     const userEntry: CompetitionLeaderboardEntry = {
@@ -279,8 +272,13 @@ export const ColorSwitchCompetitionService = {
       isCurrentUser: true,
     };
 
+    const combinedList = [...entries];
+    if (sevenDayTotalScore > 0 || combinedList.length === 0) {
+      combinedList.push(userEntry);
+    }
+
     // Sort by 7-Day Score descending, then by timestamp ascending (earlier achieves higher rank)
-    const all = [...entries, userEntry].sort((a, b) => {
+    const all = combinedList.sort((a, b) => {
       if (b.sevenDayScore !== a.sevenDayScore) {
         return b.sevenDayScore - a.sevenDayScore;
       }

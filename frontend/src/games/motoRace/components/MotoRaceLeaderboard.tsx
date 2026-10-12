@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Trophy, Crown, Medal } from 'lucide-react';
 import { maskMsisdn } from '../utils/msisdn';
 import { MotoLeaderboardEntry } from '../types';
+import { GameLeaderboardService, GameLeaderboardEntry } from '../../../services/gameLeaderboardService';
 
 interface MotoRaceLeaderboardProps {
   userScore: number;
@@ -11,20 +12,6 @@ interface MotoRaceLeaderboardProps {
   onBack: () => void;
 }
 
-// Canonical Moto Race Championship Competitors Seed Data
-const SEED_COMPETITORS: { rawMsisdn: string; score: number; level: number }[] = [
-  { rawMsisdn: '251911598830', score: 18920, level: 40 }, // #1
-  { rawMsisdn: '251912849142', score: 18745, level: 39 }, // #2
-  { rawMsisdn: '251913928117', score: 18520, level: 38 }, // #3
-  { rawMsisdn: '251914582983', score: 18150, level: 37 }, // #4
-  { rawMsisdn: '251915938451', score: 17890, level: 36 }, // #5
-  { rawMsisdn: '251916382964', score: 17420, level: 35 }, // #6
-  { rawMsisdn: '251917281929', score: 16980, level: 34 }, // #7
-  { rawMsisdn: '251918392195', score: 16450, level: 32 }, // #8
-  { rawMsisdn: '251919482112', score: 15890, level: 30 }, // #9
-  { rawMsisdn: '251910293876', score: 15200, level: 28 }, // #10
-];
-
 export const MotoRaceLeaderboard: React.FC<MotoRaceLeaderboardProps> = ({
   userScore,
   userLevel,
@@ -32,35 +19,55 @@ export const MotoRaceLeaderboard: React.FC<MotoRaceLeaderboardProps> = ({
   userRankString,
   onBack,
 }) => {
+  const [serverScores, setServerScores] = useState<GameLeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    GameLeaderboardService.fetchServerLeaderboard('moto-race').then((res) => {
+      if (mounted && res && res.length > 0) {
+        setServerScores(res);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   // Compile entries incorporating the player's legitimate current tournament score
   const { topEntries, calculatedUserRank } = useMemo(() => {
-    const list: { rawMsisdn: string; score: number; level: number; isCurrentUser?: boolean }[] = [
-      ...SEED_COMPETITORS,
-    ];
+    const list: { rawMsisdn: string; score: number; level: number; isCurrentUser?: boolean }[] = serverScores.map((s, idx) => ({
+      rawMsisdn: s.playerMasked,
+      score: s.score,
+      level: Math.max(1, 40 - idx * 2),
+      isCurrentUser: Boolean(
+        userRawMsisdn && (s.playerMasked === maskMsisdn(userRawMsisdn) || s.playerMasked === userRawMsisdn)
+      ),
+    }));
 
-    let rank = 2481;
+    let rank = 1;
 
     if (userScore > 0) {
-      let inserted = false;
-      for (let i = 0; i < list.length; i++) {
-        if (userScore >= list[i].score) {
-          list.splice(i, 0, {
-            rawMsisdn: userRawMsisdn,
-            score: userScore,
-            level: userLevel,
-            isCurrentUser: true,
-          });
-          rank = i + 1;
-          inserted = true;
-          break;
+      const existingUserIdx = list.findIndex((item) => item.isCurrentUser);
+      if (existingUserIdx >= 0) {
+        if (userScore > list[existingUserIdx].score) {
+          list[existingUserIdx].score = userScore;
+          list[existingUserIdx].level = userLevel;
         }
+      } else {
+        list.push({
+          rawMsisdn: userRawMsisdn,
+          score: userScore,
+          level: userLevel,
+          isCurrentUser: true,
+        });
       }
+    }
 
-      if (!inserted) {
-        // Below top 10: compute realistic rank based on score difference to 15,200
-        const deficit = 15200 - userScore;
-        rank = Math.min(2481, Math.max(11, Math.round(11 + (deficit / 15200) * 2470)));
-      }
+    list.sort((a, b) => b.score - a.score);
+
+    const userIdx = list.findIndex((item) => item.isCurrentUser);
+    if (userIdx >= 0) {
+      rank = userIdx + 1;
     }
 
     const rankedList: MotoLeaderboardEntry[] = list.slice(0, 10).map((item, idx) => ({
@@ -75,7 +82,7 @@ export const MotoRaceLeaderboard: React.FC<MotoRaceLeaderboardProps> = ({
       topEntries: rankedList,
       calculatedUserRank: `#${rank.toLocaleString()}`,
     };
-  }, [userScore, userLevel, userRawMsisdn]);
+  }, [serverScores, userScore, userLevel, userRawMsisdn]);
 
   const effectiveUserRank = userScore > 0 ? calculatedUserRank : userRankString;
   const userMaskedMsisdn = maskMsisdn(userRawMsisdn);
