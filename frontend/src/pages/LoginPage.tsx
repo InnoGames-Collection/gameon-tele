@@ -1,5 +1,5 @@
 /**
- * TelePlus Official Login Screen
+ * GameSwiper Official Login Screen
  * Redesigned with Midnight-Navy Surfaces and Deep-Teal Panels
  * 
  * Layout Hierarchy:

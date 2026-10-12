@@ -57,7 +57,7 @@ interface EmojiSortingBallGameProps {
   isAudioEnabled?: boolean;
 }
 
-const STORAGE_KEY = 'teleplus_emoji_sorting_ball_progression_v1';
+const STORAGE_KEY = 'gameswiper_emoji_sorting_ball_progression_v1';
 
 export const EmojiSortingBallGame: React.FC<EmojiSortingBallGameProps> = ({
   game,

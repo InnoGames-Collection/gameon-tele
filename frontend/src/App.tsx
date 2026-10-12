@@ -1,5 +1,5 @@
 /**
- * TelePlus - Official EthioTelecom Gaming Portal
+ * GameSwiper - Official EthioTelecom Gaming Portal
  * Main Application Orchestrator
  */
 
@@ -16,7 +16,6 @@ import { GameSwiperLogo } from './components/GameOnTeleLogo';
 // Modals
 import { GameLauncherModal } from './components/GameLauncherModal';
 import { GameAccessModal } from './components/GameAccessModal';
-import { CoinTopupModal } from './components/CoinTopupModal';
 import { GameDetailsModal } from './components/GameDetailsModal';
 import { TermsAndPrivacyModal } from './components/TermsAndPrivacyModal';
 import { MainMenuDrawer, MainMenuSection } from './components/MainMenuDrawer';
@@ -72,7 +71,6 @@ export default function App() {
 
   // Game Access & Modals State
   const [pendingAccessGame, setPendingAccessGame] = useState<GameDefinition | null>(null);
-  const [isCoinTopupOpen, setIsCoinTopupOpen] = useState(false);
   const [selectedGameForDetails, setSelectedGameForDetails] = useState<GameDefinition | null>(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('All Games');
 
@@ -204,10 +202,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#071827] text-[#F5FAFC] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] selection:bg-[#00BFA6] selection:text-[#071827]">
       
-      {/* 1. Global Post-Login Header: Menu on TOP LEFT, TelePlus branding */}
+      {/* 1. Global Post-Login Header: Menu on TOP LEFT, GameSwiper branding */}
       <Header
         profile={profile}
-        onOpenBuyCoins={() => setIsCoinTopupOpen(true)}
         onOpenMenu={() => setIsMainMenuOpen(true)}
       />
 
@@ -260,7 +257,6 @@ export default function App() {
             <PricingPage
               onBack={handleBackFromContent}
               showHeader={true}
-              onBuyCoins={() => setIsCoinTopupOpen(true)}
             />
           </div>
         )}
@@ -292,7 +288,6 @@ export default function App() {
                 profile={profile}
                 onLaunchGame={handlePlayGame}
                 onOpenDetails={(g) => setSelectedGameForDetails(g)}
-                onOpenBuyCoins={() => setIsCoinTopupOpen(true)}
                 onNavigateToGames={(category) => {
                   setSelectedCategoryFilter(category || 'All Games');
                   setActiveTab('games');
@@ -318,7 +313,6 @@ export default function App() {
                 language={language}
                 onLanguageChange={changeLanguage}
                 onPlayGame={handlePlayGame}
-                onOpenBuyCoins={() => setIsCoinTopupOpen(true)}
                 onProfileUpdate={setProfile}
                 audioEnabled={audioEnabled}
                 onToggleAudio={toggleAudio}
@@ -367,17 +361,8 @@ export default function App() {
           isOpen={Boolean(pendingAccessGame)}
           onClose={() => setPendingAccessGame(null)}
           onAccessGranted={handleAccessGranted}
-          onOpenTopup={() => setIsCoinTopupOpen(true)}
         />
       )}
-
-      {/* 6. Coin Topup Modal */}
-      <CoinTopupModal
-        isOpen={isCoinTopupOpen}
-        onClose={() => setIsCoinTopupOpen(false)}
-        profile={profile}
-        onProfileUpdate={setProfile}
-      />
 
       {/* 7. Game Details Modal */}
       {selectedGameForDetails && (

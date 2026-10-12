@@ -41,7 +41,7 @@ const GOPLAY_TERMS: TermSection[] = [
     number: '4.0',
     title: 'Free Catalog & Gameplay Access',
     paragraphs: [
-      'All titles in the GameSwiper catalog are free to play. There are no coin deductions, no paywalls, and no hidden micro-transactions.',
+      'All titles in the GameSwiper catalog are free to play. There are no paywalls and no hidden micro-transactions.',
       'Players can enjoy full arcade, puzzle, sports, board, and racing titles as many times as desired.',
     ],
   },

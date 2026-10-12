@@ -6,7 +6,7 @@
 
 import { SolitaireSaveData } from './types';
 
-const STORAGE_KEY = 'teleplus_solitaire_v1';
+const STORAGE_KEY = 'gameswiper_solitaire_v1';
 
 export const SolitaireStorage = {
   load(): SolitaireSaveData {

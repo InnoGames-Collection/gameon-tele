@@ -1,6 +1,6 @@
 /**
- * GameON Tele - Game-Specific Leaderboard Engine
- * Provides independent, game-specific rankings, scores, and masked MSISDN top players.
+ * GameSwiper - Game-Specific Leaderboard Engine
+ * Provides independent, game-specific rankings and scores.
  */
 
 import { UserProfile } from '../types';
@@ -11,7 +11,6 @@ export interface GameLeaderboardEntry {
   playerMasked: string;
   playerName: string;
   score: number;
-  rewardText?: string;
   isCurrentUser?: boolean;
 }
 
@@ -22,20 +21,6 @@ export interface GameLeaderboardResult {
   userScore: number;
   totalParticipants: number;
 }
-
-// Seed mock players for deterministic realism per game
-const SEED_PLAYERS = [
-  { phone: '0911234567', name: 'Solomon T.' },
-  { phone: '0922889900', name: 'Selamawit G.' },
-  { phone: '0915667788', name: 'Dawit M.' },
-  { phone: '0933112233', name: 'Bethlehem K.' },
-  { phone: '0918990011', name: 'Yared A.' },
-  { phone: '0920445566', name: 'Hiwot T.' },
-  { phone: '0912778899', name: 'Kibrom Z.' },
-  { phone: '0944332211', name: 'Tsion W.' },
-  { phone: '0910556677', name: 'Ephrem B.' },
-  { phone: '0927889922', name: 'Rahel D.' },
-];
 
 export const maskPhone = (phone?: string): string => {
   const digits = (phone || '0911428890').replace(/\D/g, '');
@@ -55,6 +40,8 @@ export interface UserGameStats {
   lastPlayedTimestamp: number;
 }
 
+const serverLeaderboardCache: Record<string, GameLeaderboardEntry[]> = {};
+
 export const GameLeaderboardService = {
   getGamesWithLeaderboards(): CatalogGame[] {
     return GameCatalog.getAll().filter((g) => g.leaderboardEnabled);
@@ -63,7 +50,7 @@ export const GameLeaderboardService = {
   getUserStats(gameId: string, profile?: UserProfile): UserGameStats {
     let localSaved: Partial<UserGameStats> = {};
     try {
-      const raw = localStorage.getItem(`teleplay_stats_${gameId}`);
+      const raw = localStorage.getItem(`gameswiper_stats_${gameId}`);
       if (raw) localSaved = JSON.parse(raw);
     } catch {}
 
@@ -83,7 +70,7 @@ export const GameLeaderboardService = {
     };
   },
 
-  recordScore(gameId: string, score: number, playerName?: string, level?: number): { isNewBest: boolean; bestScore: number } {
+  recordScore(gameId: string, score: number, _playerName?: string, level?: number): { isNewBest: boolean; bestScore: number } {
     if (typeof window === 'undefined') return { isNewBest: false, bestScore: score };
     try {
       const currentStats = this.getUserStats(gameId);
@@ -98,13 +85,36 @@ export const GameLeaderboardService = {
         totalPlaytimeSeconds: currentStats.totalPlaytimeSeconds + 60,
         lastPlayedTimestamp: Date.now(),
       };
-      localStorage.setItem(`teleplay_stats_${gameId}`, JSON.stringify(newStats));
-      localStorage.setItem(`teleplay_lb_${gameId}`, updatedBest.toString());
+      localStorage.setItem(`gameswiper_stats_${gameId}`, JSON.stringify(newStats));
+      localStorage.setItem(`gameswiper_lb_${gameId}`, updatedBest.toString());
 
       return { isNewBest, bestScore: updatedBest };
     } catch {
       return { isNewBest: false, bestScore: score };
     }
+  },
+
+  async fetchServerLeaderboard(gameId: string): Promise<GameLeaderboardEntry[]> {
+    try {
+      const res = await fetch(`/api/scores/${gameId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.scores && Array.isArray(data.scores)) {
+          const entries: GameLeaderboardEntry[] = data.scores.map((s: any, idx: number) => ({
+            rank: idx + 1,
+            playerMasked: s.masked_msisdn || maskPhone(s.player_msisdn),
+            playerName: `Player ${idx + 1}`,
+            score: s.high_score,
+            isCurrentUser: false,
+          }));
+          serverLeaderboardCache[gameId] = entries;
+          return entries;
+        }
+      }
+    } catch {
+      // Ignore background fetch error
+    }
+    return serverLeaderboardCache[gameId] || [];
   },
 
   getLeaderboardForGame(gameId: string, profile?: UserProfile): GameLeaderboardResult | null {
@@ -113,71 +123,44 @@ export const GameLeaderboardService = {
       return null;
     }
 
+    // Trigger async fetch to keep cache warm
+    if (!serverLeaderboardCache[gameId]) {
+      this.fetchServerLeaderboard(gameId);
+    }
+
     const stats = this.getUserStats(gameId, profile);
     const userScore = stats.bestScore;
 
-    // Generate base high score range based on game characteristics
-    let topBaseScore = 400;
-    if (gameId === 'helix-jump') topBaseScore = 480;
-    else if (gameId === 'candy-blast') topBaseScore = 420;
-    else if (gameId === 'world-legends') topBaseScore = 390;
-    else if (gameId === 'moto-race') topBaseScore = 450;
-    else if (gameId === 'fruit-slice') topBaseScore = 440;
-    else if (gameId === 'puzzle-block') topBaseScore = 2450;
-    else if (gameId === 'solitaire') topBaseScore = 780;
-    else if (gameId === 'hill-rider') topBaseScore = 860;
+    const entries: GameLeaderboardEntry[] = (serverLeaderboardCache[gameId] || []).map((e) => ({
+      ...e,
+      isCurrentUser: profile?.phoneNumber && e.playerMasked === maskPhone(profile.phoneNumber),
+    }));
 
-    const entries: GameLeaderboardEntry[] = SEED_PLAYERS.map((player, idx) => {
-      // Descending realistic scores
-      const score = Math.max(150, topBaseScore - idx * 25 - (idx % 3) * 7);
-      let rewardText: string | undefined;
-      if (idx === 0) rewardText = '500 Coins';
-      else if (idx === 1) rewardText = '300 Coins';
-      else if (idx === 2) rewardText = '200 Coins';
-      else if (idx < 5) rewardText = '100 Coins';
-
-      return {
-        rank: idx + 1,
-        playerMasked: maskPhone(player.phone),
-        playerName: player.name,
-        score,
-        rewardText,
-        isCurrentUser: false,
-      };
-    });
-
-    // Check where current user ranks
-    let userRank = 14;
-    for (let i = 0; i < entries.length; i++) {
-      if (userScore >= entries[i].score) {
-        userRank = i + 1;
-        break;
-      }
-    }
-
-    // If user is in top 10, splice into list
-    if (userRank <= 10 && userScore > 0) {
-      entries.splice(userRank - 1, 0, {
-        rank: userRank,
+    // If user has a score and not yet in list, place user appropriately
+    const existingIndex = entries.findIndex((e) => e.isCurrentUser);
+    if (existingIndex < 0 && userScore > 0) {
+      entries.push({
+        rank: entries.length + 1,
         playerMasked: maskPhone(profile?.phoneNumber),
         playerName: profile?.displayName || 'You',
         score: userScore,
-        rewardText: userRank <= 3 ? `${500 - (userRank - 1) * 150} Coins` : '100 Coins',
         isCurrentUser: true,
       });
-      // Re-rank
-      entries.pop(); // keep top 10
+      entries.sort((a, b) => b.score - a.score);
       entries.forEach((e, i) => {
         e.rank = i + 1;
       });
     }
 
+    const userEntry = entries.find((e) => e.isCurrentUser);
+    const userRank = userEntry ? userEntry.rank : (userScore > 0 ? 1 : 1);
+
     return {
       game,
       entries: entries.slice(0, 10),
-      userRank: userScore > 0 ? userRank : 84,
+      userRank,
       userScore,
-      totalParticipants: 1850 + (game.playsCount % 500),
+      totalParticipants: Math.max(entries.length, userScore > 0 ? 1 : 0),
     };
   },
 };

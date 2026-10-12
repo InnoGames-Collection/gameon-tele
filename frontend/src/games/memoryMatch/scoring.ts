@@ -1,6 +1,6 @@
 /**
  * Memory Match - Authoritative Competitive Scoring Engine
- * TelePlus Ethiopia Gaming Suite
+ * GameSwiper Ethiopia Gaming Suite
  * 
  * Deterministic mathematical model:
  * - Base points per match

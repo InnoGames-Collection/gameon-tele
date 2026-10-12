@@ -1,12 +1,11 @@
 /**
- * Game Bridge Service for TelePlus Ethiopia
+ * Game Bridge Service for GameSwiper Ethiopia
  * Orchestrates game launching, testing mode access, coin deduction, score validation (max 400 per game),
  * and leaderboard synchronization.
  */
 
 import { GameDefinition, GameSessionResult, UserProfile, RewardTransaction } from '../types';
 import { StorageService } from './storageService';
-import { CompetitiveService } from './competitiveService';
 import { GameLeaderboardService } from './gameLeaderboardService';
 import { HelixCompetitionService } from './helixCompetitionService';
 
@@ -125,12 +124,6 @@ export const GameBridgeService = {
 
     StorageService.saveProfile(updatedProfile);
 
-    let tournamentTx: RewardTransaction | undefined = undefined;
-    if (tournamentId) {
-      const tourneyResult = CompetitiveService.submitTournamentScore(tournamentId, validScore, updatedProfile);
-      tournamentTx = tourneyResult.transaction;
-    }
-
     const result: GameSessionResult = {
       gameId,
       score: validScore,
@@ -140,6 +133,6 @@ export const GameBridgeService = {
       durationSeconds,
     };
 
-    return { result, updatedProfile, transaction: tournamentTx };
+    return { result, updatedProfile };
   },
 };

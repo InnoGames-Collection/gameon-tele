@@ -1,6 +1,6 @@
 /**
  * Procedural Web Audio Synthesizer for Memory Match
- * TelePlus Ethiopia Gaming Suite
+ * GameSwiper Ethiopia Gaming Suite
  * 
  * Generates crisp, low-latency, zero-dependency game audio effects.
  */

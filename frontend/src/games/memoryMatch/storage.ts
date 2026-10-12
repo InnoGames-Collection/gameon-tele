@@ -1,6 +1,6 @@
 /**
  * Memory Match - Persistence & Statistics Storage Manager
- * TelePlus Ethiopia Gaming Suite
+ * GameSwiper Ethiopia Gaming Suite
  * 
  * Manages 40-level progression, cumulative tournament score,
  * best performance records, achievements, and player statistics in LocalStorage.
@@ -8,7 +8,7 @@
 
 import { MemoryMatchStorageData } from './types';
 
-const STORAGE_KEY = 'teleplus_memory_match_state_v2';
+const STORAGE_KEY = 'gameswiper_memory_match_state_v2';
 
 const DEFAULT_STORAGE_STATE: MemoryMatchStorageData = {
   currentLevel: 1,

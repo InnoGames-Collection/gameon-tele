@@ -64,13 +64,13 @@ export function createVehicle3D(): VehicleMeshRig {
 
   // High-Quality Metallic & Matte Automotive Materials
   const metallicBlueMat = new THREE.MeshStandardMaterial({
-    color: 0x1688C9, // TelePlus Royal Sky Blue
+    color: 0x1688C9, // GameSwiper Royal Sky Blue
     metalness: 0.8,
     roughness: 0.2,
   });
 
   const vibrantLimeMat = new THREE.MeshStandardMaterial({
-    color: 0x8BCB3D, // TelePlus Vibrant Lime
+    color: 0x8BCB3D, // GameSwiper Vibrant Lime
     metalness: 0.65,
     roughness: 0.25,
   });

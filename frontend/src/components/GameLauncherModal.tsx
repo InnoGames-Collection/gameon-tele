@@ -40,8 +40,7 @@ import {
   Trophy, 
   Award, 
   Sparkles, 
-  ArrowLeft, 
-  Coins 
+  ArrowLeft 
 } from 'lucide-react';
 
 interface GameLauncherModalProps {
@@ -542,10 +541,10 @@ export const GameLauncherModal: React.FC<GameLauncherModalProps> = ({
               </div>
 
               <div className="bg-[#0B2234] rounded-xl p-3 border border-[#244558] text-left">
-                <div className="text-[10px] text-[#A9C0CE] font-semibold uppercase">MATCH REWARDS</div>
+                <div className="text-[10px] text-[#A9C0CE] font-semibold uppercase">PERSONAL BEST</div>
                 <div className="text-base font-bold text-[#F7C85B] font-mono flex items-center gap-1">
-                  <Coins className="w-4 h-4 fill-current" />
-                  <span>+{lastResult.coinsEarned}</span>
+                  <Trophy className="w-4 h-4 text-[#F7C85B]" />
+                  <span>{Math.max(lastResult.score, profile.highScores?.[game.id] || 0)} PTS</span>
                 </div>
               </div>
             </div>

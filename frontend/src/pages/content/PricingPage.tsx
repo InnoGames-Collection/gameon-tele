@@ -95,7 +95,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
           <div className="space-y-2 text-xs text-[#A9C0CE]">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#63F5C8] shrink-0" />
-              <span>Unlimited access to all skill-based games without coin limits</span>
+              <span>Unlimited access to all skill-based games with zero restrictions</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#63F5C8] shrink-0" />

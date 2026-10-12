@@ -63,7 +63,7 @@ interface SortingBallsGameProps {
   isAudioEnabled?: boolean;
 }
 
-const STORAGE_KEY = 'teleplus_sorting_balls_progression_v3';
+const STORAGE_KEY = 'gameswiper_sorting_balls_progression_v3';
 
 export const SortingBallsGame: React.FC<SortingBallsGameProps> = ({
   game,

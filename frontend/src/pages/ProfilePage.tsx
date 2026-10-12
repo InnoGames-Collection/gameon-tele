@@ -8,8 +8,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { 
   UserProfile, 
   GameDefinition, 
-  EnergyTransaction, 
-  ClaimableReward,
   LanguageCode 
 } from '../types';
 import { 
@@ -29,10 +27,8 @@ import {
   Volume2, 
   VolumeX,
   LogOut,
-  Coins,
   Star,
   CheckCircle2,
-  Plus,
   History,
   Gift
 } from 'lucide-react';
@@ -66,19 +62,14 @@ export type ProfileSubView =
 interface ProfilePageProps {
   profile: UserProfile;
   games: GameDefinition[];
-  energyTransactions?: EnergyTransaction[];
-  claimableRewards?: ClaimableReward[];
   language?: LanguageCode;
   onLanguageChange?: (lang: LanguageCode) => void;
-  onOpenEnergyModal?: () => void;
   onOpenSubscriptionModal?: () => void;
   onOpenAuthModal?: () => void;
   onPlayGame: (game: GameDefinition) => void;
-  onClaimReward?: (rewardId: string) => void;
   audioEnabled?: boolean;
   onToggleAudio?: () => void;
   onSignOut?: () => void;
-  onOpenBuyCoins?: () => void;
   onProfileUpdate?: (updated: UserProfile) => void;
 }
 
@@ -88,7 +79,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   language = 'en',
   onLanguageChange,
   onPlayGame,
-  onOpenBuyCoins,
   onProfileUpdate,
   audioEnabled,
   onToggleAudio,
@@ -154,8 +144,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         .catch((err) => console.warn('[ProfilePage] Failed to fetch server scores:', err));
     }
   }, [profile.phoneNumber]);
-
-  const coinsBalance = profile.coinsBalance ?? 1250;
 
   // Subview rendering
   if (subView === 'subscriptions') {
@@ -373,7 +361,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <span>Level</span>
             </div>
             <div className="text-sm font-black text-[#F5FAFC] mt-0.5 font-mono">
-              12
+              {Math.max(1, Object.keys(profile.highScores || {}).length)}
             </div>
           </div>
 
@@ -402,42 +390,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         <div className="absolute right-0 top-0 w-32 h-32 bg-[#00BFA6]/10 rounded-full blur-2xl pointer-events-none" />
       </div>
 
-      {/* 3. WALLET / BALANCE CARD (Reference Screen 3) */}
-      <div 
-        id="profile-wallet-card"
-        className="rounded-2xl bg-[#102C40] border border-[#244558] p-4 flex items-center justify-between shadow-md"
-      >
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-[#0B2234] border border-[#244558] flex items-center justify-center shrink-0">
-            <Coins className="w-6 h-6 text-[#F7C85B]" />
-          </div>
-          <div>
-            <span className="text-[10px] sm:text-[11px] font-bold text-[#A9C0CE] uppercase tracking-wider block">
-              My Wallet
-            </span>
-            <div className="text-xl font-black text-[#F5FAFC] font-mono leading-tight mt-0.5">
-              {coinsBalance.toLocaleString()} <span className="text-xs font-sans text-[#F7C85B] font-bold">Coins</span>
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onOpenBuyCoins}
-          className="px-3.5 py-2 rounded-xl bg-[#15374A] hover:bg-[#00BFA6] hover:text-[#071827] text-[#00BFA6] border border-[#00BFA6]/40 text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs active:scale-95"
-        >
-          <Plus className="w-3.5 h-3.5 stroke-[3]" />
-          <span>Add Coins</span>
-        </button>
-      </div>
-
-      {/* 4. PROFILE NAVIGATION MENU ITEMS (Reference Screen 3) */}
+      {/* 3. PROFILE NAVIGATION MENU ITEMS */}
       <div className="bg-[#102C40] rounded-2xl border border-[#244558] shadow-md overflow-hidden divide-y divide-[#244558]">
         {[
           { id: 'my_games', label: 'Game History', desc: 'View your played games', icon: History, color: '#35D9F2' },
           { id: 'subscriptions', label: 'Subscription & VIP', desc: 'Check active gaming pass', icon: CreditCard, color: '#63F5C8' },
           { id: 'my_scores', label: 'My High Scores', desc: 'Personal best records', icon: Trophy, color: '#F7C85B' },
-          { id: 'pricing', label: 'Pricing & Plans', desc: 'Token packages and rates', icon: Tag, color: '#00BFA6' },
+          { id: 'pricing', label: 'Pricing & Plans', desc: 'Subscription plans & daily pass', icon: Tag, color: '#00BFA6' },
           { id: 'faq', label: 'FAQ', desc: 'Frequently asked questions', icon: HelpCircle, color: '#35D9F2' },
           { id: 'help_support', label: 'Help & Support', desc: 'Customer care and assistance', icon: Headphones, color: '#63F5C8' },
           { id: 'terms', label: 'Terms & Conditions', desc: 'Terms of service', icon: FileText, color: '#A9C0CE' },
@@ -476,7 +435,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         })}
       </div>
 
-      {/* 5. BOTTOM PROMO BANNER (Reference Screen 3) */}
+      {/* 4. BOTTOM PROMO BANNER */}
       <div 
         id="profile-reward-promo"
         className="rounded-2xl bg-gradient-to-r from-[#102C40] via-[#15374A] to-[#102C40] border border-[#244558] p-4 flex items-center justify-between shadow-md"
@@ -490,7 +449,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               Play More Games
             </h4>
             <p className="text-[10px] text-[#A9C0CE] font-medium">
-              Earn daily rewards & badges!
+              Play more games and beat your high scores!
             </p>
           </div>
         </div>

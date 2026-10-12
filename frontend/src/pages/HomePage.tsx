@@ -39,7 +39,6 @@ interface HomePageProps {
   onLaunchGame: (game: GameDefinition) => void;
   onOpenDetails?: (game: GameDefinition) => void;
   onNavigateToGames?: (category?: string) => void;
-  onOpenBuyCoins?: () => void;
   activeEntitlements?: Record<string, boolean>;
 }
 

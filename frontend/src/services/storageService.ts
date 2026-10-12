@@ -1,69 +1,60 @@
 /**
- * Storage Service for TelePlay Ethiopia
- * Handles client-side offline persistence for profile, scores, energy, and preferences.
+ * GameSwiper Storage Service
+ * Handles client-side persistent storage for player session, settings, and preferences.
  */
 
 import { UserProfile, LanguageCode } from '../types';
-import { INITIAL_GUEST_PROFILE } from './demoData';
 
 const STORAGE_KEYS = {
-  PROFILE: 'teleplay_ethio_profile_v1',
-  LANGUAGE: 'teleplay_ethio_language_v1',
-  AUDIO_ENABLED: 'teleplay_ethio_audio_v1',
-  HAPTICS_ENABLED: 'teleplay_ethio_haptics_v1',
-  NOTIFS_ENABLED: 'teleplay_ethio_notifs_v1',
-  LOW_DATA_MODE: 'teleplay_ethio_low_data_v1',
-  ENERGY_TXS: 'teleplay_ethio_energy_txs_v1',
-  COIN_TXS: 'teleplay_ethio_coin_txs_v1',
-  PAYMENT_TXS: 'teleplay_ethio_payment_txs_v1',
+  PROFILE: 'gameswiper_profile_v1',
+  LANGUAGE: 'gameswiper_language_v1',
+  AUDIO_ENABLED: 'gameswiper_audio_v1',
+  HAPTICS_ENABLED: 'gameswiper_haptics_v1',
+  NOTIFS_ENABLED: 'gameswiper_notifs_v1',
+  LOW_DATA_MODE: 'gameswiper_low_data_v1',
 };
 
-import { EnergyTransaction, PaymentTransaction } from '../types';
-
-export interface CoinTransaction {
-  id: string;
-  type: 'INITIAL_SUBSCRIPTION' | 'GAME_ENTRY' | 'TOURNAMENT_WIN' | 'TELEBIRR_PURCHASE';
-  amount: number;
-  description: string;
-  timestamp: string;
-}
-
-const INITIAL_COIN_TXS: CoinTransaction[] = [
-  {
-    id: 'CTX_WELCOME_01',
-    type: 'INITIAL_SUBSCRIPTION',
-    amount: 25,
-    description: 'Initial EthioTelecom Subscription Allocation',
-    timestamp: new Date().toISOString(),
+export const INITIAL_GUEST_PROFILE: UserProfile = {
+  id: '',
+  phoneNumber: '',
+  displayName: 'Player',
+  avatarId: 'avatar_runner',
+  isRegistered: false,
+  telebirrLinked: false,
+  telebirrBalance: 0,
+  coins: 0,
+  xp: 0,
+  level: 1,
+  energy: 0,
+  maxEnergy: 0,
+  lastEnergyRefillTimestamp: 0,
+  subscription: {
+    plan: 'daily',
+    isActive: false,
+    autoRenew: false,
   },
-];
-
-const INITIAL_ENERGY_TXS: EnergyTransaction[] = [
-  {
-    transactionId: 'ETX_INIT_01',
-    type: 'DAILY_REGEN',
-    amount: 10,
-    timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-    status: 'COMPLETED',
-    details: 'Initial Daily Energy Pool Refill',
+  streak: {
+    current: 0,
+    lastClaimedDate: '',
+    hasClaimedToday: false,
   },
-];
-
-const ENERGY_REFILL_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes per 1 energy point
+  highScores: {},
+  achievements: [],
+  matchesPlayed: 0,
+  trophiesCount: 0,
+};
 
 export const StorageService = {
   getProfile(): UserProfile {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PROFILE);
       if (!stored) {
-        this.saveProfile(INITIAL_GUEST_PROFILE);
-        return INITIAL_GUEST_PROFILE;
+        return { ...INITIAL_GUEST_PROFILE };
       }
       const parsed: UserProfile = JSON.parse(stored);
-      // Auto-calculate energy recharge based on elapsed time
-      return this.recalculateEnergy(parsed);
+      return parsed;
     } catch {
-      return INITIAL_GUEST_PROFILE;
+      return { ...INITIAL_GUEST_PROFILE };
     }
   },
 
@@ -75,122 +66,21 @@ export const StorageService = {
     }
   },
 
-  /**
-   * One-time grant of 25 coins upon confirmed subscription
-   */
-  grantInitialSubscriptionCoins(profile: UserProfile): UserProfile {
-    if (profile.hasReceivedInitialCoins) {
-      return profile;
-    }
-
-    const updated: UserProfile = {
-      ...profile,
-      coins: profile.coins + 25,
-      hasReceivedInitialCoins: true,
-    };
-
-    this.saveProfile(updated);
-
-    this.recordCoinTransaction({
-      id: 'CTX_SUB_' + Date.now().toString(36).toUpperCase(),
-      type: 'INITIAL_SUBSCRIPTION',
-      amount: 25,
-      description: 'Confirmed Subscription Allocation (25 Coins)',
-      timestamp: new Date().toISOString(),
-    });
-
-    return updated;
-  },
-
   clearSession(): UserProfile {
-    const current = this.getProfile();
     const unauthenticated: UserProfile = {
-      ...current,
-      phoneNumber: '',
-      isRegistered: false,
-      telebirrLinked: false,
-      highScores: {},
+      ...INITIAL_GUEST_PROFILE,
     };
-
     this.saveProfile(unauthenticated);
     return unauthenticated;
   },
 
   recalculateEnergy(profile: UserProfile): UserProfile {
-    // If VIP subscriber, always maintain max or unlimited
-    if (profile.subscription?.isActive) {
-      return {
-        ...profile,
-        energy: profile.maxEnergy,
-      };
-    }
-
-    if (profile.energy >= profile.maxEnergy) {
-      return {
-        ...profile,
-        lastEnergyRefillTimestamp: Date.now(),
-      };
-    }
-
-    const now = Date.now();
-    const elapsed = now - (profile.lastEnergyRefillTimestamp || now);
-    const refillPoints = Math.floor(elapsed / ENERGY_REFILL_INTERVAL_MS);
-
-    if (refillPoints > 0) {
-      const newEnergy = Math.min(profile.maxEnergy, profile.energy + refillPoints);
-      const updated: UserProfile = {
-        ...profile,
-        energy: newEnergy,
-        lastEnergyRefillTimestamp: newEnergy >= profile.maxEnergy ? now : profile.lastEnergyRefillTimestamp + (refillPoints * ENERGY_REFILL_INTERVAL_MS),
-      };
-      this.saveProfile(updated);
-      return updated;
-    }
-
     return profile;
-  },
-
-  getCoinTransactions(): CoinTransaction[] {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.COIN_TXS);
-      if (!stored) {
-        this.saveCoinTransactions(INITIAL_COIN_TXS);
-        return INITIAL_COIN_TXS;
-      }
-      return JSON.parse(stored);
-    } catch {
-      return INITIAL_COIN_TXS;
-    }
-  },
-
-  saveCoinTransactions(txs: CoinTransaction[]): void {
-    try {
-      localStorage.setItem(STORAGE_KEYS.COIN_TXS, JSON.stringify(txs));
-    } catch (e) {
-      console.warn('[StorageService] Failed to save coin transactions:', e);
-    }
-  },
-
-  recordCoinTransaction(tx: CoinTransaction): void {
-    const list = this.getCoinTransactions();
-    list.unshift(tx);
-    this.saveCoinTransactions(list.slice(0, 50));
-  },
-
-  resetDemoState(): UserProfile {
-    try {
-      localStorage.removeItem(STORAGE_KEYS.PROFILE);
-      this.saveProfile(INITIAL_GUEST_PROFILE);
-      return INITIAL_GUEST_PROFILE;
-    } catch {
-      return INITIAL_GUEST_PROFILE;
-    }
   },
 
   getLanguage(): LanguageCode {
     try {
-      const lang = localStorage.getItem(STORAGE_KEYS.LANGUAGE) as LanguageCode;
-      return (lang === 'en' || lang === 'am' || lang === 'om') ? lang : 'en';
+      return (localStorage.getItem(STORAGE_KEYS.LANGUAGE) as LanguageCode) || 'en';
     } catch {
       return 'en';
     }
@@ -205,101 +95,92 @@ export const StorageService = {
   },
 
   getAudioEnabled(): boolean {
-    return localStorage.getItem(STORAGE_KEYS.AUDIO_ENABLED) !== 'false';
+    try {
+      const val = localStorage.getItem(STORAGE_KEYS.AUDIO_ENABLED);
+      return val !== null ? val === 'true' : true;
+    } catch {
+      return true;
+    }
   },
 
   saveAudioEnabled(enabled: boolean): void {
-    localStorage.setItem(STORAGE_KEYS.AUDIO_ENABLED, enabled ? 'true' : 'false');
+    try {
+      localStorage.setItem(STORAGE_KEYS.AUDIO_ENABLED, String(enabled));
+    } catch (e) {
+      console.warn('[StorageService] Failed to save audio setting:', e);
+    }
   },
 
   getHapticsEnabled(): boolean {
-    return localStorage.getItem(STORAGE_KEYS.HAPTICS_ENABLED) !== 'false';
+    try {
+      const val = localStorage.getItem(STORAGE_KEYS.HAPTICS_ENABLED);
+      return val !== null ? val === 'true' : true;
+    } catch {
+      return true;
+    }
   },
 
   saveHapticsEnabled(enabled: boolean): void {
-    localStorage.setItem(STORAGE_KEYS.HAPTICS_ENABLED, enabled ? 'true' : 'false');
+    try {
+      localStorage.setItem(STORAGE_KEYS.HAPTICS_ENABLED, String(enabled));
+    } catch (e) {
+      console.warn('[StorageService] Failed to save haptics setting:', e);
+    }
   },
 
   getNotificationsEnabled(): boolean {
-    return localStorage.getItem(STORAGE_KEYS.NOTIFS_ENABLED) !== 'false';
+    try {
+      const val = localStorage.getItem(STORAGE_KEYS.NOTIFS_ENABLED);
+      return val !== null ? val === 'true' : false;
+    } catch {
+      return false;
+    }
   },
 
   saveNotificationsEnabled(enabled: boolean): void {
-    localStorage.setItem(STORAGE_KEYS.NOTIFS_ENABLED, enabled ? 'true' : 'false');
+    try {
+      localStorage.setItem(STORAGE_KEYS.NOTIFS_ENABLED, String(enabled));
+    } catch (e) {
+      console.warn('[StorageService] Failed to save notifications setting:', e);
+    }
   },
 
   getLowDataMode(): boolean {
-    return localStorage.getItem(STORAGE_KEYS.LOW_DATA_MODE) === 'true';
+    try {
+      const val = localStorage.getItem(STORAGE_KEYS.LOW_DATA_MODE);
+      return val !== null ? val === 'true' : false;
+    } catch {
+      return false;
+    }
   },
 
   saveLowDataMode(enabled: boolean): void {
-    localStorage.setItem(STORAGE_KEYS.LOW_DATA_MODE, enabled ? 'true' : 'false');
-  },
-
-  getEnergyTransactions(): EnergyTransaction[] {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.ENERGY_TXS);
-      if (!stored) {
-        this.saveEnergyTransactions(INITIAL_ENERGY_TXS);
-        return INITIAL_ENERGY_TXS;
-      }
-      return JSON.parse(stored);
-    } catch {
-      return INITIAL_ENERGY_TXS;
-    }
-  },
-
-  saveEnergyTransactions(txs: EnergyTransaction[]): void {
-    try {
-      localStorage.setItem(STORAGE_KEYS.ENERGY_TXS, JSON.stringify(txs));
+      localStorage.setItem(STORAGE_KEYS.LOW_DATA_MODE, String(enabled));
     } catch (e) {
-      console.warn('[StorageService] Failed to save energy transactions:', e);
+      console.warn('[StorageService] Failed to save low data setting:', e);
     }
   },
 
-  recordEnergyTransaction(tx: EnergyTransaction): void {
-    const list = this.getEnergyTransactions();
-    list.unshift(tx);
-    // Keep last 50 transactions for performance
-    this.saveEnergyTransactions(list.slice(0, 50));
+  getEnergyTransactions(): any[] {
+    return [];
   },
 
-  getPaymentTransactions(): PaymentTransaction[] {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.PAYMENT_TXS);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  },
-
-  savePaymentTransactions(txs: PaymentTransaction[]): void {
-    try {
-      localStorage.setItem(STORAGE_KEYS.PAYMENT_TXS, JSON.stringify(txs));
-    } catch (e) {
-      console.warn('[StorageService] Failed to save payment transactions:', e);
-    }
-  },
-
-  recordPaymentTransaction(tx: PaymentTransaction): void {
-    const list = this.getPaymentTransactions();
-    const existingIndex = list.findIndex((t) => t.transactionId === tx.transactionId);
-    if (existingIndex >= 0) {
-      list[existingIndex] = tx;
-    } else {
-      list.unshift(tx);
-    }
-    this.savePaymentTransactions(list.slice(0, 50));
-  },
+  recordEnergyTransaction(_tx: any): void {},
 
   wipeAllData(): UserProfile {
     try {
       localStorage.clear();
-      this.saveProfile(INITIAL_GUEST_PROFILE);
-      return INITIAL_GUEST_PROFILE;
+      sessionStorage.clear();
+      const guest = { ...INITIAL_GUEST_PROFILE };
+      this.saveProfile(guest);
+      return guest;
     } catch {
-      return INITIAL_GUEST_PROFILE;
+      return { ...INITIAL_GUEST_PROFILE };
     }
   },
-};
 
+  resetDemoState(): UserProfile {
+    return this.wipeAllData();
+  },
+};

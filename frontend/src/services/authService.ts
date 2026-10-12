@@ -140,6 +140,50 @@ export const AuthService = {
   },
 
   /**
+   * Validate active backend JWT token and synchronize profile directly from DB
+   */
+  async checkSession(): Promise<UserProfile | null> {
+    const token = sessionStorage.getItem('gameon_player_token');
+    if (!token) return null;
+
+    try {
+      const res = await fetch('/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) {
+        sessionStorage.removeItem('gameon_player_token');
+        return null;
+      }
+      const data = await res.json();
+      if (data.success && data.profile) {
+        const current = StorageService.getProfile();
+        let normalizedPhone = data.profile.msisdn.replace(/\D/g, '');
+        if (normalizedPhone.startsWith('251')) {
+          normalizedPhone = '0' + normalizedPhone.slice(3);
+        }
+        const updated: UserProfile = {
+          ...current,
+          phoneNumber: normalizedPhone,
+          isRegistered: true,
+          telebirrLinked: true,
+          highScores: data.profile.highScores || {},
+          subscription: {
+            ...current.subscription,
+            isActive: Boolean(data.profile.isSubscribed),
+          },
+        };
+        StorageService.saveProfile(updated);
+        return updated;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
    * Sign out and clear authenticated session
    */
   signOut(): UserProfile {

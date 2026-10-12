@@ -1,5 +1,5 @@
 /**
- * TelePlus - Helix 7-Day Weekly Competition Service
+ * GameSwiper - Helix 7-Day Weekly Competition Service
  * 
  * Manages the authoritative 7-day weekly competition for Helix:
  * - Operates in continuous 7-day cycles (Day 1 to Day 7)
@@ -56,8 +56,8 @@ export const HELIX_PRIZE_RULES: CompetitionPrize[] = [
 ];
 
 const STORAGE_KEYS = {
-  HELIX_COMPETITION: 'teleplus_helix_competition_v2',
-  USER_COMPETITION_DATA: 'teleplus_user_helix_comp_v2',
+  HELIX_COMPETITION: 'gameswiper_helix_competition_v2',
+  USER_COMPETITION_DATA: 'gameswiper_user_helix_comp_v2',
 };
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;

@@ -1,6 +1,6 @@
 /**
  * Hill Climb 3D - Production 3D Mountain Hill-Driving Game
- * Fully Integrated with TelePlus Tournaments (Max 400 PTS)
+ * Fully Integrated with GameSwiper Tournaments (Max 400 PTS)
  * 
  * Progressive Endless Difficulty & Continuous High-Score Competition
  */
@@ -78,7 +78,7 @@ interface HillRiderGameProps {
   isAudioEnabled?: boolean;
 }
 
-const STORAGE_KEY = 'teleplus_hill_climb_3d_save';
+const STORAGE_KEY = 'gameswiper_hill_climb_3d_save';
 const CHUNK_SIZE = 250;
 const TOTAL_SESSION_SECONDS = 120; // Exactly 2 Minutes (120 seconds)
 

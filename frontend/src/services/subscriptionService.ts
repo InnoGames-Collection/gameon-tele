@@ -1,5 +1,5 @@
 /**
- * TelePlus Subscription Service
+ * GameSwiper Subscription Service
  * Manages the single official Daily Subscription (2 Birr/day) via SMS shortcode 7198.
  */
 

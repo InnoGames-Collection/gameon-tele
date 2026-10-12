@@ -1,6 +1,6 @@
 /**
  * Memory Match - Type Definitions
- * TelePlus Ethiopia Premium HTML5 Mobile Gaming Suite
+ * GameSwiper Ethiopia Premium HTML5 Mobile Gaming Suite
  */
 
 export type MemoryCardCategory = 

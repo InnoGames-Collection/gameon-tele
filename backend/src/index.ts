@@ -123,8 +123,8 @@ async function main() {
   });
 
   // Backward compatibility health endpoints
-  fastify.get('/health', async () => ({ status: 'healthy', service: 'gameon-api', timestamp: new Date().toISOString() }));
-  fastify.get('/api/v1/health', async () => ({ status: 'healthy', platform: 'GameOn Tele', version: '1.0.0' }));
+  fastify.get('/health', async () => ({ status: 'healthy', service: 'gameswiper-api', timestamp: new Date().toISOString() }));
+  fastify.get('/api/v1/health', async () => ({ status: 'healthy', platform: 'GameSwiper', version: '1.0.0' }));
 
   // Routes registration
   await fastify.register(authRoutes, { prefix: '/api/auth' });
@@ -140,7 +140,7 @@ async function main() {
 
   try {
     const address = await fastify.listen({ port: env.PORT, host: env.HOST });
-    fastify.log.info(`🚀 GameOn Tele API Server running at ${address}`);
+    fastify.log.info(`🚀 GameSwiper API Server running at ${address}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

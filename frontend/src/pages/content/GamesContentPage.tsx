@@ -1,5 +1,5 @@
 /**
- * Games Content Page Component for TelePlus
+ * Games Content Page Component for GameSwiper
  * 
  * Verbatim content from Document Section 1:
  * - 1.1 Candy Blast
@@ -21,7 +21,7 @@ import {
   ChevronUp, 
   Clock 
 } from 'lucide-react';
-import { TELEPLUS_GAMES_CONTENT, GameContentDetails } from '../../data/teleplusContent';
+import { GAMESWIPER_GAMES_CONTENT, GameContentDetails } from '../../data/gameswiperContent';
 import { GameDefinition, UserProfile } from '../../types';
 import { OriginalGameArtwork } from '../../components/OriginalGameArtwork';
 
@@ -83,7 +83,7 @@ export const GamesContentPage: React.FC<GamesContentPageProps> = ({
 
       {/* 2. Game Guide Cards with Full Detail */}
       <div className="space-y-4">
-        {TELEPLUS_GAMES_CONTENT.map((game) => {
+        {GAMESWIPER_GAMES_CONTENT.map((game) => {
           const isExpanded = expandedGameId === game.id;
           const personalBest = profile?.highScores?.[game.id] || 0;
 

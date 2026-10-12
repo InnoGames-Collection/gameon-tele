@@ -18,7 +18,7 @@ import {
   MatchStats,
 } from './types';
 
-export const DAMA_STORAGE_KEY = 'teleplus_dama_tournament_v1';
+export const DAMA_STORAGE_KEY = 'gameswiper_dama_tournament_v1';
 
 export const INITIAL_DAMA_PROGRESS: DamaProgress = {
   version: 1,
@@ -92,7 +92,7 @@ export function saveDamaProgress(progress: DamaProgress): void {
   try {
     localStorage.setItem(DAMA_STORAGE_KEY, JSON.stringify(progress));
     // Backward compatibility with legacy keys
-    localStorage.setItem('teleplus_dama_unlocked_level', String(progress.highestUnlockedLevel));
+    localStorage.setItem('gameswiper_dama_unlocked_level', String(progress.highestUnlockedLevel));
   } catch (e) {
     console.warn('Failed to save Dama tournament progress:', e);
   }
@@ -376,8 +376,8 @@ export function recordCompletedDamaMatch(
  */
 export function resetDamaProgress(): DamaProgress {
   localStorage.removeItem(DAMA_STORAGE_KEY);
-  localStorage.removeItem('teleplus_dama_unlocked_level');
-  localStorage.removeItem('teleplus_dama_current_level');
-  localStorage.removeItem('teleplus_dama_level_stars');
+  localStorage.removeItem('gameswiper_dama_unlocked_level');
+  localStorage.removeItem('gameswiper_dama_current_level');
+  localStorage.removeItem('gameswiper_dama_level_stars');
   return INITIAL_DAMA_PROGRESS;
 }

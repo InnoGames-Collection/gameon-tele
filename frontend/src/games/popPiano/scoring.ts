@@ -28,7 +28,7 @@ import {
   LevelSaveData,
 } from './types';
 
-const STORAGE_KEY = 'teleplus_pop_piano_tournament_v1';
+const STORAGE_KEY = 'gameswiper_pop_piano_tournament_v1';
 
 export const INITIAL_PROGRESS: PopPianoProgress = {
   highestUnlockedLevel: 1, // Level 1 is unlocked initially; Levels 2-40 locked

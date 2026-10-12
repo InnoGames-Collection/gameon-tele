@@ -15,12 +15,8 @@ import {
   ShieldAlert,
   CreditCard,
   Eye,
-  Ban,
-  Check,
   ChevronLeft,
-  ChevronRight,
-  Search,
-  Filter
+  ChevronRight
 } from 'lucide-react';
 
 interface AdminUser {

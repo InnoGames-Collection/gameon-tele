@@ -1,6 +1,6 @@
 /**
  * Memory Match - Dynamic Responsive Layout Engine
- * TelePlus Ethiopia Premium HTML5 Mobile Gaming Suite
+ * GameSwiper Ethiopia Premium HTML5 Mobile Gaming Suite
  * 
  * Guarantees:
  * - ABSOLUTE MOBILE RULE: NO VERTICAL PAGE SCROLLING during gameplay.

@@ -63,7 +63,7 @@ interface SoccerPingPongGameProps {
   isAudioEnabled?: boolean;
 }
 
-const STORAGE_KEY = 'teleplus_soccer_ping_pong_v4_hub';
+const STORAGE_KEY = 'gameswiper_soccer_ping_pong_v4_hub';
 
 const INITIAL_PROGRESS: PlayerProgress = {
   unlockedLevel: 1,

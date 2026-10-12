@@ -1,12 +1,12 @@
 /**
- * Privacy Policy Page Component for TelePlus
+ * Privacy Policy Page Component for GameSwiper
  * 
- * Verbatim data and compliance text based on Document Section 14.24 and TelePlus privacy practices.
+ * Verbatim data and compliance text based on Document Section 14.24 and GameSwiper privacy practices.
  */
 
 import React from 'react';
 import { ShieldCheck, ArrowLeft, Lock, Smartphone, Database, CheckCircle2 } from 'lucide-react';
-import { TELEPLUS_PRIVACY_POLICY } from '../../data/teleplusContent';
+import { GAMESWIPER_PRIVACY_POLICY } from '../../data/gameswiperContent';
 
 interface PrivacyPageProps {
   onBack?: () => void;
@@ -44,13 +44,13 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({ onBack, showHeader = t
 
       {/* 2. Overview Card */}
       <div className="p-4 rounded-2xl bg-[#102C40] border border-[#244558] text-xs text-[#A9C0CE] leading-relaxed mb-4 space-y-1">
-        <h2 className="font-black text-[#F5FAFC] text-sm">{TELEPLUS_PRIVACY_POLICY.title}</h2>
-        <p>{TELEPLUS_PRIVACY_POLICY.summary}</p>
+        <h2 className="font-black text-[#F5FAFC] text-sm">{GAMESWIPER_PRIVACY_POLICY.title}</h2>
+        <p>{GAMESWIPER_PRIVACY_POLICY.summary}</p>
       </div>
 
       {/* 3. Sections */}
       <div className="space-y-3">
-        {TELEPLUS_PRIVACY_POLICY.sections.map((section, idx) => {
+        {GAMESWIPER_PRIVACY_POLICY.sections.map((section, idx) => {
           const SectionIcon = SECTION_ICONS[idx % SECTION_ICONS.length] || Lock;
           return (
             <div

@@ -1,7 +1,7 @@
 /**
- * TelePlus Official Content Source of Truth
+ * GameSwiper Official Content Source of Truth
  * 
- * Sourced directly from the official TelePlus content specification document.
+ * Sourced directly from the official GameSwiper content specification document.
  * This canonical file supplies text and structured data across the entire application.
  */
 
@@ -22,7 +22,7 @@ export interface GameContentDetails {
   importantRules?: string[];
 }
 
-export const TELEPLUS_GAMES_CONTENT: GameContentDetails[] = [
+export const GAMESWIPER_GAMES_CONTENT: GameContentDetails[] = [
   // 1.1 CANDY BLAST
   {
     id: 'candy-blast',
@@ -347,7 +347,7 @@ export interface FAQItem {
   category?: string;
 }
 
-export const TELEPLUS_FAQ_ITEMS: FAQItem[] = [
+export const GAMESWIPER_FAQ_ITEMS: FAQItem[] = [
   {
     id: 'faq-1',
     question: 'What is GameSwiper?',
@@ -415,7 +415,7 @@ export interface SupportTopic {
   note?: string;
 }
 
-export const TELEPLUS_SUPPORT_TOPICS: SupportTopic[] = [
+export const GAMESWIPER_SUPPORT_TOPICS: SupportTopic[] = [
   {
     id: 'sub-support',
     title: 'Subscription Support',
@@ -541,7 +541,7 @@ export interface SubscriptionPackage {
   recipient: string;
 }
 
-export const TELEPLUS_SUBSCRIPTION_PACKAGES: SubscriptionPackage[] = [
+export const GAMESWIPER_SUBSCRIPTION_PACKAGES: SubscriptionPackage[] = [
   {
     package: 'Daily',
     price: '2 Birr/day',
@@ -553,7 +553,7 @@ export const TELEPLUS_SUBSCRIPTION_PACKAGES: SubscriptionPackage[] = [
   },
 ];
 
-export const TELEPLUS_SUBSCRIPTION_INFO = {
+export const GAMESWIPER_SUBSCRIPTION_INFO = {
   ussdInfo: 'Subscription is available by sending OK to 7198.',
   afterSubscription:
     'After successful subscription, the user can access GameSwiper games. GameSwiper costs 2 Birr per day. Subscription charges and renewal operate daily.',
@@ -566,7 +566,7 @@ export const TELEPLUS_SUBSCRIPTION_INFO = {
 // =========================================================================
 // 5. PRICING CONTENT (Section 11 in Document)
 // =========================================================================
-export const TELEPLUS_TOP10_PRIZES = [
+export const GAMESWIPER_TOP10_PRIZES = [
   { rank: '1st', prize: '50,000 ETB' },
   { rank: '2nd', prize: '40,000 ETB' },
   { rank: '3rd', prize: '35,000 ETB' },
@@ -579,7 +579,7 @@ export const TELEPLUS_TOP10_PRIZES = [
   { rank: '10th', prize: '3,000 ETB' },
 ];
 
-export const TELEPLUS_TOTAL_PRIZE_VALUE = '233,000 ETB per applicable competition period.';
+export const GAMESWIPER_TOTAL_PRIZE_VALUE = '233,000 ETB per applicable competition period.';
 
 // =========================================================================
 // 6. TERMS & CONDITIONS CONTENT (Section 14 in Document)
@@ -592,7 +592,7 @@ export interface TermSection {
   table?: { col1: string; col2: string }[];
 }
 
-export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
+export const GAMESWIPER_TERMS_SECTIONS: TermSection[] = [
   {
     number: '14.1',
     title: 'Introduction',
@@ -846,7 +846,7 @@ export const TELEPLUS_TERMS_SECTIONS: TermSection[] = [
 // =========================================================================
 // 7. PRIVACY POLICY CONTENT (Section 14.24 & GameSwiper Privacy Practices)
 // =========================================================================
-export const TELEPLUS_PRIVACY_POLICY = {
+export const GAMESWIPER_PRIVACY_POLICY = {
   title: 'GameSwiper Privacy Policy',
   summary:
     'GameSwiper is committed to protecting user privacy and handling personal information responsibly, transparently, and securely in accordance with applicable laws and telecommunications standards.',

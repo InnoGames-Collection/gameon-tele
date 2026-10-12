@@ -97,12 +97,12 @@ export const MainMenuDrawer: React.FC<MainMenuDrawerProps> = ({
 
   return (
     <div 
-      id="teleplus-main-menu-overlay"
+      id="gameswiper-main-menu-overlay"
       className={`fixed inset-0 z-50 bg-[#071827]/80 backdrop-blur-xs flex ${isSlideFromLeft ? 'justify-start' : 'justify-end'} animate-in fade-in duration-150`}
       onClick={onClose}
     >
       <div 
-        id="teleplus-main-menu-panel"
+        id="gameswiper-main-menu-panel"
         className={`w-full max-w-sm bg-[#0B2234] border-${isSlideFromLeft ? 'r' : 'l'} border-[#244558] h-full shadow-2xl flex flex-col justify-between animate-in ${isSlideFromLeft ? 'slide-in-from-left' : 'slide-in-from-right'} duration-200 select-none font-['Plus_Jakarta_Sans',sans-serif]`}
         onClick={(e) => e.stopPropagation()}
       >

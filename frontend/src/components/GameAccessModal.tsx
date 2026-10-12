@@ -1,21 +1,18 @@
 /**
- * GameON Tele - Game Access & Entitlement Modal
- * Handles Free instant access, Coin deduction confirmations, and telebirr Subscription authorizations.
- * Compliant with GameON Tele spec: Direct in-app authorization.
+ * GameSwiper - Game Access & Entitlement Modal
+ * Authoritative subscriber access gate for skill-based games.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { CatalogGame } from '../services/gameCatalog';
 import { UserProfile } from '../types';
-import { EntitlementService, GameEntitlement } from '../services/entitlementService';
+import { GameEntitlement } from '../services/entitlementService';
 import { 
-  Coins, 
-  Wallet, 
   ShieldCheck, 
   X, 
   CheckCircle2, 
-  AlertCircle,
-  Play
+  Play,
+  Send
 } from 'lucide-react';
 
 interface GameAccessModalProps {
@@ -23,9 +20,9 @@ interface GameAccessModalProps {
   profile: UserProfile;
   isOpen: boolean;
   onClose: () => void;
-  onAuthorizedPlay: (game: CatalogGame, entitlement?: GameEntitlement) => void;
-  onOpenCoinTopup: () => void;
-  onProfileUpdate: (updated: UserProfile) => void;
+  onAuthorizedPlay?: (game: CatalogGame, entitlement?: GameEntitlement) => void;
+  onAccessGranted?: (profile: UserProfile, game: any) => void;
+  onProfileUpdate?: (updated: UserProfile) => void;
 }
 
 export const GameAccessModal: React.FC<GameAccessModalProps> = ({
@@ -34,70 +31,34 @@ export const GameAccessModal: React.FC<GameAccessModalProps> = ({
   isOpen,
   onClose,
   onAuthorizedPlay,
-  onOpenCoinTopup,
-  onProfileUpdate,
+  onAccessGranted,
 }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-
   if (!isOpen || !game) return null;
 
-  // Bypass modal entirely for Candy Crush, Word Legend, and all Free games
-  if (game.gameId === 'candy-blast' || game.gameId === 'world-legends' || game.isFree || game.accessType === 'FREE' || !game.requiresCoins) {
-    onAuthorizedPlay(game);
+  const handleLaunch = () => {
+    if (onAccessGranted) {
+      onAccessGranted(profile, game);
+    } else if (onAuthorizedPlay) {
+      onAuthorizedPlay(game);
+    }
     onClose();
+  };
+
+  const handleSubscribeSms = () => {
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const separator = isIOS ? '&' : '?';
+    window.location.href = `sms:7198${separator}body=OK`;
+  };
+
+  const isSubscribed = Boolean(profile.subscription?.isActive);
+
+  // If user is already subscribed or game is free, launch immediately
+  if (isSubscribed || game.isFree || game.accessType === 'FREE' || !game.requiresCoins) {
+    handleLaunch();
     return null;
   }
-
-  const costCoins = game.coinCost || 10;
-  const hasEnoughCoins = profile.coins >= costCoins;
-
-  // Handle Coin Access Confirmation
-  const handleConfirmCoinPlay = () => {
-    setErrorMsg(null);
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      const res = EntitlementService.grantCoinAccess(game, profile);
-      setIsProcessing(false);
-
-      if (res.success) {
-        onProfileUpdate(res.updatedProfile);
-        onAuthorizedPlay(game, res.entitlement);
-        onClose();
-      } else {
-        setErrorMsg(res.error || 'Failed to authorize coin access');
-      }
-    }, 250);
-  };
-
-  // Handle Subscription Access Confirmation
-  const handleConfirmSubscriptionPlay = () => {
-    setErrorMsg(null);
-    const subOpts = game.subscriptionOptions;
-    const option = subOpts?.[selectedPeriod];
-    const priceETB = option?.priceETB || 5;
-
-    if (profile.telebirrBalance < priceETB) {
-      setErrorMsg(`Insufficient telebirr balance (${profile.telebirrBalance.toFixed(2)} ETB). Required: ${priceETB.toFixed(2)} ETB.`);
-      return;
-    }
-
-    setIsProcessing(true);
-    setTimeout(() => {
-      const res = EntitlementService.grantSubscriptionAccess(game, selectedPeriod, priceETB, profile);
-      setIsProcessing(false);
-
-      if (res.success) {
-        onProfileUpdate(res.updatedProfile);
-        onAuthorizedPlay(game, res.entitlement);
-        onClose();
-      } else {
-        setErrorMsg(res.error || 'Failed to authorize telebirr subscription');
-      }
-    }, 300);
-  };
 
   return (
     <div className="fixed inset-0 z-50 bg-[#071827]/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200 select-none">
@@ -146,201 +107,46 @@ export const GameAccessModal: React.FC<GameAccessModalProps> = ({
 
         {/* Modal Content */}
         <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">
-          {errorMsg && (
-            <div className="p-3 rounded-xl bg-[#FF796C]/10 border border-[#FF796C]/30 text-[#FF796C] text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-[#FF796C]" />
-              <span>{errorMsg}</span>
+          <div className="p-4 rounded-2xl bg-[#0B2234] border border-[#244558] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-[#63F5C8] uppercase tracking-wider">
+                DAILY PASS
+              </span>
+              <span className="text-xs font-bold text-[#A9C0CE]">
+                2 Birr/day
+              </span>
             </div>
-          )}
-
-          {/* =========================================================================
-              COIN ACCESS FLOW
-             ========================================================================= */}
-          {game.accessType === 'COIN' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#15374A] border border-[#244558]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#F7C85B]/20 text-[#F7C85B] border border-[#F7C85B]/30 flex items-center justify-center shadow-xs">
-                    <Coins className="w-5 h-5 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <div className="text-[11px] font-black text-[#F7C85B] uppercase tracking-wide">
-                      Coin Game Access
-                    </div>
-                    <div className="text-xs font-bold text-[#F5FAFC]">
-                      Entry: <span className="font-black text-[#63F5C8]">{costCoins} Coins</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <div className="text-[10px] text-[#A9C0CE] font-bold uppercase">
-                    Your Coins
-                  </div>
-                  <div className={`text-sm font-black ${hasEnoughCoins ? 'text-[#63F5C8]' : 'text-[#FF796C]'}`}>
-                    🪙 {profile.coins}
-                  </div>
-                </div>
+            <p className="text-xs text-[#A9C0CE] leading-relaxed">
+              Unlock unlimited instant access to all skill-based games with no interruptions.
+            </p>
+            <div className="space-y-1.5 text-xs text-[#A9C0CE]">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#63F5C8] shrink-0" />
+                <span>Unlimited plays across all games</span>
               </div>
-
-              {/* What you get */}
-              <div className="space-y-1.5 px-1 text-xs text-[#A9C0CE]">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#63F5C8] shrink-0" />
-                  <span>Unlimited plays and match retries for 2 hours</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#63F5C8] shrink-0" />
-                  <span>Rank on the official national {game.gameName} leaderboard</span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="pt-2 space-y-2">
-                {hasEnoughCoins ? (
-                  <button
-                    onClick={handleConfirmCoinPlay}
-                    disabled={isProcessing}
-                    className="w-full py-3.5 px-4 rounded-xl bg-[#00BFA6] hover:bg-[#63F5C8] text-[#071827] font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-                  >
-                    {isProcessing ? (
-                      <span className="inline-block animate-pulse">Authorizing Entry...</span>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4 fill-current" />
-                        <span>Unlock & Play ({costCoins} Coins)</span>
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        onClose();
-                        onOpenCoinTopup();
-                      }}
-                      className="w-full py-3.5 px-4 rounded-xl bg-[#15374A] hover:bg-[#244558] text-[#35D9F2] border border-[#35D9F2]/30 font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-                    >
-                      <Coins className="w-4 h-4" />
-                      <span>Get More Coins via telebirr</span>
-                    </button>
-                    <p className="text-[11px] text-center text-[#A9C0CE]">
-                      You need {costCoins - profile.coins} more coins to unlock this game.
-                    </p>
-                  </div>
-                )}
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#63F5C8] shrink-0" />
+                <span>Personal high scores & leaderboard ranking</span>
               </div>
             </div>
-          )}
-
-          {/* =========================================================================
-              SUBSCRIPTION ACCESS FLOW
-             ========================================================================= */}
-          {game.accessType === 'SUBSCRIPTION' && (
-            <div className="space-y-3">
-              <div className="text-xs font-bold text-[#F5FAFC]">
-                Choose Access Period (Paid via telebirr):
-              </div>
-
-              {/* Only show configured options */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {game.subscriptionOptions?.daily?.enabled && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPeriod('daily')}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      selectedPeriod === 'daily'
-                        ? 'border-[#63F5C8] bg-[#15374A] shadow-xs'
-                        : 'border-[#244558] hover:border-[#35D9F2]/50 bg-[#0B2234]'
-                    }`}
-                  >
-                    <div className="text-[10px] font-black uppercase tracking-wider text-[#A9C0CE]">
-                      Daily Pass
-                    </div>
-                    <div className="text-base font-black text-[#F5FAFC] mt-0.5">
-                      {game.subscriptionOptions.daily.priceETB} ETB
-                    </div>
-                    <div className="text-[10px] text-[#A9C0CE]">24 hours access</div>
-                  </button>
-                )}
-
-                {game.subscriptionOptions?.weekly?.enabled && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPeriod('weekly')}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      selectedPeriod === 'weekly'
-                        ? 'border-[#63F5C8] bg-[#15374A] shadow-xs'
-                        : 'border-[#244558] hover:border-[#35D9F2]/50 bg-[#0B2234]'
-                    }`}
-                  >
-                    <div className="text-[10px] font-black uppercase tracking-wider text-[#A9C0CE]">
-                      Weekly Pass
-                    </div>
-                    <div className="text-base font-black text-[#F5FAFC] mt-0.5">
-                      {game.subscriptionOptions.weekly.priceETB} ETB
-                    </div>
-                    <div className="text-[10px] text-[#A9C0CE]">7 days access</div>
-                  </button>
-                )}
-
-                {game.subscriptionOptions?.monthly?.enabled && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPeriod('monthly')}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      selectedPeriod === 'monthly'
-                        ? 'border-[#63F5C8] bg-[#15374A] shadow-xs'
-                        : 'border-[#244558] hover:border-[#35D9F2]/50 bg-[#0B2234]'
-                    }`}
-                  >
-                    <div className="text-[10px] font-black uppercase tracking-wider text-[#A9C0CE]">
-                      Monthly Pass
-                    </div>
-                    <div className="text-base font-black text-[#F5FAFC] mt-0.5">
-                      {game.subscriptionOptions.monthly.priceETB} ETB
-                    </div>
-                    <div className="text-[10px] text-[#A9C0CE]">30 days access</div>
-                  </button>
-                )}
-              </div>
-
-              {/* Telebirr Balance Card */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-[#0B2234] border border-[#244558] text-xs">
-                <div className="flex items-center gap-2">
-                  <Wallet className="w-4 h-4 text-[#35D9F2]" />
-                  <span className="font-bold text-[#A9C0CE]">telebirr Wallet Balance</span>
-                </div>
-                <span className="font-black text-[#F5FAFC]">
-                  {profile.telebirrBalance.toFixed(2)} ETB
-                </span>
-              </div>
-
-              {/* Pay via telebirr button */}
-              <button
-                onClick={handleConfirmSubscriptionPlay}
-                disabled={isProcessing}
-                className="w-full py-3.5 px-4 rounded-xl bg-[#00BFA6] hover:bg-[#63F5C8] text-[#071827] font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-              >
-                {isProcessing ? (
-                  <span className="inline-block animate-pulse">Processing telebirr Authorization...</span>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>
-                      Pay via telebirr ({game.subscriptionOptions?.[selectedPeriod]?.priceETB || 5} ETB)
-                    </span>
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-
-          {/* Secure Footer Notice */}
-          <div className="flex items-center justify-center gap-1.5 text-[10px] text-[#A9C0CE] font-bold pt-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#63F5C8]" />
-            <span>Authorized securely via telebirr SuperApp</span>
           </div>
+
+          <button
+            type="button"
+            onClick={handleSubscribeSms}
+            className="w-full py-3.5 rounded-2xl bg-[#00BFA6] hover:bg-[#63F5C8] text-[#071827] font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-98"
+          >
+            <Send className="w-4 h-4" />
+            <span>Subscribe via SMS (Send OK to 7198)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleLaunch}
+            className="w-full py-2.5 rounded-xl bg-[#15374A] hover:bg-[#244558] text-[#A9C0CE] font-bold text-xs uppercase transition-colors cursor-pointer text-center"
+          >
+            Play Now
+          </button>
         </div>
       </div>
     </div>

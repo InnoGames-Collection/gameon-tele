@@ -105,4 +105,46 @@ export async function authRoutes(fastify: FastifyInstance) {
       },
     });
   });
+
+  fastify.get('/me', async (req, reply) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return reply.status(401).send({ error: 'UNAUTHORIZED' });
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, env.JWT_SECRET) as { msisdn: string; id: string };
+      const norm = normalizeMsisdn(decoded.msisdn);
+      const playerRes = await pool.query('SELECT * FROM players WHERE msisdn = $1 LIMIT 1', [norm]);
+      if (playerRes.rows.length === 0) {
+        return reply.status(404).send({ error: 'PLAYER_NOT_FOUND' });
+      }
+      const player = playerRes.rows[0];
+      const subRes = await pool.query(
+        `SELECT status, plan_type, next_billing_at FROM subscriptions WHERE msisdn = $1 AND status = 'ACTIVE' LIMIT 1`,
+        [norm]
+      );
+      const scoresRes = await pool.query(
+        `SELECT game_id, high_score FROM player_game_scores WHERE player_msisdn = $1`,
+        [norm]
+      );
+      const scoreMap: Record<string, number> = {};
+      for (const s of scoresRes.rows) {
+        scoreMap[s.game_id] = s.high_score;
+      }
+      return reply.send({
+        success: true,
+        profile: {
+          id: player.id,
+          msisdn: norm,
+          maskedMsisdn: player.masked_msisdn,
+          isLoggedIn: true,
+          isSubscribed: subRes.rows.length > 0,
+          highScores: scoreMap,
+        },
+      });
+    } catch {
+      return reply.status(401).send({ error: 'INVALID_OR_EXPIRED_TOKEN' });
+    }
+  });
 }

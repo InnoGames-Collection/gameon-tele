@@ -1,5 +1,5 @@
 /**
- * FAQ Page Component for TelePlus
+ * FAQ Page Component for GameSwiper
  * 
  * Features:
  * - Standard expandable/collapsible accordion design
@@ -7,12 +7,12 @@
  * - Left: Question text; Right: Dynamic '+' (collapsed) or '−' (expanded) icon
  * - Entire FAQ row is clickable
  * - Smooth expansion/collapse
- * - All 27 questions from the official source of truth document
+ * - All questions from the official source of truth document
  */
 
 import React, { useState } from 'react';
 import { HelpCircle, ArrowLeft, Plus, Minus, Search } from 'lucide-react';
-import { TELEPLUS_FAQ_ITEMS } from '../../data/teleplusContent';
+import { GAMESWIPER_FAQ_ITEMS } from '../../data/gameswiperContent';
 
 interface FAQPageProps {
   onBack?: () => void;
@@ -35,7 +35,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onBack, showHeader = true }) =
 
   const expandAll = () => {
     const allOpen: Record<string, boolean> = {};
-    TELEPLUS_FAQ_ITEMS.forEach((item) => {
+    GAMESWIPER_FAQ_ITEMS.forEach((item) => {
       allOpen[item.id] = true;
     });
     setOpenItemIds(allOpen);
@@ -45,7 +45,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({ onBack, showHeader = true }) =
     setOpenItemIds({});
   };
 
-  const filteredItems = TELEPLUS_FAQ_ITEMS.filter(
+  const filteredItems = GAMESWIPER_FAQ_ITEMS.filter(
     (item) =>
       item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.answer.toLowerCase().includes(searchQuery.toLowerCase())

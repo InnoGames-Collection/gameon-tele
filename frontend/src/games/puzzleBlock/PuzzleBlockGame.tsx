@@ -36,7 +36,7 @@ import { DailyChallengeBanner } from './components/DailyChallengeBanner';
 import { BlockRenderer, ConnectedPieceRenderer } from './blockRenderer';
 import { GameLeaderboardModal, GAME_CONFIGS } from '../../components/gameNavigation';
 
-const STORAGE_KEY = 'teleplus_puzzle_block_savedata_v1';
+const STORAGE_KEY = 'gameswiper_puzzle_block_savedata_v1';
 
 function loadSaveData(): PuzzleBlockSaveData {
   try {

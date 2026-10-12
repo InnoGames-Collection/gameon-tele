@@ -1,5 +1,5 @@
 /**
- * TelePlus - Color Switch 7-Day Weekly Competition Service
+ * GameSwiper - Color Switch 7-Day Weekly Competition Service
  * 
  * Manages the active 7-day competitive Color Switch tournament:
  * - 7-Day Competition cycle with start date, end date, and remaining days
@@ -46,9 +46,9 @@ export interface WeeklyCompetitionInfo {
 }
 
 const STORAGE_KEYS = {
-  COMPETITION_STATE: 'teleplus_cs_comp_state_v1',
-  COMPETITION_SCORES: 'teleplus_cs_comp_scores_v1',
-  COMPLETED_COMPS: 'teleplus_cs_completed_comps_v1',
+  COMPETITION_STATE: 'gameswiper_cs_comp_state_v1',
+  COMPETITION_SCORES: 'gameswiper_cs_comp_scores_v1',
+  COMPLETED_COMPS: 'gameswiper_cs_completed_comps_v1',
 };
 
 // Seed verified competitors with strictly masked MSISDNs (no names, consistent 2519***** format)

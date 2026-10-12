@@ -1,16 +1,16 @@
 /**
- * Help & Support Page Component for TelePlus
+ * Help & Support Page Component for GameSwiper
  * 
  * Features:
  * - Interactive expandable/collapsible accordion design
  * - Dynamic '+' (collapsed) and '−' (expanded) icons
- * - Verbatim content for all 9 support topics from Document Section 13
+ * - Verbatim content for all support topics from Document Section 13
  * - Important note: official support phone number notice
  */
 
 import React, { useState } from 'react';
 import { Headphones, ArrowLeft, Plus, Minus, LifeBuoy, AlertCircle } from 'lucide-react';
-import { TELEPLUS_SUPPORT_TOPICS } from '../../data/teleplusContent';
+import { GAMESWIPER_SUPPORT_TOPICS } from '../../data/gameswiperContent';
 
 interface HelpSupportPageProps {
   onBack?: () => void;
@@ -31,7 +31,7 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
 
   const expandAll = () => {
     const allOpen: Record<string, boolean> = {};
-    TELEPLUS_SUPPORT_TOPICS.forEach((t) => {
+    GAMESWIPER_SUPPORT_TOPICS.forEach((t) => {
       allOpen[t.id] = true;
     });
     setOpenTopicIds(allOpen);
@@ -99,7 +99,7 @@ export const HelpSupportPage: React.FC<HelpSupportPageProps> = ({ onBack, showHe
 
       {/* 3. Accordion List of 9 Support Topics */}
       <div className="space-y-2.5">
-        {TELEPLUS_SUPPORT_TOPICS.map((topic, index) => {
+        {GAMESWIPER_SUPPORT_TOPICS.map((topic, index) => {
           const isOpen = !!openTopicIds[topic.id];
 
           return (

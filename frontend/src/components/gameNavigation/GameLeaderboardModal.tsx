@@ -142,11 +142,6 @@ export const GameLeaderboardModal: React.FC<GameLeaderboardModalProps> = ({
                   <div className="text-sm font-black text-amber-300 font-mono">
                     {entry.score.toLocaleString()} <span className="text-[10px] text-slate-300">{gameConfig.scoreLabel}</span>
                   </div>
-                  {entry.rewardText && (
-                    <span className="text-[10px] font-semibold text-emerald-400">
-                      🏆 {entry.rewardText}
-                    </span>
-                  )}
                 </div>
               </div>
             );
